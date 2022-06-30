@@ -86,7 +86,10 @@
 <script src="<?php echo base_url('assets/js/common.js?v=20220316'); ?>"></script>
 
 <!-- CKEditor 5  -->
-<script src="<?php echo base_url('assets/js/ckeditor.js'); ?>"></script>
+<script src="<?php echo base_url('assets/js/ckeditor.js'); ?>"></script> 
+<script src="<?php echo base_url('assets/js/multiselect_dropdown.js'); ?>"></script>
+
+
 
 <script>
   toastr.options = {

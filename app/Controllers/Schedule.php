@@ -12,9 +12,7 @@ class Schedule extends BaseController
 	public function index()
 	{
 		$data['title'] = "Schedule Management";
-		$data['module'] = "Schedule";
-		$data['module_holiday'] = "Add-Holiday";
-		
+		$data['module'] = "Schedule";  
 		return view('pages/schedule/overview', $data);
 	}
 	/*******************************************************/
@@ -55,7 +53,8 @@ class Schedule extends BaseController
 						'ends_at' =>  $event['ends_at'],
 						'duration' => $event['duration'],
 						'total_students' => $event['total_students'],
-						'present_students' => $event['present_students']
+						'present_students' => $event['present_students'],
+						'frequency'=>$event['frequency']
 					);
 				}
 			} else {
@@ -144,6 +143,29 @@ class Schedule extends BaseController
 		echo view('modals/schedule/holiday_list', $data);
 	}
 	/** holiday_list end  */
+
+	/* holiday calender start */
+	public function holiday_calender($redirect = 'schedule'){
+		$data['title'] = "Holiday Calender";
+		$data['instituteID'] = session()->get('instituteID');
+
+		$instituteID = decrypt_cipher($data['instituteID']);
+
+		$ClassroomModel = new ClassroomModel();
+		$data['classroom_list'] = $ClassroomModel->fetch_all_classrooms($instituteID);
+
+		$InstituteScheduleModel = new InstituteScheduleModel();  
+		$post_data['institute_id'] = $instituteID;
+		$post_data['type'] = 'Holiday'; 
+		$holiday_list = $InstituteScheduleModel->fetch_holiday_list($post_data); 
+		$data['holiday_list'] = $holiday_list;
+		$SubjectsModel = new SubjectsModel();
+		$data['subjects_list'] = $SubjectsModel->get_subjects($instituteID);
+
+		$data['redirect'] = $redirect; 
+		echo view('modals/schedule/holiday_calender', $data); 
+	}
+	/* holiday calender end */
 
 	/**
 	 * Add Bulk Schedules

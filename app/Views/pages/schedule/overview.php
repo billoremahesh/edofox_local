@@ -54,26 +54,23 @@
                         <?php endif; ?>
                     </div>
                     <div class="float-end">
-                        <?php  
-                        if ($module_holiday == 'Add-Holiday') :  ?>
-                         <?php if (in_array("manage_schedule", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
-                             
-
-                                <div class="btn-group">
+                    <?php if ($module == 'Schedule') :  ?> 
+                            <?php if (in_array("manage_schedule", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
+                              
+                        <div class="btn-group">
                             <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center me-1 dropdown-toggle" data-bs-toggle="dropdown" style="margin-right:5px;color:#fff;background-color:#ec5034 !important" aria-expanded="false">
                                 HOLIDAY
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" onclick="show_add_modal('modal_div','add_holiday_modal','schedule/add_holiday_modal');" >Add Holiday</a></li>
-
-                                <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_list','schedule/holiday_list');" >List Holiday</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="show_add_modal('modal_div','add_holiday_modal','schedule/add_holiday_modal');">Add Holiday</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_list','schedule/holiday_list');">List Holiday</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_calender','schedule/holiday_calender');">Holiday Calender</a></li>
                             </ul>
                         </div>
 
-
-
-                            <?php endif; ?>
                         <?php endif; ?>
+                        <?php endif; ?>
+
                     </div>
                 </div>
             </div>
@@ -229,6 +226,7 @@
     }
 
     function format_schedule(data) {
+        console.log(data,'data format schedule');
         var html = "";
         var date = new Date();
         var current_year = date.getFullYear();
@@ -254,7 +252,8 @@
 
                 html = html + "<div class='kanban'>";
                 html = html + "<div class='kanban-container'>";
-                $.each(data, function(objIndex, obj) {
+                $.each(data, function(objIndex, obj) { 
+                  
                     if (week_date != obj.date) {
                         if (objIndex != 0) {
                             if (ui_module == 'Schedule') {
@@ -270,14 +269,25 @@
                             html = html + "</ul></div></div>";
                         }
 
+                        if(obj.frequency=="Date"){ 
+                        var formatted_date = new Date(obj.date);
+                        formatted_date = formatted_date.toLocaleDateString("en-US", options)
+                        html = html + "<div class='kanban-column'>";
+                        html = html + "<div class='kanban-column-header'>h" + formatted_date + "</div>";
+                        html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
+                        week_date = obj.date;
+                        }else{
                         var formatted_date = new Date(obj.date);
                         formatted_date = formatted_date.toLocaleDateString("en-US", options)
                         html = html + "<div class='kanban-column'>";
                         html = html + "<div class='kanban-column-header'>" + formatted_date + "</div>";
                         html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
                         week_date = obj.date;
-                    }
-
+                        }
+                       
+                    } 
+                    
+                    if(obj.frequency=="Weekly"){ 
                     if (obj.title != null) {
                         html = html + "<li class='schedule_card position-relative'>";
                         html = html + "<div class='badge subject_badge'>" + obj.subject_name.toUpperCase() + "</div>";
@@ -332,8 +342,8 @@
 
                         html = html + "</div>";
                         html = html + "</li>";
-                    }
-
+                    } 
+                    } 
                 });
                 if (ui_module == 'Schedule') {
                     html = html + "<li>";

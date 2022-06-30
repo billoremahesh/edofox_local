@@ -124,7 +124,7 @@
             }],
             "searching": true,
             "paging": true,
-            "pageLength": 25,
+            "pageLength": 10,
             "bLengthChange": false,
             "bInfo": false,
             language: {

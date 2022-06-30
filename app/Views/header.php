@@ -18,7 +18,8 @@
 
     <!-- Font-Awesome 5.15.4-web -->
     <link rel="stylesheet" href="<?php echo base_url('assets/fontawesome-5.15.4-web/css/all.min.css'); ?>">
-
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/multiselect_dropdown.css'); ?>">
+    
     <!-- Bootstrap-5.0.2 -->
     <link rel="stylesheet" href="<?php echo base_url('assets/bootstrap-5.0.2-dist/css/bootstrap.min.css'); ?>">
 
@@ -29,7 +30,7 @@
     <!-- Datepicker -->
     <link rel="stylesheet" href="<?php echo base_url('assets/plugins/jquery-ui-1.12.1.custom/jquery-ui.css'); ?>">
     <link rel="stylesheet" href="<?php echo base_url('assets/plugins/datetimepicker/bootstrap-datetimepicker.min.css'); ?>">
-
+    
     <!-- Select2 CSS -->
     <link rel="stylesheet" href="<?php echo base_url('assets/plugins/select2-4.0.13/css/select2.min.css'); ?>">
 
@@ -58,6 +59,8 @@
     <link href="<?php echo base_url('assets/css/common.css?v=20220406'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/material_design.css?v=20220413'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/loading_indicater.css?v=20210902'); ?>" rel="stylesheet">
+
+  
 </head>
 
 

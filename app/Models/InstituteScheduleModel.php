@@ -109,9 +109,9 @@ class InstituteScheduleModel extends Model
         $end_date = '';
         if (isset($postData['end']) && !empty($postData['end'])) {
             $end_date = $postData['end'];
-        }
+        } 
 
-        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name,test_subjects.subject,institute_schedule_data.date,attendance.total_students,present_attendance.present_students FROM institute_schedule LEFT JOIN packages ON packages.id = institute_schedule.classroom_id LEFT JOIN test_subjects ON test_subjects.subject_id = institute_schedule.subject_id LEFT JOIN institute_schedule_data on institute_schedule_data.schedule_id = institute_schedule.id LEFT JOIN (select count(*) as total_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 group by schedule_data_id) as attendance on attendance.schedule_data_id = institute_schedule_data.id LEFT JOIN (select count(*) as present_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 and is_present = 1 group by schedule_data_id) as present_attendance on present_attendance.schedule_data_id = institute_schedule_data.id where institute_schedule.is_disabled = 0 AND institute_schedule.frequency = 'weekly' $institute_condn  $classroom_filter_check $check_access_perms $day_check AND (institute_schedule_data.date IS NULL OR institute_schedule_data.date BETWEEN '$start_date' AND '$end_date') ORDER BY institute_schedule.day,institute_schedule.starts_at ASC";
+        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name,test_subjects.subject,institute_schedule_data.date,attendance.total_students,present_attendance.present_students FROM institute_schedule LEFT JOIN packages ON packages.id = institute_schedule.classroom_id LEFT JOIN test_subjects ON test_subjects.subject_id = institute_schedule.subject_id LEFT JOIN institute_schedule_data on institute_schedule_data.schedule_id = institute_schedule.id LEFT JOIN (select count(*) as total_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 group by schedule_data_id) as attendance on attendance.schedule_data_id = institute_schedule_data.id LEFT JOIN (select count(*) as present_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 and is_present = 1 group by schedule_data_id) as present_attendance on present_attendance.schedule_data_id = institute_schedule_data.id where institute_schedule.frequency IN ('weekly','date') AND institute_schedule.is_disabled = 0  $institute_condn  $classroom_filter_check $check_access_perms $day_check AND (institute_schedule_data.date IS NULL OR institute_schedule_data.date BETWEEN '$start_date' AND '$end_date') ORDER BY institute_schedule.day,institute_schedule.starts_at ASC";
         $query = $db->query($sql_fetch_data);
         $result = $query->getResultArray();
         return $result;
@@ -259,16 +259,14 @@ class InstituteScheduleModel extends Model
 
         $db->transStart();
         // $data['classroom_list']
-        $classroom_arr = [];
-        if ($data['session_classroom'][0] == 'ALL') { 
-            foreach ($data['classroom_list'] as $classroom_id) {
-                $classroom_arr[] = $classroom_id['id'];
-            } 
+        $classroom_arr = []; 
+        if(count($data['session_classroom'])==count($data['classroom_list'])){
+            $classroom_arr[] =0;
             $data['session_classroom'] = $classroom_arr;
-        } 
-
-
+        }  
+ 
         foreach ($data['session_classroom'] as $class_value) {
+          
             if (isset($data['institute_id']) && !empty($data['institute_id'])) {
                 $insert_data['institute_id'] = sanitize_input($data['institute_id']);
             }
@@ -280,7 +278,10 @@ class InstituteScheduleModel extends Model
 
             if (isset($class_value) && !empty($class_value)) {
                 $insert_data['classroom_id'] = sanitize_input($class_value);
-            }
+            } 
+            if(count($data['session_classroom'])==count($data['classroom_list'])){
+                $insert_data['classroom_id'] =0;
+            }  
 
             if (isset($data['session_frequency']) && !empty($data['session_frequency'])) {
                 $insert_data['frequency'] = sanitize_input($data['session_frequency']);

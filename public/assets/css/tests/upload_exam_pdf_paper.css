@@ -1,0 +1,30 @@
+.add_section_btn {
+  color: #fff;
+  box-sizing: border-box;
+  border: none;
+  transition: all 0.3s ease-out;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.225);
+  background-color: #ff4081;
+  border-radius: 5px;
+  font-size: 16px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.add_section_btn:hover {
+  cursor: pointer;
+}
+
+.remove_ed_icon {
+  transition: all 0.3s ease-out;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.225);
+  background-color: #ff4081;
+  border-radius: 50%;
+  color: #fff;
+  padding: 6px;
+  font-size: 12px;
+}
+
+.remove_ed_icon:hover {
+  cursor: pointer;
+}

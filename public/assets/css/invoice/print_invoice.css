@@ -1,0 +1,14 @@
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+    color: black;
+    font-family: Karla, Roboto, sans-serif !important;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  body {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+}

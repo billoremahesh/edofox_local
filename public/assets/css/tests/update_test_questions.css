@@ -1,0 +1,239 @@
+#main_div {
+	background-color: white;
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .08);
+	margin: 16px auto 32px;
+	padding: 0px;
+}
+
+#card_box_heading {
+	color: #bdbdbd;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.card_box_link:hover {
+	text-decoration: none;
+}
+
+.frm_label {
+	margin: 8px;
+}
+
+.frm_input {
+	margin: 8px;
+}
+.add_question_dropdown_button {
+	background-color: transparent;
+	border: 0px;
+	display: block;
+	padding: 3px 20px;
+	clear: both;
+	font-weight: 400;
+	line-height: 1.42857143;
+	color: #333;
+	white-space: nowrap;
+	outline: none;
+	text-align: left;
+	width: 100%;
+}
+
+.add_question_dropdown_button:focus,
+	.add_question_dropdown_button:hover {
+	color: #262626;
+	text-decoration: none;
+	background-color: #f5f5f5;
+}
+
+/* Subject and Section Count Card CSS */
+.subject_section_card_block{
+	margin-top: 16px;
+}
+
+.subjects-counts-block{
+	background-color: white;
+	padding: 8px;
+	border-radius: 10px;
+	box-shadow: 0px 0px 10px #eee;
+	align-items: center;
+	border: 2px solid #eee;
+	margin-bottom: 8px;
+}
+
+.subjects-counts-block .counts-title {
+	color: rgb(104, 104, 104);
+	font-size: 14px;
+  }
+
+  .top-counts-flexdiv{
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 4px;
+  }
+
+
+  .subjects-counts-block .counts-subtitle {
+	color: rgb(104, 104, 104);;
+	font-size: 12px;
+  }
+  
+  .subjects-counts-block .count-number {
+	margin: 0;
+	font-size: 20px;
+	font-weight: bold;
+  }
+
+  
+  .subjects-counts-block .count-subnumber {
+	margin: 0;
+	font-size: 16px;
+	font-weight: bold;
+  }
+
+  .custom_count_badge{
+	background-color:rgb(99, 99, 99);
+	color:#fff;
+	display:inline-block;
+	padding-left:8px;
+	padding-right:8px;
+	text-align:center;
+	border-radius:50%
+  }
+  .section_card_label{
+	border-bottom: 1px solid rgb(156, 156, 156);
+	margin-bottom: 2px;
+  }
+
+/* The snackbar - position it at the bottom and in the middle of the screen */
+#snackbar {
+	visibility: hidden; /* Hidden by default. Visible on click */
+	min-width: 250px; /* Set a default minimum width */
+	margin-left: -125px; /* Divide value of min-width by 2 */
+	background-color: #333; /* Black background color */
+	color: #fff; /* White text color */
+	text-align: center; /* Centered text */
+	border-radius: 2px; /* Rounded borders */
+	padding: 16px; /* Padding */
+	position: fixed; /* Sit on top of the screen */
+	z-index: 1; /* Add a z-index if needed */
+	left: 50%; /* Center the snackbar */
+	bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+	visibility: visible; /* Show the snackbar */
+	/* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+However, delay the fade out process for 2.5 seconds */
+	-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@
+-webkit-keyframes fadein {
+	from {bottom: 0;
+	opacity: 0;
+}
+
+to {
+	bottom: 30px;
+	opacity: 1;
+}
+
+}
+@
+keyframes fadein {
+	from {bottom: 0;
+	opacity: 0;
+}
+
+to {
+	bottom: 30px;
+	opacity: 1;
+}
+
+}
+@
+-webkit-keyframes fadeout {
+	from {bottom: 30px;
+	opacity: 1;
+}
+
+to {
+	bottom: 0;
+	opacity: 0;
+}
+
+}
+@
+keyframes fadeout {
+	from {bottom: 30px;
+	opacity: 1;
+}
+
+to {
+	bottom: 0;
+	opacity: 0;
+}
+}
+#main_div {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.question_display_card {
+  border: 2px solid #eee;
+  color: rgba(0, 0, 0, 0.54);
+  padding: 16px;
+  background-color: white;
+  margin: 16px auto;
+  box-shadow: 0px 4px 20px #eee;
+  border-radius: 8px;
+}
+
+.question_display_card .top_title_div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.editable-blocks {
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #2196f3;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.metadata-block {
+  background-color: #f5f5f5;
+  padding: 8px;
+  font-weight: 500;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.correct-answer-block {
+  color: #4caf50;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+#btn-go-to-top {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  font-size: 12px;
+  border: none;
+  outline: none;
+  background-color: #4db6ac;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+#btn-go-to-top:hover {
+  background-color: #009688;
+}

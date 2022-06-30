@@ -1,0 +1,11 @@
+#dashboard_heading{
+    font-size: 24px;
+}
+
+.card_box_disabled_link,
+.card_box_disabled_link:hover,
+.card_box_disabled_link:focus,
+.card_box_disabled_link:active{
+    cursor: not-allowed;
+    color: #8c8c8c;
+}

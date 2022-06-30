@@ -1,0 +1,32 @@
+.parse_bottom_buttons_div {
+  display: flex;
+  justify-content: space-around;
+}
+
+.parsed_question_div {
+  border: 2px solid rgb(197, 197, 197);
+  margin: 16px auto;
+  padding: 16px;
+  box-shadow: 0px 0px 20px rgb(197, 197, 197);
+  border-radius: 6px;
+}
+
+.question_image_div {
+  position: relative;
+}
+
+.question_crop_button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+@media (min-width: 992px) {
+  .question_image_div {
+    max-width: 60%;
+    display: block;
+    margin: auto;
+  }
+}

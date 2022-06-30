@@ -1,0 +1,25 @@
+/**
+* Datatables inside more, form submit button styling
+*/
+
+.table_form_submit_dropdown_button {
+  background-color: transparent;
+  border: 0px;
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+  outline: none;
+  text-align: left;
+  width: 100%;
+}
+
+.table_form_submit_dropdown_button:focus,
+.table_form_submit_dropdown_button:hover {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}

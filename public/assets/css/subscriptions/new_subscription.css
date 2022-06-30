@@ -1,0 +1,23 @@
+.package_info_card{
+    font-size: 16px;
+    padding: 16px;
+    border: 1px solid black;
+    margin: 8px auto;
+}
+
+.package_total_amt_text {
+  font-size: 20px;
+}
+
+.footer_total_amt_text {
+  font-size: 24px;
+}
+
+.checkout_text{
+    font-size: 18px;
+}
+
+.total_saved_text{
+    font-size: 20px;
+    color: rgb(116, 134, 1);
+}

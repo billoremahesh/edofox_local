@@ -1,0 +1,175 @@
+#main_div {
+  background-color: white;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
+  margin: 32px 16px;
+  min-width: 1200px;
+  padding: 16px;
+  color: #424242;
+}
+
+#card_box_heading {
+  color: #bdbdbd;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  margin: 8px auto;
+}
+
+.flex-container > div {
+  /*  background-color: #f1f1f1;*/
+  margin: 10px 0px;
+  text-align: center;
+  padding: 32px 8px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.56);
+}
+
+/* Test Details styling */
+
+.test-details .test-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.test-details .test-details-badges span {
+  font-size: 12px;
+  border-radius: 25px;
+  background-color: #ba68c8;
+  padding: 0px 8px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Test Analysis Counts cards styling */
+
+.test-analysis-counts-card {
+  border-radius: 10px;
+  border: 2px solid #eee;
+  padding: 16px;
+}
+
+.test-analysis-counts-card .count-text {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.count-text .fa-users {
+  color: #64b5f6;
+}
+
+.count-text .fa-users-slash {
+  color: #f06292;
+}
+
+.count-text .fa-tachometer-alt {
+  color: #4db6ac;
+}
+
+.count-text .fa-check-circle {
+  color: #aed581;
+}
+
+.count-text .fa-times-circle {
+  color: #e57373;
+}
+
+.count-text .fa-pen-alt {
+  color: #7986cb;
+}
+
+.test-analysis-counts-card .count-subtitle {
+  font-weight: bold;
+  font-size: 12px;
+  color: #aaa;
+}
+
+#showQuestions,
+#showStudents {
+  padding: 8px;
+}
+
+#test_ques_table tr > td,
+#test_ques_table tr > th {
+  font-size: 12px;
+}
+
+#test_student_table tr > td,
+#test_student_table tr > th {
+  font-size: 12px;
+}
+
+#absent-students-table tr > td,
+#absent-students-table tr > th {
+  font-size: 12px;
+}
+
+.chart_sub_heading {
+  font-family: Verdana;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Student List UI  */
+
+.usr_list_container {
+  width: 206px;
+  border: 1px solid #eaeaea;
+  position: absolute;
+  z-index: 9;
+  background: #fff;
+  list-style: none;
+  width: 94%;
+  padding-left: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.usr_list_container li {
+  padding: 8px;
+}
+
+.usr_list_container li:hover {
+  background: #3c8dbc;
+  color: white;
+}
+
+#student_user_list {
+  display: none;
+}
+
+.questionRow {
+  border: solid 1px #fab;
+  max-width: 600px;
+  word-wrap: break-word;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  @page {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  body {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+  }
+}

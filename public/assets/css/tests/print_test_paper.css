@@ -1,0 +1,35 @@
+.print-button {
+  background-color: #5b51d8;
+  border: 0;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 1);
+  font-weight: bold;
+  display: inline-block;
+  margin: 0;
+  margin-top: 32px;
+  outline: none;
+  padding: 8px;
+  text-transform: uppercase;
+  transition-duration: 0.2s;
+}
+
+.print-button:hover,
+.print-button:focus {
+  box-shadow: 0px 10px 20px #bdbdbd;
+}
+
+@media print {
+  /* To hide the page url and margin while printing */
+  @page {
+    size: auto;
+    margin: 0;
+  }
+  /* To hide the urls showing up in print page for every image */
+  a[href]:after {
+    content: none !important;
+  }
+  .each_question {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

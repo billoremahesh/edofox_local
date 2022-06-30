@@ -1,0 +1,96 @@
+.live_lecture_card {
+  border-radius: 4px;
+  background-color: #fff;
+  background-color: var(--mdc-theme-surface, #fff);
+  box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: 8px;
+}
+
+.card_head {
+  padding-top: 18px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.card_title {
+  font-family: Karla, Roboto, sans-serif !important;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1.25rem;
+  line-height: 2rem;
+  font-weight: 500;
+  letter-spacing: 0.0125em;
+  text-decoration: inherit;
+  text-transform: inherit;
+}
+
+.card_subtitle {
+  font-family: Karla, Roboto, sans-serif !important;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.0178571429em;
+  text-decoration: inherit;
+  text-transform: inherit;
+  opacity: 0.6;
+}
+
+.card_body {
+  padding-top: 18px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.card_supporting_text {
+  font-family: Karla, Roboto, sans-serif !important;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.0178571429em;
+  text-decoration: inherit;
+  text-transform: inherit;
+  opacity: 0.6;
+}
+
+.card_actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 52px;
+  padding: 8px;
+}
+
+.card_action_btn {
+  text-decoration: none;
+  margin-left: 0;
+  margin-right: 8px;
+  padding: 0 8px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  color: #6200ee;;
+}
+
+.search_input_wrap {
+  max-width: 200px;
+}
+
+.lecture_status_filter {
+  max-width: 200px;
+}
+
+#refresh_icon {
+  cursor: pointer;
+}

@@ -1,0 +1,23 @@
+/* Datatable CSS - moved searchbox and page length */
+#video_analysis_table_filter,
+#video_analysis_table_length {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+#video_analysis_table_filter > label,
+#video_analysis_table_length > label {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+}
+
+#video_analysis_table_filter > label > input,
+#video_analysis_table_length > label > select {
+  margin: auto 8px !important;
+}
+
+/* Hide table export option buttons */
+#video_analysis_table_wrapper .dt-buttons {
+  display: none;
+}

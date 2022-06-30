@@ -1,0 +1,30 @@
+.chapter_list {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    width: 100%;
+}
+
+.add_ques_card {
+    padding: 16px;
+    margin: 32px auto;
+    background-color: #ffffff;
+    border: 2px solid #c8e6c9;
+    border-radius: 6px;
+}
+
+.editable-blocks {
+    padding: 4px 8px;
+    cursor: pointer;
+    color: #2196f3;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.correct-answer-block {
+    padding: 4px 8px;
+    color: #4caf50;
+    font-weight: bold;
+    text-decoration: underline;
+}

@@ -1,0 +1,41 @@
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after {
+  right: 0px;
+}
+
+#activityLogsTable thead tr th {
+  vertical-align: top;
+  font-size: 14px;
+}
+
+.dataTables_wrapper table thead tr th:first-child {
+  left: 0px;
+}
+
+.table > thead > tr > th {
+  padding: 6px;
+}
+
+.export-icon-group {
+  display: inline-block;
+}
+
+.export-icon {
+  cursor: pointer;
+  margin-left: 10px;
+  height: 24px;
+  width: 24px;
+}
+
+.activityLogsTableBody {
+  font-size: 14px;
+}
+
+.table > tbody > tr > td {
+  border-top: 0px;
+}
+
+.staff_list_select{
+  max-width: 150px;
+}

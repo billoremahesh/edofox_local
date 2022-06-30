@@ -1,0 +1,114 @@
+.subject-chapter-block {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px auto;
+  background-color: white;
+}
+
+.subject-chapter-block h4 {
+  font-weight: bold;
+  color: #333;
+}
+
+.loading-div {
+  width: 20px;
+  float: right;
+  display: none;
+}
+
+.chapter-order-input {
+  border: 0px;
+  border-bottom: 2px solid #ccc;
+}
+
+.subjects-chapters-block {
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.chapter-item {
+  display: flex;
+  align-items: center;
+}
+
+.chapter-item a {
+  margin: 8px 4px;
+  color: #2196f3;
+  display: inline-block;
+  flex-grow: 2;
+}
+
+.top-counts-block {
+  background-color: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px #eee;
+  display: flex;
+  align-items: center;
+  border: 2px solid #eee;
+  margin-bottom: 8px;
+}
+
+.top-counts-block .counts-subtitle {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.top-counts-block .count-number {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.video-content-button {
+  background-color: transparent;
+  outline: none;
+  border: 0px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* max-width: 90%; */
+  font-size: 14px;
+  padding: 8px;
+}
+
+.resources-block {
+  margin-top: 32px;
+  border: 2px solid #f48fb1;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.tests-block {
+  margin-top: 32px;
+  border: 2px solid #a5d6a7;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.content-order-input {
+  border: 0px;
+  border-bottom: 2px solid #ccc;
+}
+
+@media (min-width: 992px) {
+  .content-block {
+    margin: 0px auto;
+  }
+}
+
+.video-js .vjs-big-play-button {
+  position: absolute !important;
+  top: 50% !important;
+  -webkit-transform: translateY(-50%) !important;
+  -ms-transform: translateY(-50%) !important;
+  transform: translateY(-50%) !important;
+  left: 50% !important;
+  -webkit-transform: translateX(-50%) !important;
+  -ms-transform: translateX(-50%) !important;
+  transform: translateX(-50%) !important;
+}

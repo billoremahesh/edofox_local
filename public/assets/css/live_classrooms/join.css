@@ -1,0 +1,437 @@
+#video_msg_content {
+  position: relative;
+  height: 100%;
+  padding-bottom: 24px;
+}
+
+/* Video CSS */
+.video_div {
+  height: 600px;
+  margin: 8px;
+  background-color: transparent;
+  border-right: solid 1px #e0e0e0;
+}
+.ratio {
+  height: 100%;
+}
+
+#remoteVideo {
+  height: 100vh;
+  width: 100%;
+  object-fit: fill;
+}
+
+/* Chat Messages CSS */
+.discussions {
+  background-color: #fff;
+  border-right: solid 1px #e0e0e0;
+}
+
+.discussion_header {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Open Sans", sans-serif;
+  background-color: #fff;
+  border-bottom: solid 1px #e0e0e0;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.student_list {
+  min-height: 500px;
+  min-width: 300px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.chat {
+  width: 100%;
+  background-color: #fff;
+  border-right: solid 1px #e0e0e0;
+  position: relative;
+}
+
+.chat_header {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Open Sans", sans-serif;
+  background-color: #fff;
+  border-bottom: solid 1px #e0e0e0;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.msg_history {
+  width: 100%;
+  padding: 8px;
+  overflow-y: scroll;
+}
+
+.write_message_div {
+  position: relative;
+}
+
+.write-message {
+  padding: 4px;
+  padding-right: 24px;
+  margin: 8px auto;
+  width: 100%;
+}
+
+.send_message {
+  position: absolute;
+  right: 8px;
+  top: 12px;
+  cursor: pointer;
+}
+
+.chat_footer {
+  width: 100%;
+  height: 60px;
+  padding: 8px;
+  position: absolute;
+  bottom: 0;
+  background-color: transparent;
+  border-top: 2px solid #eee;
+}
+
+/* Student List Template CSS */
+.chat_people {
+  display: flex;
+  background-color: #fff;
+  border-bottom: solid 1px #e0e0e0;
+  min-height: 80px;
+  width: 100%;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.chat_people:hover {
+  background-color: rgb(205, 205, 205);
+}
+
+.chat_people video {
+  width: 0;
+}
+.chat_img_div {
+  position: relative;
+}
+
+.chat_img {
+  margin-left: 20px;
+  display: block;
+  width: 45px;
+  height: 45px;
+  background: #e6e7ed;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.remote_mic_action {
+  position: absolute;
+  bottom: 0px;
+  right: 5px;
+}
+
+.chat_ib {
+  display: flex;
+  justify-content: space-between;
+}
+
+.contact_card_user_details {
+  font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+#student_name {
+  font-size: 12px;
+}
+
+.chat_date {
+  font-size: 14px;
+}
+/*  End Student List Template CSS */
+
+/* Chat Message Template for incoming/outgoing chats CSS */
+.incoming_msg {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: 8px;
+}
+
+.incoming_msg_img img {
+  width: 40px;
+  height: 40px;
+}
+
+.received_withd_msg {
+  margin: 0 8px;
+  background-color: #f6f6f6;
+  padding: 8px;
+  border-radius: 8px;
+}
+.incoming_msg_time {
+  font-size: 10px;
+  color: lightgrey;
+}
+
+.outgoing_msg {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 8px;
+}
+
+.outgoing_msg p {
+  margin: 0;
+  padding: 0;
+}
+
+.sent_msg {
+  margin: 0 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #f6f6f6;
+}
+
+.sent_msg p {
+  margin: 0;
+  padding: 0;
+}
+
+.outgoing_msg_time {
+  margin: 0 8px;
+  font-size: 10px;
+  color: lightgrey;
+}
+/* END Chat Message Template for incoming/outgoing chats CSS */
+
+.mobile_chat_settings {
+  position: absolute;
+  bottom: 12px;
+  width: 100%;
+}
+
+/* Fab Buttons */
+.fab-buttons {
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 50%;
+  padding: 0;
+  margin: auto 4px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background-color: #6200ee;
+  box-shadow: 0px 3px 5px -1px rgb(0 0 0 / 20%),
+    0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%);
+  transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 15ms linear 30ms, transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.fab-buttons-exit {
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 50%;
+  padding: 0;
+  margin: auto 4px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background-color: #ee0020;
+  box-shadow: 0px 3px 5px -1px rgb(0 0 0 / 20%),
+    0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%);
+  transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 15ms linear 30ms, transform 270ms 0ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.fab-buttons span {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.fab-buttons i,
+.fab-buttons span i {
+  color: #fff;
+  transition: 0.3s;
+}
+
+/* OffCanvas CSS */
+
+.offcanvas_student_list {
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.offcanvas_chat_messages {
+  position: relative;
+  height: 100%;
+  padding-bottom: 52px;
+}
+
+.offcanvas_chat_footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+/* END OffCanvas CSS */
+.msg_btn_grp {
+  position: relative;
+}
+
+.msg_count_badge {
+  position: absolute;
+  top: 0;
+  left: 90%;
+  transform: translate(-50%, -50%) !important;
+  display: inline-block;
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  background-color: #dc3545 !important;
+  border-radius: 50rem !important;
+}
+
+/* pop-up buttons */
+
+.level {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -ms-grid-row-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.level-item {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-preferred-size: auto;
+  flex-basis: auto;
+  -webkit-box-flex: 0;
+  -ms-flex-positive: 0;
+  flex-grow: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}
+
+.fab-pop-up-buttons {
+  display: block;
+  width: 25px;
+  height: 25px;
+  font-size: 10px;
+  margin-top: 4px;
+  text-decoration: none;
+  position: relative;
+  border-radius: 50%;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.fab-icon::before {
+  content: "\f013";
+}
+
+.fab-opened .fab-icon::before {
+  content: "\f00d";
+}
+
+.fab-opened .fab-pop-up-buttons:not(:last-of-type) {
+  width: 25px;
+  height: 25px;
+  opacity: 1;
+}
+
+.fab-opened .fab-rotate {
+  transform: rotate(0deg);
+}
+
+.fab-opened .fab-pop-up-buttons span.fab-rotate i {
+  transform: rotate(90deg);
+}
+
+.fab-pop-up-buttons:nth-last-of-type(2) {
+  transition-delay: 20ms;
+}
+
+.fab-pop-up-buttons:nth-last-of-type(3) {
+  transition-delay: 40ms;
+}
+
+.fab-pop-up-buttons:nth-last-of-type(4) {
+  transition-delay: 60ms;
+}
+
+.fab-pop-up-buttons:nth-last-of-type(5) {
+  transition-delay: 80ms;
+}
+
+.fab-pop-up-buttons:nth-last-of-type(6) {
+  transition-delay: 100ms;
+}
+
+.fab-pop-up-buttons:nth-last-of-type(1) {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  opacity: 1;
+}
+
+.fab-pop-up-buttons {
+  background: #6200ee;
+  border: none;
+}
+
+.fab-pop-up-buttons span {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.fab-pop-up-buttons i,
+.fab-pop-up-buttons span i {
+  color: #fff;
+  transition: 0.3s;
+}
+
+.fab-pop-up-buttons span.fab-rotate {
+  background: #ee0020;
+  position: absolute;
+  transform: rotate(0deg);
+  transition: 0.3s;
+  bottom: 0;
+  right: 0;
+}

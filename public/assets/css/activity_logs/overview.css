@@ -1,0 +1,11 @@
+body {
+    font-size: 14px;
+  }
+  
+  #card_box_heading {
+    color: #bdbdbd;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 16px;
+    font-size: 22px;
+  }

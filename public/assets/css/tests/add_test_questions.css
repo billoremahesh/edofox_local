@@ -1,0 +1,53 @@
+#main_div {
+  background-color: white;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
+  margin: 32px 16px;
+  padding: 16px;
+}
+
+#card_box_heading {
+  color: #bdbdbd;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.card_box_link:hover {
+  text-decoration: none;
+}
+
+.frm_label {
+  margin: 8px;
+}
+
+.frm_input {
+  margin: 8px;
+}
+.add_question_dropdown_button {
+  background-color: transparent;
+  border: 0px;
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+  outline: none;
+  text-align: left;
+  width: 100%;
+}
+
+.add_question_dropdown_button:focus,
+.add_question_dropdown_button:hover {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+
+#add_bulk_questions_submit_button {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+}

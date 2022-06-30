@@ -1,0 +1,21 @@
+#meetingSDKElement > div.jss3.jss10.react-draggable > div > span,
+#meetingSDKElement
+  > div.jss3.jss10.react-draggable
+  > div
+  > div.MuiPaper-root.jss54.MuiPaper-elevation1.MuiPaper-rounded
+  > button:nth-child(3),
+#meetingSDKElement
+  > div.jss3.jss10.react-draggable
+  > div
+  > div.MuiPaper-root.jss54.MuiPaper-elevation1.MuiPaper-rounded
+  > div:nth-child(4),
+#meetingSDKElement
+  > div.jss3.jss10.react-draggable.react-draggable-dragged
+  > div
+  > div.MuiPaper-root.jss25.MuiPaper-elevation1.MuiPaper-rounded
+  > div.MuiToolbar-root.MuiToolbar-regular.jss26.jss27.drag-video
+  > div.MuiBox-root.jss204.jss28,
+button[title="More"],
+button[title="Leave"] {
+  display: none;
+}

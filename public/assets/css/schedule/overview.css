@@ -1,0 +1,140 @@
+.default_card {
+  text-align: center;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background-color: #eee;
+  padding: 16px;
+  margin: 16px auto;
+}
+
+.kanban {
+  display: flex;
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.kanban-container {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 0 10px 10px;
+}
+
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+  min-width: 300px;
+  max-width: 300px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  background-color: #eee;
+}
+
+.kanban-column-header {
+  padding: 10px;
+  font-weight: bold;
+  font-size: 0.875rem;
+  background-color: green;
+  color: white;
+}
+
+.kanban-column-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 10px 10px 0;
+  list-style: none;
+}
+
+.schedule_card {
+  border-radius: 4px;
+  background-color: #fff;
+  background-color: var(--mdc-theme-surface, #fff);
+  box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: 8px;
+  padding-top: 16px;
+}
+
+.card_head {
+  padding: 12px 8px 0px 8px;
+}
+
+.card_title {
+  font-family: Karla, Roboto, sans-serif !important;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.card_body {
+  padding: 12px 8px;
+}
+
+.card_supporting_text {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.schedule_btns {
+  cursor: pointer;
+}
+
+.schedule_edit_btn {
+  color: #6200ee;
+}
+
+.schedule_delete_btn {
+  color: #ff4081;
+}
+
+.subject_badge {
+  top: 0px;
+  position: absolute;
+  font-size: 12px;
+  right: 0px;
+  font-weight: bold;
+  border-radius: 0px !important;
+  color: white;
+  background-color: #ec5034 !important;
+}
+
+.add_section_btn {
+  color: #fff;
+  box-sizing: border-box;
+  border: none;
+  transition: all 0.3s ease-out;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.225);
+  background-color: #ff4081;
+  border-radius: 5px;
+  font-size: 16px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.add_section_btn:hover {
+  cursor: pointer;
+}
+
+.remove_ed_icon {
+  transition: all 0.3s ease-out;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.225);
+  background-color: #ff4081;
+  border-radius: 50%;
+  color: #fff;
+  padding: 6px;
+  font-size: 12px;
+}
+
+.remove_ed_icon:hover {
+  cursor: pointer;
+}
+
+.schedule_view_btn {
+  text-decoration: none;
+  color: #6200ee;
+}

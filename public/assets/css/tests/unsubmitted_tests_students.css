@@ -1,0 +1,15 @@
+.reevaluate_finished_text {
+    background-color: #4caf50;
+    color: white;
+    border-radius: 20px;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+.reevaluate_error_text {
+    background-color: #e57373;
+    color: white;
+    border-radius: 20px;
+    font-size: 12px;
+    padding: 4px 8px;
+}

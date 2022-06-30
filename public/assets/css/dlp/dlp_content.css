@@ -1,0 +1,80 @@
+.video-content-button {
+  background-color: transparent;
+  outline: none;
+  border: 0px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* max-width: 90%; */
+  font-size: 14px;
+  padding: 8px;
+  text-decoration: none !important;
+  color: #343a40;
+}
+
+.content-block {
+  background-color: white;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  margin: 16px auto;
+  display: none;
+}
+
+.resources-block {
+  margin-top: 32px;
+  border: 2px solid #f48fb1;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.tests-block {
+  margin-top: 32px;
+  border: 2px solid #a5d6a7;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.fa-play-circle {
+  padding: 8px;
+  color: #5b51d8;
+}
+.fa-file-text-o {
+  padding: 8px;
+  color: #e91e63;
+}
+
+.fa-list-ol {
+  padding: 8px;
+  color: #4caf50;
+}
+
+.content-order-input {
+  border: 0px;
+  border-bottom: 2px solid #ccc;
+}
+
+/* Upload Document Resource CSS */
+.file_structure_append_subdiv {
+  margin: 8px auto;
+}
+.add_file_structure {
+  cursor: pointer;
+  padding: 8px;
+  font-size: 22px;
+  color: blueviolet;
+}
+
+.remove_file_structure {
+  cursor: pointer;
+  padding: 8px;
+  font-size: 22px;
+  color: red;
+}
+
+@media (min-width: 992px) {
+  .content-block {
+    margin: 0px auto;
+  }
+}

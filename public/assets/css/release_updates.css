@@ -1,0 +1,126 @@
+change_log_timeline {
+  background-color: white;
+}
+.timeline {
+  border-left: 6px solid #ed4c05;
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  color: #333;
+  margin: 5px auto;
+  letter-spacing: 0.5px;
+  position: relative;
+  line-height: 1.4em;
+  padding: 20px;
+  list-style: none;
+  text-align: left;
+  background-color: white;
+}
+
+.timeline h1,
+.timeline h2,
+.timeline h3 {
+  font-size: 1.4em;
+}
+
+.timeline .timeline-item {
+  border-bottom: 1px solid rgba(160, 160, 160, 0.2);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.timeline .timeline-item:last-of-type {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border: none;
+}
+
+.timeline .timeline-item:before,
+.timeline .timeline-item:after {
+  position: absolute;
+  display: block;
+  top: 0;
+}
+
+.timeline .timeline-item:before {
+  left: -180px;
+  content: attr(data-date);
+  text-align: right;
+  font-size: 12px;
+  min-width: 120px;
+  color: #ed4c05;
+}
+
+.timeline .timeline-item:after {
+  left: -30px;
+  background: #2078f9;
+  border-radius: 50%;
+  height: 15px;
+  width: 15px;
+  content: "";
+  top: 5px;
+}
+
+.text-success {
+  color: #1cc88a !important;
+}
+
+a.text-success:focus,
+a.text-success:hover {
+  color: #13855c !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.timeline-info{
+  font-size: 18px;
+  font-weight: 700;
+}
+.timeline-content-subheading{
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.timeline-content-list li{
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 945px) {
+  .timeline .timeline-item::before {
+    left: 0.5px;
+    top: 20px;
+    min-width: 0;
+    position: relative;
+    font-size: 13px;
+    display: none;
+  }
+  .timeline h3 {
+    font-size: 16px;
+  }
+  section.lab h3.card-title {
+    padding: 5px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline .timeline-item::before {
+    left: 0.5px;
+    top: 20px;
+    min-width: 0;
+    font-size: 13px;
+    position: relative;
+  }
+  .timeline .timeline-item:nth-child(1)::before,
+  .timeline .timeline-item:nth-child(3)::before,
+  .timeline .timeline-item:nth-child(5)::before {
+    top: 18px;
+  }
+  .timeline h3 {
+    font-size: 16px;
+  }
+}

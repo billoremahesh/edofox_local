@@ -1,0 +1,23 @@
+/* Datatable CSS - moved searchbox and page length */
+#live_lecture_details_tble_filter,
+#live_lecture_details_tble_length {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+#live_lecture_details_tble_filter > label,
+#live_lecture_details_tble_length > label {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+}
+
+#live_lecture_details_tble_filter > label > input,
+#live_lecture_details_tble_length > label > select {
+  margin: auto 8px !important;
+}
+
+/* Hide table export option buttons */
+#live_lecture_details_tble_wrapper .dt-buttons {
+  display: none;
+}

@@ -1,0 +1,110 @@
+html {
+  height: 100%;
+}
+
+body {
+  text-rendering: geometricPrecision;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  background-color: #f5f7f9;
+  color: #3e4676;
+  font-family: Karla, Roboto, sans-serif !important;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.card_box {
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  margin: 16px auto;
+  background-color: white;
+  display: block;
+  max-width: 400px;
+}
+
+.card_box #title {
+  color: #979797;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.frm_input {
+  border: 1px solid #eeeeee;
+  margin: 0px auto 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.frm_input:focus {
+  border: 1px solid #eeeeee;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.12);
+}
+
+.input-group-addon {
+  background-color: transparent;
+  border: 1px solid #eeeeee;
+}
+
+.login_button {
+  background-color: #5b51d8;
+  border: 0;
+  border-radius: 4px;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.12);
+  color: rgba(255, 255, 255, 1);
+  display: block;
+  font-weight: bold;
+  margin: 16px auto;
+  outline: none;
+  padding: 8px;
+  text-transform: uppercase;
+  transition-duration: 0.2s;
+  width: 100%;
+}
+
+.login_button:hover,
+.login_button:focus {
+  box-shadow: 0px 10px 20px #bdbdbd;
+}
+
+.reset_button {
+  background-color: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: #bdbdbd;
+  display: block;
+  font-weight: 700;
+  letter-spacing: 2px;
+  outline: none;
+  padding: 8px;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.reset_button:hover,
+.reset_button:focus {
+  color: #9e9e9e;
+}
+
+.addon_span {
+  border: 1px solid #eeeeee;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  background-color: rgb(232, 240, 254) !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.39) !important;
+}
+
+.error_msg_div_text {
+  margin-top: 8px;
+  color: rgba(255, 0, 0, 0.89);
+  font-weight: 700;
+}
+
+.loading_div {
+  padding-top: 8px;
+  text-align: center;
+  font-weight: 700;
+  color: #5b51d8;
+}

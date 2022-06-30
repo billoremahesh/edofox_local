@@ -1,0 +1,230 @@
+body {
+  background-color: #e2efff;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.top_note {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+#error_notify_div {
+  margin: 16px auto;
+}
+
+#notify_link,
+#notify_link:hover {
+  text-decoration: none;
+}
+
+#appl_form {
+  background-color: #ffffff;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+  font-family: Roboto, sans-serif;
+  padding: 16px;
+  max-width: 750px;
+  margin: 24px auto;
+  position: relative;
+}
+
+.subheading {
+  background-color: #43a047;
+  color: #fff;
+  padding: 8px;
+  display: inline-block;
+  margin: auto;
+  border-radius: 4px;
+}
+
+#check-demo-link {
+  outline: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: absolute;
+  right: 0px;
+  top: 0;
+  background-color: #fff;
+  padding: 8px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 992px) {
+  #check-demo-link {
+    position: absolute;
+    right: -100px;
+    top: 0;
+    background-color: #fff;
+    padding: 8px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.print_hall_div {
+  margin-bottom: 32px;
+}
+
+.print_hall_btn {
+  float: right;
+}
+
+.reg_input1 {
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+
+#stu_regno_append {
+  width: 40px;
+  margin: 8px auto;
+}
+
+#head_part {
+  margin-bottom: 24px;
+}
+
+.logo_image {
+  display: block;
+  margin: auto;
+  height: 100px;
+}
+
+#form_sub_title {
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+#form_title {
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+
+#form_sub_title1 {
+  text-align: center;
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.label1 {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 8px auto;
+}
+
+.form-control {
+  margin: 8px auto;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.label_note {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+#radio1 {
+  margin: 8px auto;
+}
+
+#table1 tr > td,
+.input11 {
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+}
+
+#notice_para {
+  color: rgba(255, 0, 0, 0.7);
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+}
+
+#notice_span {
+  color: rgba(255, 0, 0, 0.7);
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+}
+
+#my_btn {
+  margin: 16px auto;
+  display: block;
+  background-color: #2095f2;
+  border: 1px soild #2095f2;
+  color: #ffffff;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+table td {
+  padding: 8px;
+}
+
+table td:nth-child(2) {
+  font-weight: bold;
+}
+
+.footer_terms {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.56);
+}
+
+#captcha_row {
+  /*    margin-bottom: 10px;*/
+  padding: 5px;
+}
+
+#captchaimg {
+  display: block;
+  margin: 0 auto 8px;
+}
+
+.captcha1 {
+  border: 1px solid #2196f3;
+  border-radius: 2px;
+  /*    margin: 10px;*/
+}
+
+.CAPTCHA_Image {
+  width: 150px;
+  border: 2px solid black;
+  height: 70px;
+}
+
+#capcha_txt_box {
+  text-transform: none;
+}
+
+@media (max-width: 667px) {
+  #appl_form {
+    margin: 48px 16px;
+  }
+  #form_sub_title {
+    font-size: 16px;
+  }
+  #form_title {
+    font-size: 28px;
+  }
+  #form_sub_title1 {
+    font-size: 16px;
+  }
+  .print_hall_btn {
+    font-size: 12px;
+  }
+}

@@ -43,10 +43,29 @@ class Schedule extends BaseController
 			$post_data['day'] = date('N', strtotime($date));
 			$post_data['date'] = $date; 
 			
-			$holiday_data = $InstituteScheduleModel->fetch_holiday_events($post_data);  
-             
+		
+			$holiday_all =  $InstituteScheduleModel->fetch_holiday_all_classes($post_data); 
+			$holiday_data = $InstituteScheduleModel->fetch_holiday_events($post_data); 
 			$event_data = $InstituteScheduleModel->fetch_schedule_events($post_data);
-			if (!empty($holiday_data)) {
+
+
+			if (!empty($holiday_all)) {
+				foreach ($holiday_all as $event) {  
+					$data[] = array(
+						'id' => encrypt_string($event['id']),
+						'title' => $event['title'],
+						'package_name' => '',
+						'subject_name' =>'',
+						'date' => $date,
+						'starts_at' => $event['starts_at'],
+						'ends_at' =>  $event['ends_at'],
+						'duration' => $event['duration'],
+						'total_students' => '',
+						'present_students' => '',
+						'frequency'=>$event['frequency']
+					);
+				}
+			}else if (!empty($holiday_data)) {
 				foreach ($holiday_data as $event) { 
 					$data[] = array(
 						'id' => encrypt_string($event['id']),

@@ -108,6 +108,38 @@ class InstituteScheduleModel extends Model
         $result = $query->getResultArray(); 
         return $result;
     }
+
+    public function fetch_holiday_all_classes(array $postData){
+        $db = \Config\Database::connect();
+
+        // Check Mapped Classrooms to staff in case of not given global permissions
+        $check_access_perms = "";
+        $classroom_mapped_ids = session()->get('classroom_mapped_arr');
+        if (!empty($classroom_mapped_ids)) {
+            $check_access_perms = " AND classroom_id IN ($classroom_mapped_ids) ";
+        }
+
+
+        $institute_condn = "";
+
+        if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
+            $institute_id = $postData['institute_id'];
+            $institute_condn = " AND institute_id= '$institute_id' ";
+        }
+
+
+        // $classroom_filter_check = "";
+        // if (isset($postData['classroom']) && !empty($postData['classroom'])) { 
+        //     $classroom_id = $postData['classroom'];
+        //     $classroom_filter_check = " AND classroom_id = null ";  
+        // }
+ 
+        $date = $postData['date'];  
+        $sql_fetch_data ="SELECT * FROM institute_schedule WHERE starts_at >='$date' AND ends_at <='$date' AND is_disabled = 0 AND frequency ='Date'$institute_condn $check_access_perms ORDER BY starts_at ASC";
+        $query = $db->query($sql_fetch_data); 
+        $result = $query->getResultArray();  
+        return $result;
+    }
      
 
     public function fetch_schedule_events(array $postData)

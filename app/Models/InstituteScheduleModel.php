@@ -67,6 +67,48 @@ class InstituteScheduleModel extends Model
         return $result;
     }
 
+    public function fetch_holiday_events(array $postData){
+        $db = \Config\Database::connect();
+
+        // Check Mapped Classrooms to staff in case of not given global permissions
+        $check_access_perms = "";
+        $classroom_mapped_ids = session()->get('classroom_mapped_arr');
+        if (!empty($classroom_mapped_ids)) {
+            $check_access_perms = " AND classroom_id IN ($classroom_mapped_ids) ";
+        }
+
+
+        $institute_condn = "";
+
+        if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
+            $institute_id = $postData['institute_id'];
+            $institute_condn = " AND institute_id= '$institute_id' ";
+        }
+
+
+        $classroom_filter_check = "";
+        if (isset($postData['classroom']) && !empty($postData['classroom'])) {
+            $classroom_id = $postData['classroom'];
+            $classroom_filter_check = " AND classroom_id = '$classroom_id' ";
+        }
+
+
+        $start_date ='';
+        if (isset($postData['start']) && !empty($postData['start'])) {
+            $start_date = $postData['start'];
+        }
+
+        $end_date ='';
+        if (isset($postData['end']) && !empty($postData['end'])) {
+            $end_date = $postData['end'];
+        } 
+        $date = $postData['date'];  
+        $sql_fetch_data ="SELECT * FROM institute_schedule WHERE starts_at >='$date' AND ends_at <='$date' AND is_disabled = 0 AND frequency ='Date'$institute_condn $classroom_filter_check $check_access_perms ORDER BY starts_at ASC";
+        $query = $db->query($sql_fetch_data); 
+        $result = $query->getResultArray(); 
+        return $result;
+    }
+     
 
     public function fetch_schedule_events(array $postData)
     {
@@ -92,7 +134,7 @@ class InstituteScheduleModel extends Model
         if (isset($postData['classroom']) && !empty($postData['classroom'])) {
             $classroom_id = $postData['classroom'];
             $classroom_filter_check = " AND institute_schedule.classroom_id = '$classroom_id' ";
-        } 
+        }
 
 
         $day_check = "";
@@ -101,17 +143,17 @@ class InstituteScheduleModel extends Model
             $day_check = " AND institute_schedule.day = '$day' ";
         }
 
-        $start_date = '';
+        $start_date ='';
         if (isset($postData['start']) && !empty($postData['start'])) {
             $start_date = $postData['start'];
         }
 
-        $end_date = '';
+        $end_date ='';
         if (isset($postData['end']) && !empty($postData['end'])) {
             $end_date = $postData['end'];
-        } 
+        }
 
-        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name,test_subjects.subject,institute_schedule_data.date,attendance.total_students,present_attendance.present_students FROM institute_schedule LEFT JOIN packages ON packages.id = institute_schedule.classroom_id LEFT JOIN test_subjects ON test_subjects.subject_id = institute_schedule.subject_id LEFT JOIN institute_schedule_data on institute_schedule_data.schedule_id = institute_schedule.id LEFT JOIN (select count(*) as total_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 group by schedule_data_id) as attendance on attendance.schedule_data_id = institute_schedule_data.id LEFT JOIN (select count(*) as present_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 and is_present = 1 group by schedule_data_id) as present_attendance on present_attendance.schedule_data_id = institute_schedule_data.id where institute_schedule.frequency IN ('weekly','date') AND institute_schedule.is_disabled = 0  $institute_condn  $classroom_filter_check $check_access_perms $day_check AND (institute_schedule_data.date IS NULL OR institute_schedule_data.date BETWEEN '$start_date' AND '$end_date') ORDER BY institute_schedule.day,institute_schedule.starts_at ASC";
+        $sql_fetch_data ="SELECT institute_schedule.*,packages.package_name,test_subjects.subject,institute_schedule_data.date,attendance.total_students,present_attendance.present_students FROM institute_schedule LEFT JOIN packages ON packages.id = institute_schedule.classroom_id LEFT JOIN test_subjects ON test_subjects.subject_id = institute_schedule.subject_id LEFT JOIN institute_schedule_data on institute_schedule_data.schedule_id = institute_schedule.id LEFT JOIN (select count(*) as total_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 group by schedule_data_id) as attendance on attendance.schedule_data_id = institute_schedule_data.id LEFT JOIN (select count(*) as present_students,schedule_data_id from institute_schedule_attendance where is_disabled = 0 and is_present = 1 group by schedule_data_id) as present_attendance on present_attendance.schedule_data_id = institute_schedule_data.id where institute_schedule.is_disabled = 0 AND institute_schedule.frequency = 'weekly' $institute_condn  $classroom_filter_check $check_access_perms $day_check AND (institute_schedule_data.date IS NULL OR institute_schedule_data.date BETWEEN '$start_date' AND '$end_date') ORDER BY institute_schedule.day,institute_schedule.starts_at ASC";
         $query = $db->query($sql_fetch_data);
         $result = $query->getResultArray();
         return $result;
@@ -289,6 +331,7 @@ class InstituteScheduleModel extends Model
             if (isset($data['session_start_time']) && !empty($data['session_start_time'])) {
                 $insert_data['starts_at'] = sanitize_input($data['session_start_time']);
                 $insert_data['date'] = sanitize_input($data['session_start_time']);
+                $insert_tran_data['DATE']=$insert_data['date']; 
             }
 
             if (isset($data['session_end_time']) && !empty($data['session_end_time'])) {
@@ -301,7 +344,9 @@ class InstituteScheduleModel extends Model
             }
 
             $insert_data['type'] = 'Holiday';
-            $db->table('institute_schedule')->insert($insert_data);
+            $result =  $db->table('institute_schedule')->insert($insert_data);  
+            $insert_tran_data['schedule_id']=$db->insertID();
+            $db->table('institute_schedule_data')->insert($insert_tran_data);
         }
 
         // Add Multiple Schdules

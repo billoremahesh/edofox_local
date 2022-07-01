@@ -3,7 +3,31 @@
 
 <!-- Custom CSS -->
 <link href="<?php echo base_url('assets/css/schedule/overview.css?v=20220609'); ?>" rel="stylesheet">
-
+<style>
+    .holiday_title{ 
+        white-space: nowrap; 
+        width: 120px; 
+        overflow: hidden;
+        float:right;
+        text-overflow: ellipsis; 
+        border: 0px solid #000000;
+    }
+    .bracketsty {position: relative;}
+    .bracketsty:before{
+        content: "(";
+        color: #fff;
+        position: absolute;
+        left: -7px;
+        top: 1px;
+    }
+    .bracketsty:after{
+        content: ")";
+        color: #fff;
+        position: absolute;
+        right: -5px;
+        top: 1px;
+    }
+</style>
 
 <div id="content">
     <div class="container-fluid mt-4">
@@ -64,7 +88,7 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="#" onclick="show_add_modal('modal_div','add_holiday_modal','schedule/add_holiday_modal');">Add Holiday</a></li>
                                 <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_list','schedule/holiday_list');">List Holiday</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_calender','schedule/holiday_calender');">Holiday Calender</a></li>
+                                <!-- <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_calender','schedule/holiday_calender');">Holiday Calender</a></li> -->
                             </ul>
                         </div>
 
@@ -272,8 +296,9 @@
                         if(obj.frequency=="Date"){ 
                         var formatted_date = new Date(obj.date);
                         formatted_date = formatted_date.toLocaleDateString("en-US", options)
+                        holiday_content =formatted_date +' <span  class="float-end bracketsty" data-bs-toggle="tooltip" data-bs-placement="top" title="'+obj.title+'" > <span class="holiday_title">'+obj.title+'</span> </span>';
                         html = html + "<div class='kanban-column'>";
-                        html = html + "<div class='kanban-column-header'>h" + formatted_date + "</div>";
+                        html = html + "<div class='kanban-column-header' style='background-color:red !important' >" + holiday_content + "</div>";
                         html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
                         week_date = obj.date;
                         }else{
@@ -363,4 +388,10 @@
         }
         return html;
     }
+
+
+
+
+
+    
 </script>

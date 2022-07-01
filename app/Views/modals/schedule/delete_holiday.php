@@ -18,8 +18,8 @@
                 <div class="modal-footer">
                     <input type="hidden" name="schedule_id" value="<?= $holiday_id; ?>" required />
                     <input type="hidden" name="is_disabled" value="1" required /> 
-                    <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />
-                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
+                    <input type="hidden" name="redirect" value="<?= $redirect; ?>" required /> 
+                    <a class="btn btn-outline-dark" href="<?= base_url('schedule'); ?>" >Cancel</a>
                     <button type="submit" class="btn btn-danger">Yes</button>
                 </div>
                 <?php echo form_close(); ?>

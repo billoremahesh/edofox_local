@@ -6,7 +6,7 @@
 <style>
     .holiday_title{ 
         white-space: nowrap; 
-        width: 120px; 
+        max-width: 120px; 
         overflow: hidden;
         float:right;
         text-overflow: ellipsis; 

@@ -535,6 +535,22 @@ class InstituteScheduleModel extends Model
         }
     }
     /*******************************************************/
+     /** student attendance percentages start*/
+     public function student_attendance_details($data){
+        $db = \Config\Database::connect(); 
+        // $db->transStart();
+        // $institute_id=$data['instituteID']; 
+        // $institute_id = "AND institute_id='.$institute_id.'";
+        // $classroom=$data['classroom'];
+        // $month=$data['attendance_month']; 
+        // $institute_id = session()->get('instituteID');
+        // $sql_fetch_data ="SELECT * FROM student_institute WHERE is_disabled=0 $institute_id";
+        // $query = $db->query($sql_fetch_data); 
+        // $db->transComplete();
+        // $result = $query->getResultArray(); 
+        return $data;
+     }
+     /** student attendance percentages start*/
 
    
 

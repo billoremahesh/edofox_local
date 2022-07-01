@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use \App\Models\LiveSessionsModel;
 use \App\Models\StudentLoginSessionsModel;
+use \App\Models\InstituteScheduleModel;
 
 
 class Reports extends BaseController
@@ -87,4 +88,24 @@ class Reports extends BaseController
         echo json_encode($classrooms_data);
     }
     /*******************************************************/
+
+    /** student view attendance start */
+    public function view_student_attendance()
+    {
+        // Log Activity 
+        $this->activity->page_access_activity('View student Attendance', '/reports/view_student_attendance');
+        $data['title'] = "View student Attendance";
+        $data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
+        return view('pages/reports/view_student_attendance', $data);
+    }
+
+    public function fetch_student_attendance(){
+        $post_data = $this->request->getVar();
+        $InstituteScheduleModel = new InstituteScheduleModel();
+        $post_data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
+        $class_attendance =$InstituteScheduleModel->student_attendance_details($post_data); 
+        echo json_encode($class_attendance); 
+    }
+
+    /** student view attendance end */
 }

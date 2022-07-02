@@ -536,19 +536,73 @@ class InstituteScheduleModel extends Model
     }
     /*******************************************************/
      /** student attendance percentages start*/
+    //  ->where('MONTH(created_at)', date('m'))
+    //  ->where('YEAR(created_at)', date('Y'))
+
      public function student_attendance_details($data){
         $db = \Config\Database::connect(); 
-        // $db->transStart();
-        // $institute_id=$data['instituteID']; 
-        // $institute_id = "AND institute_id='.$institute_id.'";
-        // $classroom=$data['classroom'];
-        // $month=$data['attendance_month']; 
-        // $institute_id = session()->get('instituteID');
-        // $sql_fetch_data ="SELECT * FROM student_institute WHERE is_disabled=0 $institute_id";
-        // $query = $db->query($sql_fetch_data); 
-        // $db->transComplete();
-        // $result = $query->getResultArray(); 
-        return $data;
+        $db->transStart(); 
+        $institute_id=$data['instituteID']; 
+        $classroom_id=$data['classroom'];
+
+        $attendance_month=$data['attendance_month']; 
+        $attendance_month = explode('/',$attendance_month); 
+        $month = $attendance_month[0];
+        $year = $attendance_month[1];
+
+        $institute = "AND student_institute.institute_id=$institute_id";
+        $classroom = "AND institute_schedule.classroom_id=$classroom_id";
+        $whereMonth = "AND MONTH(institute_schedule_data.DATE)=$month";
+        $whereYear = "AND YEAR(institute_schedule_data.DATE)=$year"; 
+
+
+        
+      
+        $institute_id = session()->get('instituteID');
+        $sql_fetch_data ="SELECT COUNT(institute_schedule_data.DATE)as totalSession,institute_schedule_data.DATE as Date FROM `institute_schedule`
+        LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id
+        WHERE institute_schedule.is_disabled=0 AND institute_schedule.frequency='Weekly' $classroom $whereMonth $whereYear GROUP BY DATE(institute_schedule_data.DATE)";
+        $query = $db->query($sql_fetch_data); 
+          // echo "<pre>";  
+        // print_r($db->getLastQuery());die;
+        $result_data['classes_schedule'] = $query->getResultArray();  
+
+
+        $classroomval="AND student_institute.package_id=$classroom_id";
+        $instituteval="AND student_institute.institute_id=3";
+        $sql_fetch_data ="SELECT student.name,student.roll_no,student_institute.* FROM `student_institute` LEFT JOIN student ON student.id=student_institute.student_id WHERE student_institute.is_disabled=0 $classroomval $instituteval";
+        $query = $db->query($sql_fetch_data); 
+        $result_data['student'] = $query->getResultArray(); 
+        $db->transComplete();   
+
+        
+        $sql_fetch_data ="SELECT count(*) as attendance,institute_schedule_data.Date, institute_schedule_attendance.student_id FROM `institute_schedule_attendance` 
+        join institute_schedule_data on institute_schedule_data.id = institute_schedule_attendance.schedule_data_id 
+        join institute_schedule on institute_schedule_data.schedule_id = institute_schedule.id 
+        where institute_schedule_data.date between '2022-06-01' and '2022-06-30' 
+        and institute_schedule.institute_id = 3 and institute_schedule.classroom_id = 7213 
+        and institute_schedule_attendance.is_present = 1 group by institute_schedule_data.date, institute_schedule_attendance.student_id ORDER BY DATE(institute_schedule_data.Date),institute_schedule_attendance.student_id";
+        
+        $query = $db->query($sql_fetch_data); 
+        $result_data['student_attendance'] = $query->getResultArray();  
+        $attendance_arr=[];
+         foreach($result_data['student_attendance'] as $attendance){
+        $attendance_arr[$attendance['student_id']][]=$attendance;
+         } 
+
+         $today_letcher_arr=[];
+         foreach($result_data['classes_schedule'] as $today_letcher){
+         $today_letcher_arr[$today_letcher['Date']]=$today_letcher; 
+         }
+  
+        
+
+         $result_data['today_letcher']=$today_letcher_arr;
+         $result_data['attendance_arr']=$attendance_arr; 
+        $db->transComplete();   
+        
+       
+        return $result_data;
      }
      /** student attendance percentages start*/
 

@@ -505,8 +505,8 @@
       });
       html = html +  ` </tr> ` 
      
-      $.each(data.student, function(objIndex, obj) {
-        
+      $.each(data.student, function(objIndex, obj) { 
+        console.log(obj.id,'obj student obj'); 
         html = html +  ` <tr>` 
         html = html +  `<td>`+obj.name+`<br><span style="font-style: italic;font-size: 12px" >(`+obj.roll_no+`)</span></td>`;
      
@@ -519,6 +519,8 @@
               }else{
                 html = html + `<td class="text-center" >0%</td>`;
               }
+              }else{
+                html = html + `<td class="text-center" >0%</td>`;
               }
             });
           

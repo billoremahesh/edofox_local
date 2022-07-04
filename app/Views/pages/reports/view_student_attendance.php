@@ -230,7 +230,7 @@
       </div>
     </div>
 
-   
+
     <div class="bg-white rounded shadow p-2" style="margin:auto;">
 
       <div class="justify-content-between my-1">
@@ -260,19 +260,20 @@
 
       <div id="custom_loader"></div>
 
-  
-    <div class="table-responsive">
-                <table class="table table-bordered table-hover table-sm" id="staffListTable" width="100%" cellspacing="0">
-                                <thead id="header_date" >
-                                  
-                                </thead>
-                                <tbody>
-                                </tbody>
-                </table></div>
-    </div>
-    
 
-    <div >
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm" id="staffListTable" width="100%" cellspacing="0">
+          <thead id="header_date">
+
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <div>
 
     </div>
 
@@ -373,6 +374,10 @@
       $("#schedule_start_date").val(localStorage.getItem('schedule_start_date_filter_val'));
     }
 
+    if (localStorage.getItem('startDate') != '') {
+      // $("#startDate").val(localStorage.getItem('startDate')); 
+    }
+
 
     if (localStorage.getItem('schedule_classroom_filter_val') != '') {
       classroom_filter_val = localStorage.getItem('schedule_classroom_filter_val');
@@ -407,7 +412,7 @@
 
       localStorage.setItem('schedule_classroom_filter_val', classroom);
       localStorage.setItem('schedule_classroom_filter_text', classroom_name);
-      localStorage.setItem('schedule_start_date_filter_val', schedule_start_date);
+      localStorage.setItem('startDate', schedule_start_date);
       jQuery.ajax({
         url: base_url + '/reports/fetch_student_attendance',
         type: 'POST',
@@ -491,44 +496,55 @@
 
 
 <script>
-  function format_attendance_data(data) { 
-    console.log(data,'data'); 
+  function format_attendance_data(data) {
+    console.log(data, 'data');
     var html = "";
     if (data != null) {
       var absent_students = 0;
       var present_students = 0;
-      colspan = data.classes_schedule.length +1;
-      html = html + `<tr style="background-color: #ed4c05 !important;" class="text-white" ><th colspan="`+colspan+`" class="text-center" >STUDENT MONTHLY ATTENDANCE REPORT</th></tr> ` 
-      html = html +  ` <tr style="background-color: #f5f7f9;" ><th>Student Name</th>`
-      $.each(data.classes_schedule, function(objIndex, obj) { 
-        html = html +  `<th class="text-center" >`+obj.Date+`</th> `;
+      colspan = data.classes_schedule.length + 2;
+      html = html + `<tr style="background-color: #ed4c05 !important;width:100%;" class="text-white" ><th colspan="` + colspan + `" class="text-center" >STUDENT MONTHLY ATTENDANCE REPORT</th></tr> `
+      html = html + ` <tr style="background-color: #f5f7f9;" ><th style="width: 13%;" >Student Name</th>`
+      if(data.classes_schedule.length>0){
+      $.each(data.today_letcher, function(objIndex, obj) {
+        console.log(obj, 'obj classes_schedule');
+        html = html + `<th class="text-center" >` + obj.view_date + `</th> `;
       });
-      html = html +  ` </tr> ` 
-     
-      $.each(data.student, function(objIndex, obj) { 
-        console.log(obj.id,'obj student obj'); 
-        html = html +  ` <tr>` 
-        html = html +  `<td>`+obj.name+`<br><span style="font-style: italic;font-size: 12px" >(`+obj.roll_no+`)</span></td>`;
-     
-            $.each(data.classes_schedule, function(objIndex, classes_obj) {
-              if(data.attendance_arr[obj.student_id] !=undefined){ 
-              if(data.attendance_arr[obj.student_id][classes_obj.Date]){
-                attend_cls = data.attendance_arr[obj.student_id][classes_obj.Date]; 
-                per = parseInt(attend_cls.attendance)*100/parseInt(classes_obj.totalSession); 
-                html = html + `<td class="text-center" >`+per+`%</td>`;
-              }else{
-                html = html + `<td class="text-center" >0%</td>`;
-              }
-              }else{
-                html = html + `<td class="text-center" >0%</td>`;
-              }
-            });
-          
-        html = html +  ` </tr> `
-      });
-    
+    }else{ 
+      html = html + `<td class="text-center" >No Schedule Avialble</td>`;
+    }
+      html = html + ` </tr> `
 
-      
+      $.each(data.student, function(objIndex, obj) {
+        html = html + ` <tr>`
+        html = html + `<td style="width: 13%;" >` + obj.name + `<br><span style="font-style: italic;font-size: 12px" >(` + obj.roll_no + `)</span></td>`;
+        if(data.classes_schedule.length>0){
+        $.each(data.classes_schedule, function(objIndex, classes_obj) {
+          if (data.attendance_arr[obj.student_id] != undefined) {
+            if (data.attendance_arr[obj.student_id][classes_obj.Date]) {
+              attend_cls = data.attendance_arr[obj.student_id][classes_obj.Date];
+              per = parseInt(attend_cls.attendance) * 100 / parseInt(classes_obj.totalSession);
+              if (parseInt(per) == 100) {
+                html = html + `<td class="text-center" ><i class="fa fa-check" style="color:green;" ></i></td>`;
+              } else if (parseInt(per) > 0) {
+                html = html + `<td class="text-center" style="color:#ff8d00;" >` + per + `%</td>`;
+              }
+            } else {
+              html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
+            }
+          } else {
+            html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
+          }
+        });
+      }else{
+        html = html + `<td class="text-center" ></td>`;
+      }
+
+        html = html + ` </tr> `
+      });
+
+
+
       // html = html + "<div class='d-flex justify-content-center' style='position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center;'><button class='btn btn-primary submit_btn' onclick='upload_attendance_submit();' type='button'>Submit</button></div>";
 
       total_students = data.classes_schedule.length;

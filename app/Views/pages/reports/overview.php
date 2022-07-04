@@ -131,7 +131,22 @@
                             </div>
                             <div class="md_card_body">
                                 <div class="md_card_title text-center text-uppercase">
-                                   View Attendance
+                                 Monthly Attendance
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-sm-12 col-md-3 mb-3">
+                    <a class="organization_card_links" href="<?php echo base_url('/reports/view_student_day_attendance'); ?>">
+                        <div class="md_card">
+                            <div class="md_card_media text-center">
+                                <img class="img-fluid" src="<?= base_url('assets/img/statics/live_session.jpg'); ?>" style="width:100%; max-width:200px; margin: auto;" />
+                            </div>
+                            <div class="md_card_body">
+                                <div class="md_card_title text-center text-uppercase">
+                                 Daily Attendance
                                 </div>
                             </div>
                         </div>

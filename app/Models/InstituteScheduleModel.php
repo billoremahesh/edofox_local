@@ -586,8 +586,8 @@ class InstituteScheduleModel extends Model
         $query = $db->query($sql_fetch_data); 
         $result_data['student_attendance'] = $query->getResultArray();  
         $attendance_arr=[];
-         foreach($result_data['student_attendance'] as $attendance){
-        $attendance_arr[$attendance['student_id']][]=$attendance;
+         foreach($result_data['student_attendance'] as $attendance){ 
+        $attendance_arr[$attendance['student_id']][$attendance['Date']]=$attendance; 
          } 
 
          $today_letcher_arr=[];

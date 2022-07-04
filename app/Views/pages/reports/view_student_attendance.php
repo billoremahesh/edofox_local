@@ -492,7 +492,7 @@
 
 <script>
   function format_attendance_data(data) { 
-    console.log(data.today_letcher,'data'); 
+    console.log(data,'data'); 
     var html = "";
     if (data != null) {
       var absent_students = 0;
@@ -501,7 +501,7 @@
       html = html + `<tr style="background-color: #ed4c05 !important;" class="text-white" ><th colspan="`+colspan+`" class="text-center" >STUDENT MONTHLY ATTENDANCE REPORT</th></tr> ` 
       html = html +  ` <tr style="background-color: #f5f7f9;" ><th>Student Name</th>`
       $.each(data.classes_schedule, function(objIndex, obj) { 
-        html = html +  `<th>`+obj.Date+`</th> `;
+        html = html +  `<th class="text-center" >`+obj.Date+`</th> `;
       });
       html = html +  ` </tr> ` 
      
@@ -509,24 +509,19 @@
         
         html = html +  ` <tr>` 
         html = html +  `<td>`+obj.name+`<br><span style="font-style: italic;font-size: 12px" >(`+obj.roll_no+`)</span></td>`;
-         
-          $.each(data.attendance_arr[obj.student_id], function(objIndex, obj) {
-          attendance =  data.today_letcher[obj.Date];
-          if(attendance.Date==obj.Date){
-            per = parseInt(obj.attendance)*100/parseInt(attendance.totalSession);
-            html = html + `<td class="text-center" >`+per+`%</td>`;
-        }else{
-          html = html + `<td class="text-center" >0%</td>`;
-        } 
-          // console.log(,'attendance totalSession'); 
-       
-
-      
      
-
-          });
-         
-
+            $.each(data.classes_schedule, function(objIndex, classes_obj) {
+              if(data.attendance_arr[obj.student_id] !=undefined){ 
+              if(data.attendance_arr[obj.student_id][classes_obj.Date]){
+                attend_cls = data.attendance_arr[obj.student_id][classes_obj.Date]; 
+                per = parseInt(attend_cls.attendance)*100/parseInt(classes_obj.totalSession); 
+                html = html + `<td class="text-center" >`+per+`%</td>`;
+              }else{
+                html = html + `<td class="text-center" >0%</td>`;
+              }
+              }
+            });
+          
         html = html +  ` </tr> `
       });
     

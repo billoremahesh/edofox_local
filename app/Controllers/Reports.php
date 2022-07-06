@@ -94,7 +94,7 @@ class Reports extends BaseController
     {
         // Log Activity 
         $this->activity->page_access_activity('View Student Monthly Attendance', '/reports/view_student_attendance');
-        $data['title'] = "View student Monthly Attendance";
+        $data['title'] = "View Student Attendance";
         $data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
         return view('pages/reports/view_student_attendance', $data);
     }

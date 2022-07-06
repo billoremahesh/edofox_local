@@ -243,11 +243,30 @@
           </div>
 
 
+
           <div class="col my-1">
-            <input type="text" id="startDate" placeholder="Select Month" onchange="get_schedule_data()" />
+            <select id="selecttype" class="form-select" placeholde="select type">
+              <option value=""> Select type</option>
+              <option value="1"> Month Report</option>
+              <option value="2"> Day Report</option>
+              <!-- <option value="3"> Custom Report</option> -->
+
+
+            </select>
           </div>
 
 
+
+          <div class="col my-1" id="selectMonth" style="display:none;">
+            <input type="text" id="startDate" placeholder="Select Month" onchange="get_schedule_data('selectMonth')" />
+          </div>
+          <div class="col my-1" id="selectDay" style="display:none;">
+            <input type="text" id="schedule_start_date" placeholder="Select Date" onchange="get_schedule_data('selectDay')" />
+          </div>
+          <div class="col my-1" id="customCalender" style="display:none;">
+            <input type="text" id="schedule_start_date" placeholder="from date" onchange="get_schedule_data('customCalender')" />
+            <input type="text" id="schedule_end_date" placeholder="to date" onchange="get_schedule_data('customCalender')" />
+          </div>
           <div class="col my-1">
             <button class="btn btn-secondary btn-sm text-uppercase" onclick="resetFilterData();" data-toggle='tooltip' title='Reset Filters'>
               Reset
@@ -394,16 +413,99 @@
   });
 
 
+  function get_schedule_data(seletType) {  
+    if (seletType == 'selectMonth') {
+      get_month_data()
+    } else if (seletType == 'selectDay') {
+      get_day_data()
+    }
+  }
 
-  function get_schedule_data() {
+  function get_day_data() {
+    $("#error_message").html("");
+    toggle_custom_loader(true, "custom_loader");
+    var classroom = $("#classroom_filter").val();
+    var classroom_name = $("#classroom_filter").select2('data')[0]['text'];
+    var schedule_start_date = $("#schedule_start_date").val();
+    if (classroom == '' || schedule_start_date == '') {
+      toggle_custom_loader(false, "custom_loader");
+      $("#error_message").html("<div class='default_card'><h4>Please select the classroom</h4></div>");
+    } else {
+      localStorage.setItem('schedule_classroom_filter_val', classroom);
+      localStorage.setItem('schedule_classroom_filter_text', classroom_name);
+      localStorage.setItem('schedule_start_date_filter_val', schedule_start_date);
+      jQuery.ajax({
+        url: base_url + '/reports/fetch_student_day_attendance',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          attendance_date: schedule_start_date,
+          classroom: classroom
+        },
+        success: function(result) {
+
+          var attendance_data = view_day_data(result);
+          $("#header_date").html("");
+          $("#header_date").html(attendance_data);
+
+          toggle_custom_loader(false, "custom_loader");
+          $("#error_message").html("");
+        }
+      });
+    }
+  }
+
+  function view_day_data(data) {
+    var html = "";
+    if (data != null) {
+      var absent_students = 0;
+      // var present_students = 0;
+      colspan = data.class_sessions.length + 2;
+      html = html + `<tr style="background-color: #ed4c05 !important;width:100%;" class="text-white" ><th colspan=` + colspan + ` class="text-center" >STUDENT DAILY ATTENDANCE REPORT</th></tr> `
+      html = html + ` <tr style="background-color: #f5f7f9;" ><th style="width: 13%;" >Student Name</th>`;
+      if (data.class_sessions.length > 0) {
+        $.each(data.class_sessions, function(objIndex, obj) {
+          html = html + `<th class="text-center" >` + obj.title + `</br>` + obj.view_session + `</th> `;
+        });
+      } else {
+        html = html + `<th class="text-center" >No Session</th> `;
+      }
+      html = html + ` </tr> `
+
+      $.each(data.student, function(objIndex, st_obj) {
+        html = html + ` <tr>`
+        html = html + `<td style="width: 13%;" >` + st_obj.name + `<br><span style="font-style: italic;font-size: 12px" >(` + st_obj.roll_no + `)</span></td>`;
+        if (data.class_sessions.length > 0) {
+          $.each(data.class_sess_check, function(objIndex, obj) {
+            if (data.student_attd_session[st_obj.student_id] != undefined) {
+              st_attend = data.student_attd_session[st_obj.student_id][obj.id];
+              if(st_attend.is_present==1){
+              html = html + `<td class="text-center" ><i class="fa fa-check" style="color:green;" ></i></td>`;
+            }else{
+              html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
+            }
+            } else {
+              html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
+            }
+          });
+        } else {
+          html = html + `<th class="text-center" ></th> `;
+        }
+
+        html = html + ` </tr> `
+      });
+
+    }
+    return html;
+  }
+
+   
+  function get_month_data() {
     $("#error_message").html("");
     toggle_custom_loader(true, "custom_loader");
     var classroom = $("#classroom_filter").val();
     var classroom_name = $("#classroom_filter").select2('data')[0]['text'];
     var schedule_start_date = $("#startDate").val();
-    console.log(schedule_start_date, 'schedule_start_date')
-    console.log(classroom_name, 'classroom_name');
-    console.log(classroom, 'classroom');
 
     if (classroom == '' || schedule_start_date == '') {
       toggle_custom_loader(false, "custom_loader");
@@ -424,6 +526,7 @@
         success: function(result) {
 
           var attendance_data = format_attendance_data(result);
+          $("#header_date").html(""); 
           $("#header_date").html(attendance_data);
 
           toggle_custom_loader(false, "custom_loader");
@@ -505,40 +608,40 @@
       colspan = data.classes_schedule.length + 2;
       html = html + `<tr style="background-color: #ed4c05 !important;width:100%;" class="text-white" ><th colspan="` + colspan + `" class="text-center" >STUDENT MONTHLY ATTENDANCE REPORT</th></tr> `
       html = html + ` <tr style="background-color: #f5f7f9;" ><th style="width: 13%;" >Student Name</th>`
-      if(data.classes_schedule.length>0){
-      $.each(data.today_letcher, function(objIndex, obj) {
-        console.log(obj, 'obj classes_schedule');
-        html = html + `<th class="text-center" >` + obj.view_date + `</th> `;
-      });
-    }else{ 
-      html = html + `<td class="text-center" >No Schedule Avialble</td>`;
-    }
+      if (data.classes_schedule.length > 0) {
+        $.each(data.today_letcher, function(objIndex, obj) {
+          console.log(obj, 'obj classes_schedule');
+          html = html + `<th class="text-center" >` + obj.view_date + `</th> `;
+        });
+      } else {
+        html = html + `<td class="text-center" >No Schedule Avialble</td>`;
+      }
       html = html + ` </tr> `
 
       $.each(data.student, function(objIndex, obj) {
         html = html + ` <tr>`
         html = html + `<td style="width: 13%;" >` + obj.name + `<br><span style="font-style: italic;font-size: 12px" >(` + obj.roll_no + `)</span></td>`;
-        if(data.classes_schedule.length>0){
-        $.each(data.classes_schedule, function(objIndex, classes_obj) {
-          if (data.attendance_arr[obj.student_id] != undefined) {
-            if (data.attendance_arr[obj.student_id][classes_obj.Date]) {
-              attend_cls = data.attendance_arr[obj.student_id][classes_obj.Date];
-              per = parseInt(attend_cls.attendance) * 100 / parseInt(classes_obj.totalSession);
-              if (parseInt(per) == 100) {
-                html = html + `<td class="text-center" ><i class="fa fa-check" style="color:green;" ></i></td>`;
-              } else if (parseInt(per) > 0) {
-                html = html + `<td class="text-center" style="color:#ff8d00;" >` + per + `%</td>`;
+        if (data.classes_schedule.length > 0) {
+          $.each(data.classes_schedule, function(objIndex, classes_obj) {
+            if (data.attendance_arr[obj.student_id] != undefined) {
+              if (data.attendance_arr[obj.student_id][classes_obj.Date]) {
+                attend_cls = data.attendance_arr[obj.student_id][classes_obj.Date];
+                per = parseInt(attend_cls.attendance) * 100 / parseInt(classes_obj.totalSession);
+                if (parseInt(per) == 100) {
+                  html = html + `<td class="text-center" ><i class="fa fa-check" style="color:green;" ></i></td>`;
+                } else if (parseInt(per) > 0) {
+                  html = html + `<td class="text-center" style="color:#ff8d00;" >` + per.toFixed(2) + `%</td>`;
+                }
+              } else {
+                html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
               }
             } else {
               html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
             }
-          } else {
-            html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
-          }
-        });
-      }else{
-        html = html + `<td class="text-center" ></td>`;
-      }
+          });
+        } else {
+          html = html + `<td class="text-center" ></td>`;
+        }
 
         html = html + ` </tr> `
       });
@@ -1006,7 +1109,25 @@
 
   $("#startDate").Monthpicker({
     onSelect: function() {
-      get_schedule_data();
+      get_schedule_data('selectMonth');
+    }
+  });
+
+
+  $("#selecttype").on('change', function() {
+    var getv = $(this).val(); 
+    if (getv == 1) {
+      $("#selectMonth").show(); //selectMonth 
+      $("#selectDay").hide();
+      $("#customCalender").hide();
+    } else if (getv == 2) {
+      $("#selectMonth").hide();
+      $("#selectDay").show();
+      $("#customCalender").hide();
+    } else if (getv == 3) {
+      $("#selectMonth").hide();
+      $("#selectDay").hide();
+      $("#customCalender").show();
     }
   });
 </script>

@@ -135,7 +135,7 @@ class InstituteScheduleModel extends Model
         // }
  
         $date = $postData['date'];  
-        $sql_fetch_data ="SELECT * FROM institute_schedule WHERE starts_at >='$date' AND ends_at <='$date' AND is_disabled = 0 AND frequency ='Date'$institute_condn $check_access_perms ORDER BY starts_at ASC";
+        $sql_fetch_data ="SELECT * FROM institute_schedule WHERE starts_at >='$date' AND ends_at <='$date' AND is_disabled = 0 AND classroom_id = null AND frequency ='Date'$institute_condn $check_access_perms ORDER BY starts_at ASC";
         $query = $db->query($sql_fetch_data); 
         $result = $query->getResultArray();  
         return $result;

@@ -131,8 +131,39 @@ class StudentModel extends Model
          ## Fetch records
          $db = \Config\Database::connect(); 
 
-        // $student_id=6493;
-        // $instituteID=3;
+        $student_id=13369;
+        $instituteID=3;
+
+        $sql_fetch_data="SELECT count(*)
+        as present_count,test_subjects.subject_id,test_subjects.subject,packages.package_name FROM institute_schedule_data
+       join institute_schedule on institute_schedule_data.schedule_id = institute_schedule.id
+       join packages on institute_schedule.classroom_id = packages.id
+       join test_subjects on institute_schedule.subject_id = test_subjects.subject_id
+       left join institute_schedule_attendance on institute_schedule_attendance.schedule_data_id = institute_schedule_data.id and institute_schedule_attendance.student_id = $student_id and institute_schedule_attendance.is_present = 1
+       where institute_schedule.is_disabled = 0 and institute_schedule_data.is_disabled = 0 and institute_schedule.classroom_id in (select package_id from student_institute where is_disabled = 0 and student_id = $student_id) and institute_schedule_attendance.is_disabled = 0 group by subject_id";
+         $query = $db->query($sql_fetch_data); 
+         $data['subject_attendanc_present'] = $query->getResultArray();   
+
+
+         $sql_fetch_data="SELECT count(*)
+         as present_count,test_subjects.subject_id,test_subjects.subject,packages.package_name FROM institute_schedule_data
+        join institute_schedule on institute_schedule_data.schedule_id = institute_schedule.id
+        join packages on institute_schedule.classroom_id = packages.id
+        join test_subjects on institute_schedule.subject_id = test_subjects.subject_id
+        left join institute_schedule_attendance on institute_schedule_attendance.schedule_data_id = institute_schedule_data.id and institute_schedule_attendance.student_id = $student_id and institute_schedule_attendance.is_present = 0
+        where institute_schedule.is_disabled = 0 and institute_schedule_data.is_disabled = 0 and institute_schedule.classroom_id in (select package_id from student_institute where is_disabled = 0 and student_id = $student_id) and institute_schedule_attendance.is_disabled = 0 group by subject_id";
+          $query = $db->query($sql_fetch_data); 
+          $subject_attendanc_absent = $query->getResultArray();  
+         $subject_abs=[];
+         $abset_tem=[];
+        foreach($subject_attendanc_absent as $subject_ab){
+         $subject_abs[$subject_ab['subject_id']]=$subject_ab;
+         $abset_tem[]=$subject_ab['subject_id'];
+        }
+        $data['abset_tem']=$abset_tem;
+        $data['subject_attend_abs']=$subject_abs;
+      
+
         $sql_fetch_data="SELECT institute_schedule.id,institute_schedule.title as session_name,institute_schedule_data.DATE as session_date ,institute_schedule.starts_at as session_time, test_subjects.subject as session_subject ,
         packages.package_name as classroom FROM `institute_schedule` 
         JOIN test_subjects ON test_subjects.subject_id=institute_schedule.subject_id 

@@ -395,6 +395,9 @@ class Students extends BaseController
         $data['exam']=$result['exam']; 
         $data['reqular_session']=$result['reqular_session'];  
         $data['attendance_list']=$result['attendance_list'];  
+        $data['subject_attendanc_present']=$result['subject_attendanc_present'];
+        $data['subject_attend_abs']=$result['subject_attend_abs'];
+        $data['abset_tem']=$result['abset_tem'];
         return view('async/students/student_attendance_performance_data', $data);
     }
     /*******************************************************/

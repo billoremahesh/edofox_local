@@ -71,8 +71,44 @@ form label.selected {
   color:white;
 }
 </style>
- 
-
+   
+<div class="row ">
+<div class="col my-1">
+    
+    <table class="table table-condensed table-hover" id="staffListTable1" style="font-size: 14px;"> 
+        <thead>
+              <tr>
+                <th>id</th>
+                <th>#</th>
+                <th>Classroom</th>
+                <th>Subject</th>
+                <th>Attendance</th>
+            </tr>
+        </thead>
+        <body>
+            <?php 
+            $snos=0;
+             
+            foreach($subject_attendanc_present as $key=>$value){ 
+                 $absent=0;
+                if(in_array($value['subject_id'],$abset_tem)) {
+                  $absents = $subject_attend_abs[$value['subject_id']]; 
+                  $absent=$absents['present_count'];
+                }  
+                $persn = round(($absent*100)/$value['present_count']);
+                ?>
+            <tr class="<?php if($key % 2 == 0){ echo "odd"; }else{ echo "even"; } ?>" >
+                <td><?= $snos; ?></td> <td></td>
+                <td><?= $value['package_name'] ?></td>
+                <td><?= $value['subject'] ?></td>
+                <td><?= $persn ?>%</td>
+            </tr>
+            <?php $snos++; } ?>
+        </body>
+    </table> 
+</div>
+</div>
+<br>
 <div class="row ">
 
 <div class="col my-1">
@@ -125,7 +161,7 @@ form label.selected {
             <?php $sno=1;  foreach($reqular_session as $key=>$sess_val){ 
                 
                 ?>
-             <tr class="regular" >
+             <tr class="regular" id="regular" >
                
                 <td><?= $sno; ?></td> <td></td>
                 <td><?= $sess_val['session_name'] ?></td> 
@@ -139,7 +175,7 @@ form label.selected {
               <?php $sno++; } ?>
 
               <?php   foreach($exam as $key=>$sess_val){  ?>
-             <tr class="exam" >
+             <tr class="exam" id="exam" >
                
                 <td><?= $sno ?></td>
                  <td></td>
@@ -286,14 +322,131 @@ form label.selected {
 
 function check_selected(type){ 
    if(type=='exam'){
-    $(".regular ").hide();
-    $(".exam").show();
+    $("#regular ").hide();
+    $("#exam").show();
    }else if(type=='regular'){
-    $(".regular ").show();
-    $(".exam").hide();
+    $("#regular ").show();
+    $("#exam").hide();
    }else if(type=='all'){
-    $(".regular ").show();
-    $(".exam").show();
+    $("#regular ").show();
+    $("#exam").show();
    }
 }
+
+
+
+
+
+
+
+var staffListTable1;
+
+// To reset all the parameters in the datatable which are saved using stateSave
+function resetDatatable() {
+    // Resetting the filter values
+    $("#searchbox").val("");
+    localStorage.setItem('staff_datatable_search_value', "");
+    staffListTable1.draw();
+
+
+    // REF: https://datatables.net/forums/discussion/53726/table-state-clear-does-not-clear-saved-state-how-do-i-remove-specified-filters-sorts-here
+    staffListTable1.state.clear(); // 1a - Clear State
+    staffListTable1.destroy(); // 1b - Destroy
+
+    setTimeout(function() {
+        window.location.reload();
+    }, 1000);
+}
+
+$(document).ready(function() {
+
+    var staff_datatable_search_value = localStorage.getItem('staff_datatable_search_value');
+    $("#searchbox").val(staff_datatable_search_value);
+
+
+    staffListTable1 = $('#staffListTable1').DataTable({
+        stateSave: true,
+        "columnDefs": [{
+            "targets": [3],
+            "orderable": false,
+        }, {
+            "targets": -1,
+            "class": 'btn_col'
+        }],
+        "order": [
+            [0, "asc"]
+        ],
+        dom: 'Bflrtip',
+        buttons: [{
+            extend: 'colvis',
+            //https://datatables.net/forums/discussion/50751/hide-several-columns-for-colvis-button-list
+            columns: ':gt(0)',
+            text: "Toggle Columns"
+        }, {
+            "extend": 'excel',
+            "titleAttr": 'Excel',
+            // not_export class is used to hide excel columns. 
+            "exportOptions": {
+                "columns": ':visible:not(.not_to_export)'
+            },
+            messageTop: "Attendance Report"
+        }, {
+            extend: 'print',
+            exportOptions: {
+                columns: ':visible:not(.not_to_print)'
+            },
+            title: "Attendance Report",
+            customize: function(win) {
+                $(win.document.body).find('h1').css('text-align', 'center');
+                $(win.document.body).css('font-size', '9px');
+                $(win.document.body).find('td').css('padding', '0px');
+                $(win.document.body).find('td').css('padding-left', '2px');
+            }
+        }],
+        "searching": true,
+        "paging": true,
+        "pageLength": 8,
+        "bLengthChange": false,
+        "bInfo": false,
+        language: {
+            search: "",
+            processing: '<i class="fas fa-atom fa-spin fa-2x fa-fw"></i><span class="sr-only">Loading...</span>'
+        },
+        stateSaveCallback: function(settings, data) {
+            if (data != null && data.search != null && data.search.search != null) {
+                localStorage.setItem('staff_datatable_search_value', data.search.search);
+            }else{
+                localStorage.setItem('staff_datatable_search_value', "");
+            }
+        }
+    });
+
+    if (staff_datatable_search_value != '' && staff_datatable_search_value != null) {
+        staffListTable1.search(staff_datatable_search_value).draw();
+    }
+    $("#searchbox").keyup(function() {
+        staffListTable1.search(this.value).draw();
+    });
+
+});
+
+
+function waitForElementToDisplay(selector, time, counter) {
+    if (counter > 6) {
+        return;
+    }
+    if (document.querySelector(selector) != null) {
+        $("#staffListTable1_filter").prepend($("#staffListTable1ExportGroup"));
+        $("#staffListTable1ExportGroup").show();
+        return;
+    } else {
+        setTimeout(function() {
+            waitForElementToDisplay(selector, time, counter + 1);
+        }, time);
+    }
+}
+
+$(document).ready(function() {
+    waitForElementToDisplay("#staffListTable1_filter", 1000, 1);
+});
 </script>

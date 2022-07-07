@@ -1,64 +1,6 @@
 <?php
 // Include Service URLs Parameters File
-include_once(APPPATH . "Views/service_urls.php"); 
-// Fetch student's data to print at the top of report
-$student_name = $student_details['name'];
-$student_category = $student_details['caste_category'];
-$student_mobile = $student_details['mobile_no'];
-$student_rollno = $student_details['roll_no'];
-$student_parentno = $student_details['parent_mobile_no'];
-$student_previous_marks = $student_details['previous_marks'];
-$student_token = $student_details['universal_token'];
-
-$subjectsColorArray = array("#2196f3", "#673ab7", "#009688", "#f44336", "#795548", "#e91e63", "#2196f3", "#673ab7", "#009688", "#f44336", "#795548", "#e91e63");
-
-
-$data1 = array();
-$studentIdObject = array(
-    "id" => $student_id,
-    "instituteId" => $institute_id,
-    "accessType" => $performance_report_type
-);
-$data["student"] = $studentIdObject;
-$data["requestType"] = "ADMIN";
-
-// Date Range Filter
-if ($startTime != "" && $endTime != "") {
-    $data["startTime"] = $startTime;
-    $data["endTime"] = $endTime;
-}
-
-$data_string = json_encode($data);
-// echo "<p>$data_string</p>";
-
-// Initiate curl
-$ch = curl_init();
-// Disable SSL verification
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-// Will return the response, if false it print the response
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-// Username and Password
-// curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-// POST ROW data
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    'Content-Type: application/json',
-    'Content-Length: ' . strlen($data_string),
-    'AuthToken: ' . $student_token
-));
-// Getting the url from a separate file
-curl_setopt($ch, CURLOPT_URL, $fetchStudentPerformanceUrl);
-// Execute
-$responseDataString = curl_exec($ch);
-// Closing
-curl_close($ch);
-
-$responseData = json_decode($responseDataString, true);
-
-/*
-highlight_string("<?php\n\$data =\n" . var_export($responseData, true) . ";\n?>");
-*/
+include_once(APPPATH . "Views/service_urls.php");  
 ?>
 
 <style> 
@@ -207,7 +149,7 @@ form label.selected {
                 <td>Exam</td>
                 <td><?= $sess_val['classroom'] ?></td>
                 <td></td> 
-                <td><?php if($sess_val['status']==''){ echo " "; }else{echo "COMPLETE";} ?></td>
+                <td><?php if($sess_val['status']==''){ echo " "; }else{echo $sess_val['status'];} ?></td>
               </tr>
               <?php  $sno++; } ?> 
 

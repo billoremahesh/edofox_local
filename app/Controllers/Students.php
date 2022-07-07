@@ -391,7 +391,7 @@ class Students extends BaseController
         $StudentModel = new StudentModel();
         $result= $StudentModel->get_attend_student_details($student_id, $institute_id); 
        
-        $data['student_details']=$result['records'];
+        // $data['student_details']=$result['records'];
         $data['exam']=$result['exam']; 
         $data['reqular_session']=$result['reqular_session'];  
         $data['attendance_list']=$result['attendance_list'];  

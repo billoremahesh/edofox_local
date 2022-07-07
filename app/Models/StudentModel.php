@@ -129,24 +129,19 @@ class StudentModel extends Model
     {
         ## Fetch records
          ## Fetch records
-         $db = \Config\Database::connect();
-         $builder = $db->table("student");
-         $builder->select("student.*,student_institute.student_id,student_login.student_access,student_login.universal_token,student.previous_marks,count.testsTaken as testsTaken,totalTest.totalTests as totalTests,student_login.username,packages.package_name,student_institute.created_date");
-         $builder->join("student_login", "student.id = student_login.student_id AND student_login.institute_id = '$instituteID' ", "inner");
-         $builder->join("student_institute", "student.id = student_institute.student_id AND student_institute.is_disabled = 0", "inner");
-         $builder->join("packages", "packages.id = student_institute.package_id", "inner");
-         $builder->join("(select count(*) as testsTaken,student_id from test_status join test on test_status.test_id = test.test_id where institute_id = '$instituteID' group by student_id) as count", "count.student_id = student.id", "left");
-         $builder->join("(select count(*) as totalTests,package_id from test where institute_id = '$instituteID' group by package_id) as totalTest", "totalTest.package_id = student_institute.package_id", "left");
-         $builder->where("student_institute.institute_id = '$instituteID'");
-         $builder->where("packages.is_disabled = 0");
-         $builder->where("student.id = '$student_id'");
-         $data['records'] = $builder->get()->getRowArray(); 
-
+         $db = \Config\Database::connect(); 
 
         // $student_id=6493;
         // $instituteID=3;
         $sql_fetch_data="SELECT institute_schedule.id,institute_schedule.title as session_name,institute_schedule_data.DATE as session_date ,institute_schedule.starts_at as session_time, test_subjects.subject as session_subject ,
-        packages.package_name as classroom FROM `institute_schedule` JOIN test_subjects ON test_subjects.subject_id=institute_schedule.subject_id JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id JOIN packages ON packages.id = institute_schedule.classroom_id JOIN student_institute ON student_institute.package_id=institute_schedule.classroom_id WHERE institute_schedule.frequency='weekly' AND student_institute.student_id=$student_id AND institute_schedule.institute_id =$instituteID order by institute_schedule.id desc";
+        packages.package_name as classroom FROM `institute_schedule` 
+        JOIN test_subjects ON test_subjects.subject_id=institute_schedule.subject_id 
+        JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id 
+        JOIN packages ON packages.id = institute_schedule.classroom_id 
+        JOIN student_institute ON student_institute.package_id=institute_schedule.classroom_id 
+        WHERE institute_schedule.frequency='weekly' AND student_institute.is_disabled=0 
+        AND institute_schedule.is_disabled=0 AND institute_schedule_data.is_disabled=0
+        AND student_institute.student_id=$student_id AND institute_schedule.institute_id =$instituteID order by institute_schedule.id desc";
          $query = $db->query($sql_fetch_data); 
          $data['reqular_session'] = $query->getResultArray();   
 
@@ -155,14 +150,13 @@ class StudentModel extends Model
          ,TIME(test.end_date) as session_time , packages.package_name as session_subject,packages.package_name as classroom,test_status.status FROM `test` join test_package_map on test_package_map.test_id = test.test_id and test_package_map.package_id in (select package_id from student_institute where is_disabled = 0 and student_id = $student_id) join packages on test_package_map.package_id = packages.id left join test_status on test.test_id = test_status.test_id and test_status.student_id = $student_id where test.status = 'Active' and test.test_id in (select test_id from test_package_map where package_id in (select package_id from student_institute where is_disabled = 0 and student_id = $student_id)) and test.end_date < now() group by test_package_map.package_id order by test.start_date desc";
          $query = $db->query($sql_fetch_data); 
          $data['exam'] = $query->getResultArray();    
-         $sql_fetch_data="SELECT institute_schedule.id,institute_schedule_attendance.is_present FROM `institute_schedule` LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN institute_schedule_attendance ON institute_schedule_attendance.schedule_data_id=institute_schedule_data.id WHERE institute_schedule.is_disabled=0 AND institute_schedule_attendance.student_id=$student_id order by institute_schedule.id desc";
+         $sql_fetch_data="SELECT institute_schedule.id,institute_schedule_attendance.is_present FROM `institute_schedule` LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN institute_schedule_attendance ON institute_schedule_attendance.schedule_data_id=institute_schedule_data.id 
+         WHERE institute_schedule.is_disabled=0 
+         AND institute_schedule_attendance.is_disabled=0 
+         AND institute_schedule_data.is_disabled=0
+         AND institute_schedule_attendance.student_id=$student_id order by institute_schedule.id desc";
          $query = $db->query($sql_fetch_data); 
          $session_attendance = $query->getResultArray();
-
-         $is_present=[];
-         $is_apsent=[];
-         $ses_status=[];
-         
          $tem_arr=[];
     
          foreach($session_attendance as $value){  

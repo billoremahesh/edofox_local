@@ -325,6 +325,22 @@ class Students extends BaseController
         $data['student_details'] = $StudentModel->get_student_details($decrypted_student_id, $instituteID);
         return view('pages/students/performance_report', $data);
     }
+
+    public function attendance_performance_report($student_id)
+    {
+        $data['graph_script'] = true;
+        $data['title'] = "Attendance Performance Report";
+        $data['redirect'] = 'students';
+        $instituteID = decrypt_cipher(session()->get('instituteID'));
+        // Get data
+        $StudentModel = new StudentModel();
+        $data['student_id'] = $student_id;
+        $decrypted_student_id = decrypt_cipher($student_id);
+        $data['instituteID'] = session()->get('instituteID');
+        $data['decrypted_instituteID'] = decrypt_cipher(session()->get('instituteID'));
+        $data['student_details'] = $StudentModel->get_student_details($decrypted_student_id, $instituteID);
+        return view('pages/students/attendance_performance_report', $data);
+    }
     /*******************************************************/
 
 
@@ -354,6 +370,29 @@ class Students extends BaseController
         $StudentModel = new StudentModel();
         $data['student_details'] = $StudentModel->get_student_details($student_id, $institute_id);
         return view('async/students/student_performance_data', $data);
+    }
+
+    public function student_attendance_performance_data()
+    {
+
+        // this cookie required to acces student result page as it is folder in which codeingter session not accessble
+        setcookie('newadmincookie', true, time() + (86400 * 30), "/"); // 86400 = 1 day
+        setcookie('admintoken', session()->get('admin_token_decrypted'), time() + (86400 * 30), "/"); // 86400 = 1 day
+        // POST data
+        $student_id = $this->request->getVar('student_id');
+        $institute_id = $this->request->getVar('institute_id');
+        $data['performance_report_type'] = $this->request->getVar('type');
+
+        $data['institute_id'] = $institute_id;
+        $data['student_id'] = $student_id;
+        $data['startTime'] = $this->request->getVar('startTime');
+        $data['endTime'] = $this->request->getVar('endTime');
+        // Get data
+        $StudentModel = new StudentModel();
+        $result= $StudentModel->get_attend_student_details($student_id, $institute_id); 
+        $data['student_details']=$result['records'];
+        $data['records_table']=$result['records_table']; 
+        return view('async/students/student_attendance_performance_data', $data);
     }
     /*******************************************************/
 

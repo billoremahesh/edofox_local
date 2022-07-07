@@ -131,7 +131,7 @@
                             </div>
                             <div class="md_card_body">
                                 <div class="md_card_title text-center text-uppercase">
-                                 View Attendance
+                                 Attendance Report
                                 </div>
                             </div>
                         </div>

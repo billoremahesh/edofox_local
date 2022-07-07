@@ -605,6 +605,67 @@ class InstituteScheduleModel extends Model
         return $result_data;
      }
 
+     public function student_custom_attendance_details($data){
+        $db = \Config\Database::connect(); 
+        $db->transStart(); 
+        $institute_id=$data['instituteID']; 
+        $classroom_id=$data['classroom']; 
+        
+        $custom_start_date = $data['custom_start_date'];
+        $custom_end_date = $data['custom_end_date'];
+
+        $institute = "AND student_institute.institute_id=$institute_id";
+        $classroom = "AND institute_schedule.classroom_id=$classroom_id";
+
+        // $institute_id = session()->get('instituteID');
+        $sql_fetch_data ="SELECT COUNT(institute_schedule_data.DATE)as totalSession,institute_schedule_data.DATE as Date FROM `institute_schedule`
+        LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id
+        WHERE institute_schedule_data.date between '$custom_start_date' and '$custom_end_date' AND institute_schedule.is_disabled=0 AND institute_schedule.frequency='Weekly' $classroom  GROUP BY DATE(institute_schedule_data.DATE)";
+        $query = $db->query($sql_fetch_data); 
+          // echo "<pre>";  
+        // print_r($db->getLastQuery());die;
+        $result_data['classes_schedule'] = $query->getResultArray();  
+
+
+        $classroomval="AND student_institute.package_id=$classroom_id";
+        $instituteval="AND student_institute.institute_id=$institute_id"; 
+        $sql_fetch_data ="SELECT student.name,student.roll_no,student_institute.* FROM `student_institute` LEFT JOIN student ON student.id=student_institute.student_id WHERE student_institute.is_disabled=0 $classroomval $instituteval";
+        $query = $db->query($sql_fetch_data); 
+        $result_data['student'] = $query->getResultArray(); 
+        $db->transComplete();   
+
+        
+        $sql_fetch_data ="SELECT count(*) as attendance,institute_schedule_data.Date, institute_schedule_attendance.student_id FROM `institute_schedule_attendance` 
+        join institute_schedule_data on institute_schedule_data.id = institute_schedule_attendance.schedule_data_id 
+        join institute_schedule on institute_schedule_data.schedule_id = institute_schedule.id 
+        where institute_schedule_data.date between '$custom_start_date' and '$custom_end_date'
+        and institute_schedule_data.is_disabled=0
+        and institute_schedule.institute_id = $institute_id and institute_schedule.classroom_id = $classroom_id 
+        and institute_schedule_attendance.is_present = 1 group by institute_schedule_data.date, institute_schedule_attendance.student_id ORDER BY DATE(institute_schedule_data.Date),institute_schedule_attendance.student_id";
+         
+        $query = $db->query($sql_fetch_data);
+        // echo "<pre>";
+        // print_r($db->getLastQuery());die;
+        $result_data['student_attendance'] = $query->getResultArray();  
+        $attendance_arr=[];
+         foreach($result_data['student_attendance'] as $attendance){ 
+        $attendance_arr[$attendance['student_id']][$attendance['Date']]=$attendance; 
+         } 
+
+         $today_letcher_arr=[]; 
+         foreach($result_data['classes_schedule'] as $today_letcher){
+         $in_date=date_create($today_letcher['Date']);  
+         $today_letcher['view_date'] = date_format($in_date,"d M");
+         $today_letcher_arr[$today_letcher['Date']]=$today_letcher; 
+         }
+   
+         $result_data['today_letcher']=$today_letcher_arr;
+         $result_data['attendance_arr']=$attendance_arr; 
+         $db->transComplete();   
+       
+        return $result_data;
+     }
+
      public function student_day_attendance_details($data){
         $db = \Config\Database::connect(); 
         $db->transStart(); 
@@ -656,6 +717,21 @@ class InstituteScheduleModel extends Model
          $result_data['student_attd_session']=$student_session_arr;
        $db->transComplete();    
         return $result_data;
+     }
+
+     public function student_attendance_update($data){
+        $db = \Config\Database::connect();
+    
+        $db->transStart();
+
+        $attendance_data = [
+            'is_present' => $data['status'],
+        ];
+
+        $id = $data['student_id'];
+        $db->table('institute_schedule_attendance')->update($attendance_data, ['id' => $id]); 
+        $db->transComplete();
+        return true;
      }
      /** student attendance percentages start*/
 

@@ -1,6 +1,67 @@
 <!-- Include Header -->
 <?php include_once(APPPATH . "Views/header.php"); ?>
 <style>
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e90505;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:checked+.slider {
+    background-color: #16ad16 !important;
+  }
+
+  input:focus+.slider {
+    box-shadow: 0 0 1px #16ad16 !important;
+  }
+
+  input:checked+.slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+
   .intervalInput {
     display: inline-block;
     width: 100%;
@@ -213,7 +274,8 @@
 </style>
 <!-- Custom CSS -->
 <link href="<?php echo base_url('assets/css/attendance/take_attendance.css?v=20220602'); ?>" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <div id="content">
   <div class="container-fluid mt-4">
 
@@ -249,7 +311,7 @@
               <option value=""> Select type</option>
               <option value="1"> Month Report</option>
               <option value="2"> Day Report</option>
-              <!-- <option value="3"> Custom Report</option> -->
+              <option value="3"> Custom Report</option>
 
 
             </select>
@@ -264,13 +326,31 @@
             <input type="text" id="schedule_start_date" placeholder="Select Date" onchange="get_schedule_data('selectDay')" />
           </div>
           <div class="col my-1" id="customCalender" style="display:none;">
-            <input type="text" id="schedule_start_date" placeholder="from date" onchange="get_schedule_data('customCalender')" />
-            <input type="text" id="schedule_end_date" placeholder="to date" onchange="get_schedule_data('customCalender')" />
+            <input type="text" id="custom_start_date" placeholder="Select Date" onchange="get_schedule_data('customCalender')" />
+            <input type="text" id="custom_end_date" placeholder="Select Date" onchange="get_schedule_data('customCalender')" />
+
           </div>
-          <div class="col my-1">
+
+          <div class="col my-1" >
             <button class="btn btn-secondary btn-sm text-uppercase" onclick="resetFilterData();" data-toggle='tooltip' title='Reset Filters'>
-              Reset
+              reset
             </button>
+          </div>
+
+          <div class="col my-1">
+
+          </div>
+
+          <div class="col my-1 " id="vieweditmode" style="display:none;" >
+            Edit Mode
+          </div>
+
+          <div class="col my-1 " id="vieweditmode1" style="display:none;">
+
+            <label class="switch">
+              <input type="checkbox" id="checkmode" class="checkmode" >
+              <span class="slider round"></span>
+            </label>
           </div>
 
         </div>
@@ -348,6 +428,29 @@
       }
     });
 
+    $("#custom_start_date").flatpickr({
+      dateFormat: "Y-m-d",
+      onChange: function(selectedDates) {
+        // $("#custom_end_date").flatpickr({
+        //   dateFormat: "Y-m-d",
+        //   minDate: new Date(selectedDates),
+        //   maxDate: new Date(selectedDates).fp_incr(30), // add 7 days
+        // });
+      }
+    });
+
+    $("#custom_end_date").flatpickr({
+      dateFormat: "Y-m-d",
+      onChange: function(selectedDates) {
+        // $("#custom_start_date").flatpickr({
+        //   dateFormat: "Y-m-d",
+        //   minDate: new Date(selectedDates),
+        //   maxDate: new Date(selectedDates).fp_incr(6), // add 7 days
+        // });
+      }
+    });
+
+
 
     // Optimized classroom dropdown list
     $(".classroom_select2_dropdown").select2({
@@ -413,11 +516,58 @@
   });
 
 
-  function get_schedule_data(seletType) {  
+  function get_schedule_data(seletType) {
+    $("#header_date").html("");
+    $("#header_date").hide();
     if (seletType == 'selectMonth') {
       get_month_data()
     } else if (seletType == 'selectDay') {
+      $(".editinput").hide();
+      
       get_day_data()
+    } else if (seletType == 'customCalender') {
+      get_customcalender_data()
+    }
+  }
+
+  function get_customcalender_data() {
+
+    $("#error_message").html("");
+    toggle_custom_loader(true, "custom_loader");
+    var classroom = $("#classroom_filter").val();
+    var classroom_name = $("#classroom_filter").select2('data')[0]['text'];
+    var custom_start_date = $("#custom_start_date").val();
+    var custom_end_date = $("#custom_end_date").val();
+
+    if (classroom == '' || custom_start_date == '' || custom_end_date == '') {
+      toggle_custom_loader(false, "custom_loader");
+      $("#error_message").html("<div class='default_card'><h4>Please select the classroom</h4></div>");
+    } else {
+
+      localStorage.setItem('schedule_classroom_filter_val', classroom);
+      localStorage.setItem('schedule_classroom_filter_text', classroom_name);
+      localStorage.setItem('custom_start_date', custom_start_date);
+      localStorage.setItem('custom_end_date', custom_end_date);
+      jQuery.ajax({
+        url: base_url + '/reports/fetch_student_custome_attendance',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          custom_start_date: custom_start_date,
+          custom_end_date: custom_end_date,
+          classroom: classroom
+        },
+        success: function(result) {
+
+          var attendance_data = format_attendance_data(result);
+          $("#header_date").show();
+          $("#header_date").html("");
+          $("#header_date").html(attendance_data);
+
+          toggle_custom_loader(false, "custom_loader");
+          $("#error_message").html("");
+        }
+      });
     }
   }
 
@@ -445,6 +595,7 @@
         success: function(result) {
 
           var attendance_data = view_day_data(result);
+          $("#header_date").show();
           $("#header_date").html("");
           $("#header_date").html(attendance_data);
 
@@ -477,15 +628,21 @@
         html = html + `<td style="width: 13%;" >` + st_obj.name + `<br><span style="font-style: italic;font-size: 12px" >(` + st_obj.roll_no + `)</span></td>`;
         if (data.class_sessions.length > 0) {
           $.each(data.class_sess_check, function(objIndex, obj) {
+          
             if (data.student_attd_session[st_obj.student_id] != undefined) {
               st_attend = data.student_attd_session[st_obj.student_id][obj.id];
-              if(st_attend.is_present==1){
-              html = html + `<td class="text-center" ><i class="fa fa-check" style="color:green;" ></i></td>`;
-            }else{
-              html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
-            }
+             let stid=st_attend.id;
+              if (st_attend.is_present == 1) {
+                html = html + `<td class="text-center" ><i class="fa fa-check showinput" style="color:green;" ></i>`;
+                html = html + `<input type="checkbox" class="editinput" id="editinput`+stid+`" onclick="editinput(`+stid+`,'not_null')"  style="display:none;" checked></td>`;
+              } else {
+                html = html + `<td class="text-center" ><i class="fa fa-times showinput" style="color:red;" ></i>`;
+                html = html + `<input type="checkbox" class="editinput" id="editinput`+stid+`" onclick="editinput(`+stid+`,'not_null')" style="display:none;"  ></td>`;
+              }
             } else {
-              html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
+              html = html + `<td class="text-center" ><i class="fa fa-times showinput" style="color:red;" ></i>`;
+              html = html + `<input type="checkbox" class="editinput" id="editinput" onclick="editinput(`+obj.student_id+`,'null')" style="display:none;"  ></td>`;
+
             }
           });
         } else {
@@ -499,7 +656,7 @@
     return html;
   }
 
-   
+
   function get_month_data() {
     $("#error_message").html("");
     toggle_custom_loader(true, "custom_loader");
@@ -526,7 +683,8 @@
         success: function(result) {
 
           var attendance_data = format_attendance_data(result);
-          $("#header_date").html(""); 
+          $("#header_date").show();
+          $("#header_date").html("");
           $("#header_date").html(attendance_data);
 
           toggle_custom_loader(false, "custom_loader");
@@ -1115,7 +1273,10 @@
 
 
   $("#selecttype").on('change', function() {
-    var getv = $(this).val(); 
+    var getv = $(this).val();
+    
+    $("#vieweditmode").hide();
+      $("#vieweditmode1").hide();
     if (getv == 1) {
       $("#selectMonth").show(); //selectMonth 
       $("#selectDay").hide();
@@ -1124,10 +1285,77 @@
       $("#selectMonth").hide();
       $("#selectDay").show();
       $("#customCalender").hide();
+      
+      $("#vieweditmode").show();
+      $("#vieweditmode1").show();
     } else if (getv == 3) {
       $("#selectMonth").hide();
       $("#selectDay").hide();
       $("#customCalender").show();
+    } else {
+      $("#selectMonth").hide();
+      $("#selectDay").hide();
+      $("#customCalender").hide();
     }
   });
+
+
+  $("#checkmode").click(function() {
+    if (this.checked) {
+      $(".showinput").hide();
+      $(".editinput").show();
+
+    }
+    if (!this.checked) {
+      get_day_data();
+      $(".showinput").show();
+      $(".editinput").hide();
+    }
+  });
+
+
+  $( "#editinput" ).click(function() {
+        if(this.checked){
+            alert('checked');
+        }
+        if(!this.checked){
+            alert('Unchecked');
+        }
+    });
+
+  function editinput(stid,stuend_status){
+    let editid="editinput"+stid;
+    var atLeastOneIsChecked = $('#'+editid+':checkbox:checked').length > 0;
+   var status=0;
+    if(atLeastOneIsChecked==true){
+      status=1;
+    }else{
+      status=0;
+    }
+    console.log(stuend_status,'stuend_status');
+  if(stuend_status=='not_null'){
+    jQuery.ajax({
+        url: base_url + '/reports/student_attendance_update',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          student_id: stid,
+          status: status
+        },
+        success: function(result) {
+
+          var attendance_data = view_day_data(result);
+          $("#header_date").show();
+          $("#header_date").html("");
+          $("#header_date").html(attendance_data);
+
+          toggle_custom_loader(false, "custom_loader");
+          $("#error_message").html("");
+        }
+      });
+    }else{
+      console.log('this student of this session record not found');
+    }
+  }
+ 
 </script>

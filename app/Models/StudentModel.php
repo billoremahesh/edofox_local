@@ -124,6 +124,40 @@ class StudentModel extends Model
         $records = $builder->get()->getRowArray();
         return $records;
     }
+
+    public function get_attend_student_details(int $student_id, int $instituteID)
+    {
+        ## Fetch records
+         ## Fetch records
+         $db = \Config\Database::connect();
+         $builder = $db->table("student");
+         $builder->select("student.*,student_institute.student_id,student_login.student_access,student_login.universal_token,student.previous_marks,count.testsTaken as testsTaken,totalTest.totalTests as totalTests,student_login.username,packages.package_name,student_institute.created_date");
+         $builder->join("student_login", "student.id = student_login.student_id AND student_login.institute_id = '$instituteID' ", "inner");
+         $builder->join("student_institute", "student.id = student_institute.student_id AND student_institute.is_disabled = 0", "inner");
+         $builder->join("packages", "packages.id = student_institute.package_id", "inner");
+         $builder->join("(select count(*) as testsTaken,student_id from test_status join test on test_status.test_id = test.test_id where institute_id = '$instituteID' group by student_id) as count", "count.student_id = student.id", "left");
+         $builder->join("(select count(*) as totalTests,package_id from test where institute_id = '$instituteID' group by package_id) as totalTest", "totalTest.package_id = student_institute.package_id", "left");
+         $builder->where("student_institute.institute_id = '$instituteID'");
+         $builder->where("packages.is_disabled = 0");
+         $builder->where("student.id = '$student_id'");
+         $data['records'] = $builder->get()->getRowArray(); 
+
+
+        // $student_id=6492;
+        // $instituteID=3;
+        $sql_fetch_data="SELECT institute_schedule.title as session_name,institute_schedule_data.DATE as session_date ,institute_schedule.starts_at as session_time, test_subjects.subject as session_subject ,
+        packages.package_name as classroom FROM `institute_schedule` JOIN test_subjects ON test_subjects.subject_id=institute_schedule.subject_id JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id JOIN packages ON packages.id = institute_schedule.classroom_id JOIN student_institute ON student_institute.package_id=institute_schedule.classroom_id WHERE institute_schedule.classroom_id=7213 AND student_institute.student_id=$student_id AND institute_schedule.institute_id =$instituteID ";
+         $query = $db->query($sql_fetch_data); 
+         $reqular_session = $query->getResultArray();   
+
+         $sql_fetch_data="SELECT test_name  as session_name
+         ,test.start_date as session_date
+         ,TIME(test.end_date) as session_time , packages.package_name as session_subject,packages.package_name as classroom FROM `test` join test_package_map on test_package_map.test_id = test.test_id and test_package_map.package_id in (select package_id from student_institute where is_disabled = 0 and student_id = $student_id) join packages on test_package_map.package_id = packages.id left join test_status on test.test_id = test_status.test_id and test_status.student_id = $student_id where test.status = 'Active' and test.test_id in (select test_id from test_package_map where package_id in (select package_id from student_institute where is_disabled = 0 and student_id = $student_id)) and test.end_date < now() group by test_package_map.package_id order by test.start_date desc";
+         $query = $db->query($sql_fetch_data); 
+         $reqular_session1 = $query->getResultArray();   
+         $data['records_table'] = array_merge($reqular_session,$reqular_session1); 
+        return $data;
+    }
     /*******************************************************/
 
 
@@ -518,6 +552,7 @@ class StudentModel extends Model
 
 
             $check_performance_form = "<li><a  class='dropdown-item' href=" . base_url('students/performance_report/' . $encrypted_student_id) . "> Check Performance </a></li>";
+            $check_attendance_form = "<li><a  class='dropdown-item' href=" . base_url('students/attendance_performance_report/' . $encrypted_student_id) . ">Attendance Performance </a></li>";
 
 
             $edit_students_classroom_form = "<li><a  class='dropdown-item' href=" . base_url('students/students_classroom/' . $encrypted_student_id) . "> Edit Student's Classrooms </a></li>";
@@ -543,7 +578,7 @@ class StudentModel extends Model
 
 
             $dropdown_wrapper_code = htmlspecialchars("<div class='dropdown'><button class='btn btn-default dropdown-toggle more_option_button' type='button' id='studentDropdownMenu' data-bs-toggle='dropdown'  data-bs-auto-close='outside'  aria-expanded='false'><i class='fa fa-ellipsis-h' aria-hidden='true'></i>
-            </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='studentDropdownMenu'>$check_performance_form <li role='separator' class='divider'></li> $update_permission_button  $edit_students_classroom_form <li role='separator' class='divider'></li><li><a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','update_student_details_modal','students/update_student_details_modal/" . $encrypted_student_id . "');" . "> Update Student Details </a></li><li><a  class='dropdown-item more_options_btn_link' href=" . base_url('students/update_password/' . $encrypted_student_id) . "> Update Student Password</a></li>$send_account_invite<li>$whatsapp_invite<a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','disable_student_modal','students/disable_student_modal/" . $encrypted_student_id . "/" . $blockType . "');" . "> $blockButtonText </a></li><li><a class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','delete_student_modal','students/delete_student_modal/" . $encrypted_student_id . "');" . "> Delete Student </a></li></ul></div>");
+            </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='studentDropdownMenu'>$check_attendance_form $check_performance_form <li role='separator' class='divider'></li> $update_permission_button  $edit_students_classroom_form <li role='separator' class='divider'></li><li><a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','update_student_details_modal','students/update_student_details_modal/" . $encrypted_student_id . "');" . "> Update Student Details </a></li><li><a  class='dropdown-item more_options_btn_link' href=" . base_url('students/update_password/' . $encrypted_student_id) . "> Update Student Password</a></li>$send_account_invite<li>$whatsapp_invite<a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','disable_student_modal','students/disable_student_modal/" . $encrypted_student_id . "/" . $blockType . "');" . "> $blockButtonText </a></li><li><a class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','delete_student_modal','students/delete_student_modal/" . $encrypted_student_id . "');" . "> Delete Student </a></li></ul></div>");
 
 
             if ($row['student_access'] != "Deleted") {

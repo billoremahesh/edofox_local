@@ -94,7 +94,7 @@ class Reports extends BaseController
     {
         // Log Activity 
         $this->activity->page_access_activity('View Student Monthly Attendance', '/reports/view_student_attendance');
-        $data['title'] = "View Student Attendance";
+        $data['title'] = "Attendance Report";
         $data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
         return view('pages/reports/view_student_attendance', $data);
     }
@@ -104,6 +104,14 @@ class Reports extends BaseController
         $InstituteScheduleModel = new InstituteScheduleModel();
         $post_data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
         $class_attendance =$InstituteScheduleModel->student_attendance_details($post_data); 
+        echo json_encode($class_attendance); 
+    }
+
+    public function fetch_student_custome_attendance(){
+        $post_data = $this->request->getVar();   
+        $InstituteScheduleModel = new InstituteScheduleModel();
+        $post_data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
+        $class_attendance =$InstituteScheduleModel->student_custom_attendance_details($post_data); 
         echo json_encode($class_attendance); 
     }
 
@@ -122,6 +130,13 @@ class Reports extends BaseController
         $post_data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
         $class_attendance =$InstituteScheduleModel->student_day_attendance_details($post_data); 
         echo json_encode($class_attendance); 
+    }
+    public function student_attendance_update(){
+        $post_data = $this->request->getVar();  
+        $InstituteScheduleModel = new InstituteScheduleModel();
+        $post_data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
+        $result =$InstituteScheduleModel->student_attendance_update($post_data); 
+        return true;
     }
     /** student view attendance end */
 }

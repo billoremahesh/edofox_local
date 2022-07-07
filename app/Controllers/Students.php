@@ -329,7 +329,7 @@ class Students extends BaseController
     public function attendance_performance_report($student_id)
     {
         $data['graph_script'] = true;
-        $data['title'] = "Attendance Performance Report";
+        $data['title'] = "Attendance Report";
         $data['redirect'] = 'students';
         $instituteID = decrypt_cipher(session()->get('instituteID'));
         // Get data
@@ -390,8 +390,10 @@ class Students extends BaseController
         // Get data
         $StudentModel = new StudentModel();
         $result= $StudentModel->get_attend_student_details($student_id, $institute_id); 
+       
         $data['student_details']=$result['records'];
-        $data['records_table']=$result['records_table']; 
+        $data['exam']=$result['exam']; 
+        $data['reqular_session']=$result['reqular_session'];  
         return view('async/students/student_attendance_performance_data', $data);
     }
     /*******************************************************/

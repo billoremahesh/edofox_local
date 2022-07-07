@@ -1,7 +1,6 @@
 <?php
 // Include Service URLs Parameters File
-include_once(APPPATH . "Views/service_urls.php");
-
+include_once(APPPATH . "Views/service_urls.php"); 
 // Fetch student's data to print at the top of report
 $student_name = $student_details['name'];
 $student_category = $student_details['caste_category'];
@@ -62,20 +61,110 @@ highlight_string("<?php\n\$data =\n" . var_export($responseData, true) . ";\n?>"
 */
 ?>
 
+<style> 
 
+form {
+  width:100%;
+  box-sizing:border-box;
+  background-color:white;
+  box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.4);
+  text-align:center;
+  position:relative;
+  border-radius:2px;
+}
 
-<div class="graph_card p-4" id="performance_analysis_graph"></div>
+form > div {
+  color:white;
+  padding-top:24px;
+  display:block;
+  position:absolute;
+  top:-4px;
+  left:-4px;
+  bottom:-4px;
+  width:calc(33.33% + 8px);
+  background-color:#ed4c05;
+  border-radius:2px;
+  box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.4);
+  z-index:1;
+  pointer-events:none;
+  transition:transform 0.3s;
+}
 
+form::after {
+  content:"";
+  display:block;
+  clear:both;
+}
 
-<div class="graph_card p-4" id="percentwise_performance_analysis_graph"></div>
+form label {
+  float:left;
+  width:calc(33.333% - 1px);
+  position:relative;
+  padding:0px;
+  height: 30px;
+  line-height: 30px;
+  overflow:hidden;
+  border-left:solid 1px rgba(0,0,0,0.2);
+  transition:color 0.3s;
+  cursor:pointer;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
 
+form label:first-child {
+  border-left:none;
+}
 
-<div class="graph_card p-4" id="subjectwise_analysis_graph"></div>
+form label input {
+  position:absolute;
+  top:-200%;
+}
+
+form label div {
+  z-index: 5;
+  position: absolute;
+  width: 100%;
+}
+
+form label.selected {
+  color:white;
+}
+</style>
+ 
+
+<div class="row ">
+
+<div class="col my-1">
+</div>
+<div class="col my-1">
+</div>
+
+<div class="col my-1">
+</div>
+<div class="col my-1">
+</div>
+<div class="col my-1">
+<form action="" id="searchTypeToggle">
+  <div></div>
+  <label class="selected">
+    <input type="radio" name="searchtype" onclick="check_selected('all')" data-location="0" value="all">
+    <div>All</div>
+  </label>
+  <label>
+    <input type="radio" name="searchtype" onclick="check_selected('regular')" data-location="calc(100% - 8px)" value="regular">
+    <div>Regular</div>
+  </label>
+  <label>
+    <input type="radio" name="searchtype" onclick="check_selected('exam')" data-location="calc(200% - 12px)" value="exam">
+    <div>Exam</div>
+  </label> 
+</form>
+</div></div>
+
 
 <div class="table_div table-responsive">
 
 
-    <table class="table table-condensed table-hover" id='testsListTable' style="font-size: 14px;">
+    <table class="table table-condensed table-hover" id='staffListTable' style="font-size: 14px;">
         <thead style="color: #999">
             <tr>
                 <th>id</th>
@@ -83,313 +172,181 @@ highlight_string("<?php\n\$data =\n" . var_export($responseData, true) . ";\n?>"
                 <th>Session Name</th>
                 <th>Session Date</th>
                 <th>Session Time</th>
-                <th>Subject</th>
+                <th>Session Type</th>
                 <th>Classroom</th> 
+                <th>Subject</th>
             </tr>
         </thead>
         <tbody>
-            <?php 
-            //Defining arrays for charts display
-            $test_name_array = array();
-            $test_score_array = array();
-            $test_total_marks_array = array();
-            $test_percent_array = array();
-            $all_subjects_array = array();
-            $subjectwise_chart_data_array = array();
-
-            $absent_label_text = "<span style='color: red'>ABSENT</span>";
-
-            //Displaying data in table
-            foreach ($responseData["exams"] as $key => $test) :
-                $test_name = ucwords($test['name']);
-
-                $appeared_on = "";
-                if (isset($test['createdDate'])) {
-                    $appeared_on =  date("d M Y, H:i A", $test['createdDate'] / 1000);
-                } else {
-                    $appeared_on =  $absent_label_text;
-                }
-
-                $total_marks = "-";
-                if (isset($test['totalMarks'])) {
-                    $total_marks = $test['totalMarks'];
-                }
-
-                $rank = "";
-
-                if (isset($test['rank'])) {
-                    if (isset($test['showRank']) && $test['showRank'] == 1) {
-                        // Show rank
-                        $rank =  $test['rank'];
-                        if (isset($test['analysis']) && isset($test['analysis']['studentsAppeared'])) {
-                            $rank = $test['rank'] . '/' . $test['analysis']['studentsAppeared'];
-                        }
-                    } else {
-                        // Do not show rank
-                        $rank = "-";
-                    }
-                } else {
-                    $rank = $absent_label_text;
-                }
-
-
-                $score = "-";
-                $score_text = "-";
-                if (isset($test['score'])) {
-                    //Pushing in array for charts only when the score exists
-                    //That is the student was not absent
-                    array_push($test_name_array, $test_name);
-
-
-                    $score = $test['score'];
-                    array_push($test_score_array, $score);
-                    array_push($test_total_marks_array, $total_marks);
-
-                    $percent = 0;
-                    if ($total_marks != 0) {
-                        //To solve the bug of divide by 0 when total marks are 0 for assignments
-                        $percent = round($score * 100 / $total_marks, 2);
-                    }
-
-                    array_push($test_percent_array, $percent);
-                    $score_text = $score . "/" . $total_marks;
-                } else {
-                    //Student is absent or not attempted the test
-                    // array_push($test_score_array, 0);
-                    // array_push($test_percent_array, 0);
-                    $score_text = $absent_label_text;
-                }
-                
-            ?>
-            
-            <?php
-            endforeach;
-
-            
-
-            /*
-highlight_string("<?php\n\$data =\n" . var_export($test_name_array, true) . ";\n?>");
-*/
-            /*  
-highlight_string("<?php\n\$data =\n" . var_export($subjectwise_chart_data_array, true) . ";\n?>");
-*/
-            ?>
-
-            <?php $sno=0;  foreach($records_table as $key=>$sess_val){ $sno++; ?>
-             <tr>
-                <td></td>
-                <td><?= $key + 1; ?></td>
+          
+            <?php $sno=1;  foreach($reqular_session as $key=>$sess_val){  ?>
+             <tr class="regular" >
+               
+                <td><?= $sno; ?></td> <td></td>
                 <td><?= $sess_val['session_name'] ?></td> 
                 <td><?= $sess_val['session_date'] ?></td>
                 <td><?= $sess_val['session_time'] ?></td>
-                <td><?= $sess_val['session_subject'] ?></td> 
+                <td>Regular</td>
                 <td><?= $sess_val['classroom'] ?></td>
+                <td><?= $sess_val['session_subject'] ?></td> 
               </tr>
-              <?php } ?>
+              <?php $sno++; } ?>
+
+              <?php   foreach($exam as $key=>$sess_val){  ?>
+             <tr class="exam" >
+               
+                <td><?= $sno ?></td>
+                 <td></td>
+                <td><?= $sess_val['session_name'] ?></td> 
+                <td><?= $sess_val['session_date'] ?></td>
+                <td><?= $sess_val['session_time'] ?></td>
+                <td>Exam</td>
+                <td><?= $sess_val['classroom'] ?></td>
+                <td></td> 
+              </tr>
+              <?php  $sno++; } ?> 
+
         </tbody>
     </table>
 </div>
 
 
 
-
-
-<script>
-    // high chart common settings
-    Highcharts.setOptions({
-        colors: ['#C55A11', '#0070C0', '#555ABE', '#71601C', '#338B8A', '#CA762F', '#AF1A3E', '#D78942', '#ED5E5E', '#B77351', '#FFD301', '#FE0D27', '#3A546A', '#E871FE', '#00FEDE', '#1AFE00'],
-        lang: {
-            thousandsSep: ','
-        }
-    });
-</script>
+ 
+ 
 
 <script>
-    /**Overall performance charts */
-    /*********************** */
-    Highcharts.chart('performance_analysis_graph', {
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: 'Performance'
-        },
-        xAxis: [{
-            categories: <?php echo json_encode(array_reverse($test_name_array)); ?>,
-            crosshair: true
-        }],
-        yAxis: {
-            title: {
-                text: 'Marks Obtained'
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        series: [{
-            name: 'Marks Obtained',
-            data: <?php echo json_encode(array_reverse($test_score_array)); ?>
-        }, {
-            name: 'Total Test Marks',
-            data: <?php echo json_encode(array_reverse($test_total_marks_array)); ?>
-        }]
-    });
+    var staffListTable;
+
+    // To reset all the parameters in the datatable which are saved using stateSave
+    function resetDatatable() {
+        // Resetting the filter values
+        $("#searchbox").val("");
+        localStorage.setItem('staff_datatable_search_value', "");
+        staffListTable.draw();
 
 
-    /**Percentwise performance charts */
-    /*********************** */
-    Highcharts.chart('percentwise_performance_analysis_graph', {
-        title: {
-            text: 'Percentwise Performance'
-        },
-        xAxis: [{
-            categories: <?php echo json_encode(array_reverse($test_name_array)); ?>,
-            crosshair: true
-        }],
-        yAxis: {
-            title: {
-                text: '% Obtained'
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        series: [{
-            name: 'Percentage',
-            data: <?php echo json_encode(array_reverse($test_percent_array)); ?>
-        }]
-    });
+        // REF: https://datatables.net/forums/discussion/53726/table-state-clear-does-not-clear-saved-state-how-do-i-remove-specified-filters-sorts-here
+        staffListTable.state.clear(); // 1a - Clear State
+        staffListTable.destroy(); // 1b - Destroy
 
-    var options = {
-        title: {
-            text: 'Subjectwise Performance'
-        },
-        xAxis: [{
-            categories: <?php echo json_encode(array_reverse($test_name_array)); ?>,
-            crosshair: true
-        }],
-        yAxis: {
-            title: {
-                text: 'Marks Obtained'
-            }
-        },
-        credits: {
-            enabled: false
-        },
-        series: [],
-        responsive: {
-            rules: [{
-                condition: {
-                    maxWidth: 500
-                },
-                chartOptions: {
-                    legend: {
-                        layout: 'horizontal',
-                        align: 'center',
-                        verticalAlign: 'bottom'
-                    }
-                }
-            }]
-        }
-    };
-
-    /**Subject wise performance charts */
-    /*********************** */
-    function search(nameKey, myArray) { //search if score exist for a particular exam
-        for (var i = 0; i < myArray.length; i++) {
-            if (myArray[i].indexOf(nameKey) == 0) {
-                return myArray[i];
-            }
-        }
+        setTimeout(function() {
+            window.location.reload();
+        }, 1000);
     }
 
-    var allTest = <?php echo json_encode(array_reverse($test_name_array)); ?>;
-    var subjects = <?php echo json_encode(array_reverse($all_subjects_array)); ?>;
-    var scoreArray = <?php echo json_encode(array_reverse($subjectwise_chart_data_array)); ?>;
-    for (i = 0, len = subjects.length; i < len; i++) {
-        if (options.series.length < len) options.series.push({
-            name: '',
-            data: ''
-        })
-        options.series[i].name = subjects[i];
-        let subjectArrayScore = scoreArray[subjects[i]];
+    $(document).ready(function() {
 
-        let dataArray = [];
-        let scoreAdd;
-        for (j = 0, len1 = allTest.length; j < len1; j++) {
-            scoreAdd = 0;
-            var testScoreArray = search(allTest[j], subjectArrayScore);
-            if (testScoreArray) {
-                var splitScore = testScoreArray.split(':');
-                scoreAdd = Number(splitScore[1]);
-            }
-            dataArray.push(scoreAdd);
-        }
-        options.series[i].data = dataArray;
-    }
-
-    var chart = new Highcharts.Chart('subjectwise_analysis_graph', options);
-</script>
+        var staff_datatable_search_value = localStorage.getItem('staff_datatable_search_value');
+        $("#searchbox").val(staff_datatable_search_value);
 
 
-<script>
-    var student_rollno = "<?= $student_rollno ?>";
-    var student_name = "<?= $student_name ?>";
-    var student_category = "<?= $student_category ?>";
-    var student_parentno = " (Parent) " + "<?= $student_parentno ?>";
-    var student_mobile = " (Self) " + "<?= $student_mobile ?>";
-
-    var student_previous_marks = "<?= $student_previous_marks ?>";
-
-    var tableTopData = "<div style='font-size: 14px;'>Roll No: " + student_rollno + " <br>Student's Name: " + student_name + " <br>Category: " + student_category + " <br>Previous Marks: " + student_previous_marks + " <br>Contact Details: " + student_parentno + student_mobile + "</div>";
-
-    var studentListTable = $('#testsListTable').DataTable({
-        "lengthChange": false,
-        "searching": true,
-        "bInfo": false,
-        "paging": false,
-        "order": [
-            [1, "asc"]
-        ],
-        dom: 'Bfrtip',
-        buttons: [{
-                extend: 'print',
-                exportOptions: {
-                    columns: ':visible'
-                },
-                messageTop: tableTopData,
-                customize: function(doc) {
-                    $(doc.document.body).find('h1').css('font-size', '15pt');
-                    $(doc.document.body).find('h1').css('text-align', 'center');
-                    $(doc.document.body).find('h1').css('display', 'none');
-                    $(doc.document.body).find('table').css('font-size', '8pt');
-                    $(doc.document.body).find('table').addClass('table-bordered');
-                    $(doc.document.body).find('td').css('padding', '0pt');
-                }
-            },
-            {
+        staffListTable = $('#staffListTable').DataTable({
+            stateSave: true,
+            "columnDefs": [{
+                "targets": [7],
+                "orderable": false,
+            }, {
+                "targets": -1,
+                "class": 'btn_col'
+            }],
+            "order": [
+                [0, "asc"]
+            ],
+            dom: 'Bflrtip',
+            buttons: [{
                 extend: 'colvis',
                 //https://datatables.net/forums/discussion/50751/hide-several-columns-for-colvis-button-list
                 columns: ':gt(0)',
-                text: 'Toggle Columns'
+                text: "Toggle Columns"
+            }, {
+                "extend": 'excel',
+                "titleAttr": 'Excel',
+                // not_export class is used to hide excel columns. 
+                "exportOptions": {
+                    "columns": ':visible:not(.not_to_export)'
+                },
+                messageTop: "Holiday"
+            }, {
+                extend: 'print',
+                exportOptions: {
+                    columns: ':visible:not(.not_to_print)'
+                },
+                title: "Holiday",
+                customize: function(win) {
+                    $(win.document.body).find('h1').css('text-align', 'center');
+                    $(win.document.body).css('font-size', '9px');
+                    $(win.document.body).find('td').css('padding', '0px');
+                    $(win.document.body).find('td').css('padding-left', '2px');
+                }
+            }],
+            "searching": true,
+            "paging": true,
+            "pageLength": 20,
+            "bLengthChange": false,
+            "bInfo": false,
+            language: {
+                search: "",
+                processing: '<i class="fas fa-atom fa-spin fa-2x fa-fw"></i><span class="sr-only">Loading...</span>'
+            },
+            stateSaveCallback: function(settings, data) {
+                if (data != null && data.search != null && data.search.search != null) {
+                    localStorage.setItem('staff_datatable_search_value', data.search.search);
+                }else{
+                    localStorage.setItem('staff_datatable_search_value', "");
+                }
             }
-        ],
-        "columnDefs": [{
-            "targets": [0],
-            "visible": false,
-            "searchable": false
-        }]
+        });
+
+        if (staff_datatable_search_value != '' && staff_datatable_search_value != null) {
+            staffListTable.search(staff_datatable_search_value).draw();
+        }
+        $("#searchbox").keyup(function() {
+            staffListTable.search(this.value).draw();
+        });
+
     });
 
 
-    $("#testsListTable").on("click", "tbody tr", function() {
-        var row = studentListTable.row($(this)).data();
-        // console.log(row);
-        localStorage.setItem("studentId", <?= $student_id ?>);
-        localStorage.setItem("testId", row[0]);
-        localStorage.setItem("pageAccess", "Temp");
-        localStorage.setItem("resultUrl", "Admin");
-        var host_urltemp = "<?= HTTPHOST; ?>";
-        window.open(host_urltemp + "/result.html", "_blank").focus();
+    function waitForElementToDisplay(selector, time, counter) {
+        if (counter > 6) {
+            return;
+        }
+        if (document.querySelector(selector) != null) {
+            $("#staffListTable_filter").prepend($("#staffListTableExportGroup"));
+            $("#staffListTableExportGroup").show();
+            return;
+        } else {
+            setTimeout(function() {
+                waitForElementToDisplay(selector, time, counter + 1);
+            }, time);
+        }
+    }
+
+    $(document).ready(function() {
+        waitForElementToDisplay("#staffListTable_filter", 1000, 1);
     });
+
+
+    $(document).ready(function(event){
+  $('form input').click(function(event){
+    $('form > div').css('transform', 'translateX('+$(this).data('location')+')');
+    $(this).parent().siblings().removeClass('selected');
+    $(this).parent().addClass('selected');
+  });
+});
+
+
+function check_selected(type){ 
+   if(type=='exam'){
+    $(".regular ").hide();
+    $(".exam").show();
+   }else if(type=='regular'){
+    $(".regular ").show();
+    $(".exam").hide();
+   }else if(type=='all'){
+    $(".regular ").show();
+    $(".exam").show();
+   }
+}
 </script>

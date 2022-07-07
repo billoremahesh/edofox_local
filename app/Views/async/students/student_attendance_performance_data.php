@@ -266,13 +266,13 @@ form label.selected {
                 "exportOptions": {
                     "columns": ':visible:not(.not_to_export)'
                 },
-                messageTop: "Holiday"
+                messageTop: "Attendance Report"
             }, {
                 extend: 'print',
                 exportOptions: {
                     columns: ':visible:not(.not_to_print)'
                 },
-                title: "Holiday",
+                title: "Attendance Report",
                 customize: function(win) {
                     $(win.document.body).find('h1').css('text-align', 'center');
                     $(win.document.body).css('font-size', '9px');

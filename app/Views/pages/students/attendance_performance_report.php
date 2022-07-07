@@ -21,31 +21,10 @@
         </div>
 
         <div>
-            <h4 class="text-center"><?= $student_details['name']; ?> : Performance</h4>
+            <h4 class="text-center"><?= $student_details['name']; ?> : Attendance Report</h4>
 
             <div class="d-flex text-center p-4">
-
-                <div>
-                    <select class="form-control" id="test_type" onchange="reloadPerformanceReport();" style="max-width: 350px; display: inline-block">
-                        <option value="TEST">Show Only TESTS Performance</option>
-                        <option value="DPP">Show Only Assignments Performance</option>
-                        <option value="ALL">Show TESTS+Assignments Performance</option>
-                    </select>
-                </div>
-
-                <div class="d-flex mx-2">
-                    <div>
-                        <label>From Date</label>
-                        <input class="datepick_input" onchange="reloadPerformanceReport();" type="text" id="input_from">
-                        <div id="input_from_picker_outlet"></div>
-                    </div>
-                    <div class="mx-2">
-                        <label id="input_to_picker_outlet">To Date</label>
-                        <input class="datepick_input" onchange="reloadPerformanceReport();" type="text" id="input_to">
-                        <div id="input_to_picker_outlet"></div>
-                    </div>
-                </div>
-
+ 
                 <div class="d-none" id="loader"><img style="width: 64px;" src="<?= base_url('assets/img/loading.gif'); ?>" /></div>
             </div>
 

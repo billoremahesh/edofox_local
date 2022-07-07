@@ -175,11 +175,14 @@ form label.selected {
                 <th>Session Type</th>
                 <th>Classroom</th> 
                 <th>Subject</th>
+                <th>Session Status</th>
             </tr>
         </thead>
         <tbody>
           
-            <?php $sno=1;  foreach($reqular_session as $key=>$sess_val){  ?>
+            <?php $sno=1;  foreach($reqular_session as $key=>$sess_val){ 
+                
+                ?>
              <tr class="regular" >
                
                 <td><?= $sno; ?></td> <td></td>
@@ -189,6 +192,7 @@ form label.selected {
                 <td>Regular</td>
                 <td><?= $sess_val['classroom'] ?></td>
                 <td><?= $sess_val['session_subject'] ?></td> 
+                <td><?= in_array($sess_val['id'],$attendance_list)?'Present':'Absent'; ?></td>
               </tr>
               <?php $sno++; } ?>
 
@@ -203,6 +207,7 @@ form label.selected {
                 <td>Exam</td>
                 <td><?= $sess_val['classroom'] ?></td>
                 <td></td> 
+                <td><?php if($sess_val['status']==''){ echo " "; }else{echo "COMPLETE";} ?></td>
               </tr>
               <?php  $sno++; } ?> 
 

@@ -23,10 +23,12 @@
         <div>
             <h4 class="text-center"><?= $student_details['name']; ?> : Attendance Report</h4>
 
+
             <div class="d-flex text-center p-4">
  
-                <div class="d-none" id="loader"><img style="width: 64px;" src="<?= base_url('assets/img/loading.gif'); ?>" /></div>
-            </div>
+ <div class="d-none" id="loader"><img style="width: 64px;" src="<?= base_url('assets/img/loading.gif'); ?>" /></div>
+</div>
+
 
 
             <div id="student_performance_data"></div>

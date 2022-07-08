@@ -127,7 +127,7 @@
                     <a class="organization_card_links" href="<?php echo base_url('/reports/view_student_attendance'); ?>">
                         <div class="md_card">
                             <div class="md_card_media text-center">
-                                <img class="img-fluid" src="<?= base_url('assets/img/statics/live_session.jpg'); ?>" style="width:100%; max-width:200px; margin: auto;" />
+                                <img class="img-fluid" src="<?= base_url('assets/img/statics/attendance_report.jpg'); ?>" style="width:100%; max-width:200px; margin: auto;" />
                             </div>
                             <div class="md_card_body">
                                 <div class="md_card_title text-center text-uppercase">

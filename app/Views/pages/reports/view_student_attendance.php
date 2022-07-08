@@ -21,7 +21,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #e90505;
+    background-color:gray;
     -webkit-transition: .4s;
     transition: .4s;
   }
@@ -524,7 +524,7 @@
     } else if (seletType == 'selectDay') {
       $(".editinput").hide();
       
-      get_day_data()
+      get_day_data('month_data')
     } else if (seletType == 'customCalender') {
       get_customcalender_data()
     }
@@ -571,9 +571,19 @@
     }
   }
 
-  function get_day_data() {
+  function get_day_data(func_call) {
+      // month_data
+      // edit_record
+
     $("#error_message").html("");
-    toggle_custom_loader(true, "custom_loader");
+    if(func_call=='month_data'){
+      toggle_custom_loader(true, "custom_loader");
+    }else{
+      Snackbar.show({
+                        pos: 'top-center',
+                        text: 'Updated Data is loading ...'
+                    });
+    }
     var classroom = $("#classroom_filter").val();
     var classroom_name = $("#classroom_filter").select2('data')[0]['text'];
     var schedule_start_date = $("#schedule_start_date").val();
@@ -775,7 +785,7 @@
         html = html + `<td class="text-center" >No Schedule Avialble</td>`;
       }
       html = html + ` </tr> `
-
+      // data-toggle='tooltip' title='Reset Filters'
       $.each(data.student, function(objIndex, obj) {
         html = html + ` <tr>`
         html = html + `<td style="width: 13%;" >` + obj.name + `<br><span style="font-style: italic;font-size: 12px" >(` + obj.roll_no + `)</span></td>`;
@@ -788,7 +798,8 @@
                 if (parseInt(per) == 100) {
                   html = html + `<td class="text-center" ><i class="fa fa-check" style="color:green;" ></i></td>`;
                 } else if (parseInt(per) > 0) {
-                  html = html + `<td class="text-center" style="color:#ff8d00;" >` + per.toFixed(2) + `%</td>`;
+                  tooltip=attend_cls.attendance+' sessions attended out of '+classes_obj.totalSession;
+                  html = html + `<td class="text-center" style="color:#ff8d00;" data-toggle='tooltip' title='`+tooltip+`' >` + per.toFixed(0) + `%</td>`;
                 }
               } else {
                 html = html + `<td class="text-center" ><i class="fa fa-times" style="color:red;" ></i></td>`;
@@ -1307,7 +1318,7 @@
 
     }
     if (!this.checked) {
-      get_day_data();
+      get_day_data('edit_record');
       $(".showinput").show();
       $(".editinput").hide();
     }
@@ -1332,8 +1343,13 @@
     }else{
       status=0;
     }
+
+  
+    
+
     console.log(stuend_status,'stuend_status');
   if(stuend_status=='not_null'){
+
     jQuery.ajax({
         url: base_url + '/reports/student_attendance_update',
         type: 'POST',
@@ -1343,7 +1359,7 @@
           status: status
         },
         success: function(result) {
-
+          
           var attendance_data = view_day_data(result);
           $("#header_date").show();
           $("#header_date").html("");
@@ -1353,7 +1369,18 @@
           $("#error_message").html("");
         }
       });
+     
+      Snackbar.show({
+                        pos: 'top-center',
+                        text: 'Attendance details updated for the student'
+                    });
     }else{
+      if(atLeastOneIsChecked==true){
+      Snackbar.show({
+                        pos: 'top-center',
+                        text: 'Something went wrong !'
+                    });
+                  }
       console.log('this student of this session record not found');
     }
   }

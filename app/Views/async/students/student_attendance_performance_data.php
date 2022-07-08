@@ -1,6 +1,7 @@
 <?php
 // Include Service URLs Parameters File
 include_once(APPPATH . "Views/service_urls.php");  
+
 ?>
 
 <style> 
@@ -72,6 +73,8 @@ form label.selected {
 }
 </style>
    
+<div class="graph_card p-4" id="weekly_attendance_report"></div>
+
 <div class="row ">
 <div class="col my-1">
     
@@ -87,7 +90,7 @@ form label.selected {
         </thead>
         <body>
             <?php 
-            $snos=0;
+            $snos=1;
              
             foreach($subject_attendanc_present as $key=>$value){ 
                  $absent=0;
@@ -149,24 +152,24 @@ form label.selected {
                 <th>#</th>
                 <th>Session Name</th>
                 <th>Session Date</th>
-                <th>Session Time</th>
                 <th>Session Type</th>
                 <th>Classroom</th> 
                 <th>Subject</th>
                 <th>Session Status</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="all_data" >
           
             <?php $sno=1;  foreach($reqular_session as $key=>$sess_val){ 
-                
+                $ses_date = $sess_val['session_date'];
+                $ses_time = $sess_val['session_time'];
+                $new_date= date('Y-m-d H:i:s', strtotime("$ses_date $ses_time"));
                 ?>
              <tr class="regular" id="regular" >
                
                 <td><?= $sno; ?></td> <td></td>
                 <td><?= $sess_val['session_name'] ?></td> 
-                <td><?= $sess_val['session_date'] ?></td>
-                <td><?= $sess_val['session_time'] ?></td>
+                <td><?= $new_date; ?></td>
                 <td>Regular</td>
                 <td><?= $sess_val['classroom'] ?></td>
                 <td><?= $sess_val['session_subject'] ?></td> 
@@ -180,8 +183,7 @@ form label.selected {
                 <td><?= $sno ?></td>
                  <td></td>
                 <td><?= $sess_val['session_name'] ?></td> 
-                <td><?= $sess_val['session_date'] ?></td>
-                <td><?= $sess_val['session_time'] ?></td>
+                <td><?= $sess_val['session_date'] ?> <?= $sess_val['session_time'] ?></td>
                 <td>Exam</td>
                 <td><?= $sess_val['classroom'] ?></td>
                 <td></td> 
@@ -195,7 +197,32 @@ form label.selected {
 
 
 
- 
+ <script>
+       Highcharts.chart('weekly_attendance_report', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Weekly Attendance Report'
+        },
+        xAxis: [{
+            categories:<?php echo json_encode(array_reverse($week_date)); ?>,
+            crosshair: true
+        }],
+        yAxis: {
+            title: {
+                text: 'Weekly Attendance %'
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: 'Weekly Attendance %',
+            data: <?php echo json_encode(array_reverse($week_per)); ?>
+        }]
+    });
+ </script>
  
 
 <script>
@@ -227,7 +254,7 @@ form label.selected {
         staffListTable = $('#staffListTable').DataTable({
             stateSave: true,
             "columnDefs": [{
-                "targets": [7],
+                "targets": [6],
                 "orderable": false,
             }, {
                 "targets": -1,
@@ -320,16 +347,17 @@ form label.selected {
 });
 
 
-function check_selected(type){ 
+function check_selected(type){
+    console.log(type,'type');  
    if(type=='exam'){
-    $("#regular ").hide();
-    $("#exam").show();
+    $(".regular ").hide();
+    $(".exam").show();
    }else if(type=='regular'){
-    $("#regular ").show();
-    $("#exam").hide();
+    $(".regular ").show();
+    $(".exam").hide();
    }else if(type=='all'){
-    $("#regular ").show();
-    $("#exam").show();
+    $(".regular ").show();
+    $(".exam").show();
    }
 }
 

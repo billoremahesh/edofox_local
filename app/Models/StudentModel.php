@@ -131,8 +131,8 @@ class StudentModel extends Model
          ## Fetch records
          $db = \Config\Database::connect(); 
 
-        $student_id=13369;
-        $instituteID=3; 
+        // $student_id=13369;
+        // $instituteID=3; 
        $sql_fetch_data="SELECT count(*) as is_present,date FROM `institute_schedule_data` join institute_schedule_attendance on institute_schedule_data.schedule_id = institute_schedule_attendance.schedule_data_id where institute_schedule_attendance.student_id = $student_id and institute_schedule_data.is_disabled = 0 and institute_schedule_attendance.is_disabled = 0 and institute_schedule_attendance.is_present = 1 group by week(date)";
        $query = $db->query($sql_fetch_data); 
        $weekly_present = $query->getResultArray();

@@ -99,12 +99,20 @@ form label.selected {
                   $absent=$absents['present_count'];
                 }  
                 $persn = round(($absent*100)/$value['present_count']);
+
                 ?>
             <tr class="<?php if($key % 2 == 0){ echo "odd"; }else{ echo "even"; } ?>" >
                 <td><?= $snos; ?></td> <td></td>
                 <td><?= $value['package_name'] ?></td>
                 <td><?= $value['subject'] ?></td>
-                <td><?= $persn ?>%</td>
+                <td class="text-center" ><?php if($persn==100){ ?>
+                <i class="fa fa-check" style="color:green;" ></i>
+                <?php }else if($persn==0){ ?>
+                <i class="fa fa-times" style="color:red;" ></i>
+                 <?php }else{ ?>
+                  <span style="color:#ff8d00;" ><?php echo $persn.'%'; ?></span>     
+                <?php } 
+                 ?></td>
             </tr>
             <?php $snos++; } ?>
         </body>

@@ -310,6 +310,7 @@ class Schedule extends BaseController
 			$data = $this->request->getVar();
 			$InstituteScheduleModel = new InstituteScheduleModel();
 			$data['institute_id'] = decrypt_cipher($data['institute_id']);
+		 
 			if ($InstituteScheduleModel->add_new_schedule($data)) {
 				$session->setFlashdata('toastr_success', 'Added New Session Schedule successfully.');
 			} else {

@@ -34,7 +34,17 @@
                             <div>Classroom: <b><?= $classroom_details['package_name']; ?></b></div>
                             <div>Date: <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
                             <div>Day of the week: <b><?= $days_of_week_array[$day]; ?></b></div>
-                            <div><b>Session Frequency: </b><span class="badge bg-success">Weekly</span></div>
+                        </div>
+                        <div class="col-6">
+                            <div><b>Session Frequency: </b><select name="session_frequency" id="session_frequency" class="form-select select2_dropdown" required >
+                                <option value="Weekly" >Weekly</option>
+                                <option value="Date" >Once</option> 
+                                <option value="Monthly" >Monthly</option>
+                            </select></div>
+                        </div>
+                        <div class="col-6">
+                        <b>Session Date: </b>
+                           <input type="date" id="schedule_date" name="schedule_date" class="form-select" value="<?= $schedule_date ?>" required />
                         </div>
 
                         <div class="col-4">
@@ -76,11 +86,10 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="session_week_day" value="<?= $day; ?>" />
-                    <input type="hidden" name="session_classroom" value="<?= $classroom_id; ?>" />
-                    <input type="hidden" name="session_frequency" value="Weekly" required />
+                    <input type="hidden" name="session_classroom" value="<?= $classroom_id; ?>" /> 
                     <input type="hidden" name="institute_id" value="<?= $instituteID; ?>" required />
                     <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />
-                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
+                      <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Add</button>
                 </div>
                 <?php echo form_close(); ?>

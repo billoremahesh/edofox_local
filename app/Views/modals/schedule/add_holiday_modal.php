@@ -92,7 +92,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <input type="hidden" name="session_frequency" value="Date" required />
+                <input type="hidden" name="session_frequency" value="Holiday" required />
                 <input type="hidden" name="institute_id" value="<?= $instituteID; ?>" required />
                 <input type="hidden" name="duration" id="duration" value="" required />
                 <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />

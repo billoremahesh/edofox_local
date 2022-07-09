@@ -321,7 +321,7 @@
                             html = html + "</ul></div></div>";
                         }
 
-                        if(obj.frequency=="Date"){ 
+                        if(obj.frequency=="Holiday"){ 
                         var formatted_date = new Date(obj.date);
                         formatted_date = formatted_date.toLocaleDateString("en-US", options)
                         holiday_content =formatted_date +' <span  class="float-end bracketsty" data-bs-toggle="tooltip" data-bs-placement="top" title="'+obj.title+'" > <span class="holiday_title">'+obj.title+'</span> </span>';
@@ -340,7 +340,7 @@
                        
                     } 
                     
-                    if(obj.frequency=="Weekly"){ 
+                    if(obj.frequency=="Weekly" || obj.frequency=='Monthly' || obj.frequency=='Date'){ 
                     if (obj.title != null) {
                         html = html + "<li class='schedule_card position-relative'>";
                         html = html + "<div class='badge subject_badge'>" + obj.subject_name.toUpperCase() + "</div>";

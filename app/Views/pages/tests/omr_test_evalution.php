@@ -86,6 +86,14 @@
                         </label>
                     </div>
                 </div>
+                <div class="col-4 mb-3 mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"  id="scanned_output">
+                        <label class="form-check-label" for="scanned_output">
+                            Get Scanned Output
+                        </label>
+                    </div>
+                </div>
 
                 <div class="col-4 mb-3">
                     <button type="button" class="btn btn-primary" onclick="generateCodeModal();"> Generate Exam code  </button>
@@ -240,7 +248,7 @@
 <!-- Include Footer -->
 <?php include_once(APPPATH . "Views/footer.php"); ?>
 <script src="<?php echo base_url('assets/js/utils.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/omr.js?ver=20220627'); ?>"></script>
+<script src="<?php echo base_url('assets/js/omr.js?ver=20220704'); ?>"></script>
 <script src="<?php echo base_url('assets/js/common.js?ver=20220627'); ?>"></script>
 
 <script>
@@ -351,11 +359,15 @@
                 preview = true;
             }
             var skipCompress = true;
+            var scannedOutput = false;
             if(document.getElementById("compress_files").checked) {
                 skipCompress = false;
             }
+            if(document.getElementById("scanned_output").checked) {
+                scannedOutput = true;
+            }
 
-            var result = await parse_omr(test_id, files[i], accessType, prefix, instituteId, requestType, timeout, skipCompress);
+            var result = await parse_omr(test_id, files[i], accessType, prefix, instituteId, requestType, timeout, skipCompress, scannedOutput);
             var file_name = files[i].name;
             if ($("#preview_result_check").is(":checked") && !addedHeaders) {
                 //Add Headers

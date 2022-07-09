@@ -211,7 +211,8 @@
             var absent_students = 0;
             var present_students = 0;
             $.each(data, function(objIndex, obj) {
-                html = html + "<label class='attendance_ckboxs card border-left-primary shadow' style='max-width: 800px;display:block;margin:4px auto;'><div class='align-items-center text-muted pt-3 studnt_attend_card' style='position: relative;'>";
+                html = html + "<div class='card border-left-primary shadow' style='max-width: 800px;display:block;margin:4px auto;'>";
+                html = html + "<label class='attendance_ckboxs ' ><div class='align-items-center text-muted pt-3 studnt_attend_card' style='position: relative;'>";
 
 
                 if (obj.profilePic != null) {
@@ -238,12 +239,21 @@
                 }
 
                 html = html + "<span class='checkmark'></span>";
+
                 html = html + "</div>";
-                html = html + "<span class='d-block'> Roll Number: " + obj.rollNo + " </span>";
+                html = html + "<span class='d-block'> Roll Number: " + obj.username + " </span>";
                 html = html + "</div>";
                 html = html + "</div>";
                 html = html + "</div>";
-                html = html + "</div></label>";
+                html = html + "</div>";
+
+                html = html + "</label>";
+                if (obj.present != null && obj.present == false) {
+                    html = html + "<div class='d-flex justify-content-center'>";
+                    html = html + "<i style='padding: 10px;  cursor:pointer' onclick=\"sendAbsentNotification('" + obj.rollNo + "')\" class=\"fa fa-lg fa-envelope\" aria-hidden=\"true\"></i>"
+                    html = html + "</div>";
+                }
+                html = html + "</div>";
             });
             html = html + "<div class='d-flex justify-content-center' style='position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center;'><button class='btn btn-primary submit_btn' onclick='upload_attendance_submit();' type='button'>Submit</button></div>";
 
@@ -313,7 +323,7 @@
             });
     }
 
-    function sendAbsentNotification() {
+    function sendAbsentNotification(username) {
         if (scheduleDataId == null) {
             alert("Please take attendance first in order to send notifications");
             return;
@@ -324,6 +334,13 @@
             },
             requestType: 'AbsentStudent'
         };
+
+        if (username != null) {
+            //Notification is for individual student
+            request.student = {
+                rollNo: username
+            };
+        }
 
         callAdminServiceJSONPost("sendNotification", request).then(function(response) {
                 console.log("Response", response);

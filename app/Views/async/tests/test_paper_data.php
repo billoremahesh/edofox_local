@@ -303,16 +303,17 @@ if ($duration < 3600) {
                     }
 
                     html,
-                    body {
+                    /* body {
                         width: 210mm;
                         height: 297mm;
-                    }
+                    } */
 
                     #row_custom {
                         break-inside: avoid !important;
                         page-break-inside: avoid !important;
                         margin-bottom: 8px;
                         margin-top: 8px;
+                        padding: 0px 10px !important;
                         /* overflow: hidden; */
                     }
 

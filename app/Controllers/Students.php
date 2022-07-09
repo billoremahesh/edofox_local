@@ -389,7 +389,7 @@ class Students extends BaseController
         $data['endTime'] = $this->request->getVar('endTime');
         // Get data
         $StudentModel = new StudentModel();
-        $result= $StudentModel->get_attend_student_details($student_id, $institute_id); 
+        $result= $StudentModel->get_attend_student_details($student_id, $institute_id,$data); 
        
         // $data['student_details']=$result['records'];
         $data['exam']=$result['exam']; 

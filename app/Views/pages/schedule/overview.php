@@ -56,8 +56,8 @@
 
 
                 <div class="col my-1">
-                    <input type="text" id="schedule_start_date" placeholder="Start Date" onchange="get_schedule_data()" />
-                    <input type="text" id="schedule_end_date" placeholder="End Date" onchange="get_schedule_data()" />
+                    <input type="text" id="schedule_start_date" placeholder="Start Date" onchange="get_schedule_data('start_date')" />
+                    <input type="text" id="schedule_end_date" placeholder="End Date" onchange="get_schedule_data('end_date')" />
                 </div>
 
 
@@ -211,15 +211,43 @@
         get_schedule_data();
     });
 
+    function addDays(schedule_start_date, days) {
+        var date = new Date(schedule_start_date);
+        date.setDate(date.getDate() + days);
+        var month = (date.getMonth() + 1);
+        if (month < 10) {
+            month = "0" + month;
+        }
+        var day = date.getDate();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        return date.getFullYear() + "-" + month + "-" + day;
+    }
 
 
-    function get_schedule_data() {
+    function get_schedule_data(date_changed) {
         $("#error_message").html("");
         toggle_custom_loader(true, "custom_loader");
         var classroom = $("#classroom_filter").val();
         var classroom_name = $("#classroom_filter").select2('data')[0]['text'];
         var schedule_start_date = $("#schedule_start_date").val();
         var schedule_end_date = $("#schedule_end_date").val();
+
+        //FOllowing code will maintain 7 days of difference
+        if (date_changed == 'start_date') {
+            if(schedule_start_date != null) {
+                var changedDate = addDays(schedule_start_date, 6);
+                schedule_end_date = changedDate;
+                $("#schedule_end_date").val(changedDate);
+            }
+        } else {
+            if(schedule_end_date != null) {
+                var changedDate = addDays(schedule_end_date, -6);
+                schedule_start_date = changedDate;
+                $("#schedule_start_date").val(changedDate);
+            }
+        }
 
 
         if (classroom == '' || schedule_start_date == '' || schedule_end_date == '') {

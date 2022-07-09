@@ -316,15 +316,28 @@ echo "<script>localStorage.setItem('testid_result', $test_id);</script>";
                         <div class="modal-header">
 
 
-                            <h5 class="modal-title" id="sendNotificationLabel">The result message will be sent in this format</h5>
+                            <h5 class="modal-title" id="sendNotificationLabel">Send Exam notification</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
                         </div>
 
                         <div class="modal-body">
 
-                            <div>
+                            <div class="col-6 mb-2">
+                                <label class="form_label" for="gender">Type of notification <span class="req_color"></span></label>
+                                <select name="exam_notification_type" id="exam_notification_type" class="form-control" required ng-model="notificationType">
+                                    <option value="Results" selected>Result Notification</option>
+                                    <option value="AbsentStudent">Absent student notification</option>
+                                </select>
+                            </div>
+
+                            <div id="result_notification_preview">
                                 Hi {name}, your <?= $institute_details['institute_name']; ?> <?= $test_details['test_name']; ?> score is {score} Your final rank is {rank} out of {totalStudents}
+                            </div>
+
+                            <div id="absent_notification_preview" style="display:none">
+                            Hello {name}, This is to inform you that you have been absent for test <?= $test_details['test_name']; ?> 
+                            conducted by <?= $institute_details['institute_name']; ?> on <?= date_format_custom($test_details['start_date'], "d-m-Y"); ?>. You can check your attendance report at {LINK} - MTRSFT
                             </div>
 
                             <!-- <div class="mb-2">
@@ -391,7 +404,7 @@ echo "<script>localStorage.setItem('testid_result', $test_id);</script>";
     var institute_name = "<?= $institute_details['alias_name']; ?>";
     var test_name = "<?= $test_details['test_name']; ?>";
     var institute_logo_url = "<?= $institute_details['logo_path']; ?>";
-    var tableTopData = "<div style='display: flex;flex-direction:row;'><div style='flex-grow: 2'><img class='img-fluid' src='" + institute_logo_url + "' alt='institute logo' style='width:100px;' /></div><div style='flex-grow: 8;'><div style='display:center;align-self: center;justify-content: center;'><h1>" + institute_name + "</h1><h3>Examination Result</h3><h5>" + title + " ("+ test_date +")</h5></div></div></div>";
+    var tableTopData = "<div style='display: flex;flex-direction:row;'><div style='flex-grow: 2'><img class='img-fluid' src='" + institute_logo_url + "' alt='institute logo' style='width:100px;' /></div><div style='flex-grow: 8;'><div style='display:center;align-self: center;justify-content: center;'><h1>" + institute_name + "</h1><h3>Examination Result</h3><h5>" + title + " (" + test_date + ")</h5></div></div></div>";
     var messageTopDataExcel = institute_name + "\n" + title;
 </script>
 
@@ -432,6 +445,18 @@ echo "<script>localStorage.setItem('testid_result', $test_id);</script>";
             $(this).trigger("change");
         });
 
+        //
+        $("#exam_notification_type").change(function() {
+            var value = $('option:selected', this).val();
+            if(value == 'AbsentStudent') {
+                $("#absent_notification_preview").attr("style", "");
+                $("#result_notification_preview").attr("style", "display:none");
+            } else {
+                $("#absent_notification_preview").attr("style", "display:none");
+                $("#result_notification_preview").attr("style", "");
+            }
+        });
+
 
         //To fetch absent students from a test
 
@@ -460,5 +485,10 @@ echo "<script>localStorage.setItem('testid_result', $test_id);</script>";
                 });
             });
 
+
+            
+
     });
+
+
 </script>

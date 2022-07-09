@@ -5,6 +5,7 @@ namespace App\Controllers;
 use \App\Models\LiveSessionsModel;
 use \App\Models\StudentLoginSessionsModel;
 use \App\Models\InstituteScheduleModel;
+use \App\Models\EmailSmsLogsModel;
 
 
 class Reports extends BaseController
@@ -139,4 +140,33 @@ class Reports extends BaseController
         return true;
     }
     /** student view attendance end */
+
+    /**
+     * Email/ SMS logs Report
+     */
+    public function email_sms_logs()
+    {
+        // Log Activity 
+        $this->activity->page_access_activity('SMS Logs', '/reports/sms_logs');
+        $data['title'] = "Email & SMS Report";
+        $data['instituteID'] = decrypt_cipher(session()->get('instituteID'));
+        return view('pages/reports/email_sms_logs', $data);
+    }
+    /*******************************************************/
+
+
+    /**
+     * Load Email/ SMS Logs
+     *
+     * @return void
+     * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+     */
+    public function load_email_sms_logs()
+    {
+        $postData = object_to_array($this->request->getVar());
+        $EmailSmsLogsModel = new EmailSmsLogsModel();
+        $email_sms_logs_data = $EmailSmsLogsModel->email_sms_logs($postData);
+        echo json_encode($email_sms_logs_data);
+    }
+    /*******************************************************/
 }

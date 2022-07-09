@@ -1,5 +1,8 @@
 <!-- Include Header -->
-<?php include_once(APPPATH . "Views/header.php"); ?>
+<?php include_once(APPPATH . "Views/header.php");
+$first_date = date('Y-m-d',strtotime('first day of this month'));
+$last_date = date('Y-m-d',strtotime('last day of this month')); 
+?>
 
 <!-- Custom CSS -->
 <link href="<?php echo base_url('assets/css/tests/performance_report.css?v=20210915'); ?>" rel="stylesheet">
@@ -23,14 +26,23 @@
         <div>
             <h4 class="text-center"><?= $student_details['name']; ?> : Attendance Report</h4>
 
-
             <div class="d-flex text-center p-4">
- 
- <div class="d-none" id="loader"><img style="width: 64px;" src="<?= base_url('assets/img/loading.gif'); ?>" /></div>
+
+<div class="d-flex mx-2">
+    <div>
+        <label>From Date</label>
+        <input class="datepick_input" onchange="reloadPerformanceReport();" type="text" id="input_from" value="<?= $first_date ?>" >
+        <div id="input_from_picker_outlet"></div>
+    </div>
+    <div class="mx-2">
+        <label id="input_to_picker_outlet">To Date</label>
+        <input class="datepick_input" onchange="reloadPerformanceReport();" type="text" id="input_to" value="<?= $last_date ?>" >
+        <div id="input_to_picker_outlet"></div>
+    </div>
 </div>
 
-
-
+<div class="d-none" id="loader"><img style="width: 64px;" src="<?= base_url('assets/img/loading.gif'); ?>" /></div>
+</div>
             <div id="student_performance_data"></div>
         </div>
 
@@ -122,6 +134,7 @@
     }
     // On change of the dropdown, fetching new report
     function reloadPerformanceReport(value) {
+        console.log(value,'value'); 
         fetchPerformanceReport(value);
     }
 </script>

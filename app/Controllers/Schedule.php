@@ -310,13 +310,19 @@ class Schedule extends BaseController
 			$data = $this->request->getVar();
 			$InstituteScheduleModel = new InstituteScheduleModel();
 			$data['institute_id'] = decrypt_cipher($data['institute_id']);
-		 
+		    $if_exit= $InstituteScheduleModel->checkSchedule($data);
+			 if($if_exit==1){
 			if ($InstituteScheduleModel->add_new_schedule($data)) {
 				$session->setFlashdata('toastr_success', 'Added New Session Schedule successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
 			}
 			return redirect()->to(base_url($redirect));
+			}else{
+				$session->setFlashdata('toastr_error', 'Error in processing.');
+				return redirect()->to(base_url($redirect));
+			}
+			
 		}
 	}
 	/*******************************************************/

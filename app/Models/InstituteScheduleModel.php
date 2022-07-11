@@ -200,11 +200,26 @@ class InstituteScheduleModel extends Model
      * @return void
      * @author Hemant K <hemant.kulkarni@mattersoft.xyz>
      */
+    public function  checkSchedule(array $data){
+        $schedule_start = $data['session_start_time'];
+        $schedule_date  = $data['schedule_date'];
+        $db = \Config\Database::connect();
+        $sql = "SELECT * FROM institute_schedule WHERE date='$schedule_date' AND frequency IN('Date','Monthly','Weekly') AND ends_at > '$schedule_start'";
+        $query = $db->query($sql);
+        $result = $query->getRowArray();  
+       if($result==''){
+        return 1;
+       }else{
+       return 0;
+       }
+     
+    }
     public function add_new_schedule(array $data)
     {
         $db = \Config\Database::connect();
          
         $db->transStart();  
+ 
         if (isset($data['institute_id']) && !empty($data['institute_id'])) {
             $insert_data['institute_id'] = sanitize_input($data['institute_id']);
         }

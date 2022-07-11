@@ -87,7 +87,7 @@
                             </select>
                         </div>
 
-                        <div class="col-12"><b>Session Frequency: </b><span class="badge bg-success">Weekly</span></div>
+                        <div class="col-12"><b>Session Frequency: </b><span class="badge bg-success"><?= $schedule_details['frequency']; ?></span></div>
 
                         <div class="col-4">
                             <label class="form_label" for="session_week_day">Which day of the week?</label>

@@ -32,19 +32,19 @@
 
                         <div class="col-12">
                             <div>Classroom: <b><?= $classroom_details['package_name']; ?></b></div>
-                            <div>Date: <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
-                            <div>Day of the week: <b><?= $days_of_week_array[$day]; ?></b></div>
+                            <div id="frequency_date" >Date: <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
+                            <div id="frequency_day" >Day of the week: <b><?= $days_of_week_array[$day]; ?></b></div>
                         </div>
                         <div class="col-6">
-                            <div><b>Session Frequency: </b><select name="session_frequency" id="session_frequency" class="form-select select2_dropdown" required >
-                                <option value="Weekly" >Weekly</option>
-                                <option value="Date" >Once</option> 
-                                <option value="Monthly" >Monthly</option>
-                            </select></div>
+                            <div><b>Session Frequency: </b><select name="session_frequency" id="session_frequency" class="form-select select2_dropdown" required>
+                                    <option value="Weekly">Weekly</option>
+                                    <option value="Date">Once</option>
+                                    <option value="Monthly">Monthly</option>
+                                </select></div>
                         </div>
-                        <div class="col-6"  >
-                        <b>Session Date: </b>
-                           <input type="date" id="schedule_date" name="schedule_date" class="form-select" value="<?= $schedule_date ?>" required />
+                        <div class="col-6">
+                            <b>Session Date: </b>
+                            <input type="date" id="schedule_date" name="schedule_date" class="form-select" value="<?= $schedule_date ?>" required />
                         </div>
 
                         <div class="col-4">
@@ -86,10 +86,10 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="session_week_day" value="<?= $day; ?>" />
-                    <input type="hidden" name="session_classroom" value="<?= $classroom_id; ?>" /> 
+                    <input type="hidden" name="session_classroom" value="<?= $classroom_id; ?>" />
                     <input type="hidden" name="institute_id" value="<?= $instituteID; ?>" required />
                     <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />
-                      <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">Add</button>
                 </div>
                 <?php echo form_close(); ?>
@@ -148,9 +148,53 @@
                 time_end.setHours(valuestop[0], valuestop[1])
 
                 time_diff = msToTime(time_end - time_start);
+                if (time_diff == 'NaN:NaN:NaN') {
+                    $("#session_duration").html("");
+                    Snackbar.show({
+                        pos: 'top-center',
+                        text: 'Time is Invalid'
+                    });
+                    $("#session_end_time").val('');
+                }else if(time_diff=='00:00:00'){
+                    $("#session_duration").html("");
+                    Snackbar.show({
+                        pos: 'top-center',
+                        text: 'Start and End time could not be same'
+                    });
+                    $("#session_end_time").val('');
+                }else{
+                    let check_time = time_diff.includes("-");
+                    if (check_time == false) {
+                        $("#session_duration").html("<b>Session Duration:</b> " + time_diff);
 
-                $("#session_duration").html("<b>Session Duration:</b> " + time_diff);
+                    } else {
+                        $("#session_duration").html("");
+                        Snackbar.show({
+                            pos: 'top-center',
+                            text: 'Time is Invalid'
+                        });
+                    $("#session_end_time").val('');
+                    }
+                }
+
+
             }
 
         };
+
+        
+            $( "#session_frequency" ).change(function() {
+                var getValue=$(this).val();
+                if(getValue=='Date'){  
+                $("#frequency_day").html("");
+                }else if(getValue=='Weekly'){ 
+                let day_week=`Day of the week: <b><?= $days_of_week_array[$day]; ?></b>`;
+                $("#frequency_day").html(day_week);
+                }else if(getValue=='Monthly'){ 
+                let get_date = $("#schedule_date").val(); 
+                let day_month=`Date of the Month: <b>`+get_date+`</b>`;
+                $("#frequency_day").html(day_month);
+                }
+            });
+
     </script>

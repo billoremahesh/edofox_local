@@ -341,11 +341,20 @@
                     } 
                     
                     if(obj.frequency=="Weekly" || obj.frequency=='Monthly' || obj.frequency=='Date'){ 
+                        var title =obj.title;
+                        console.log(title,'title');
+                        var sch_title =obj.title.toUpperCase();
+                            title_length= sch_title.length;
+                            if(parseInt(title_length)>25){
+                             sch_title = sch_title.substring(0, 25);
+                             sch_title = sch_title+' ...';
+                            }
+                       
                     if (obj.title != null) {
                         html = html + "<li class='schedule_card position-relative'>";
                         html = html + "<div class='badge subject_badge'>" + obj.subject_name.toUpperCase() + "</div>";
                         html = html + "<div class='card_head'>";
-                        html = html + "<div class='card_title'>" + obj.title.toUpperCase() + "</div>";
+                        html = html + `<div class='card_title' data-bs-toggle='tooltip' data-bs-placement='top' title="`+title+`" >` + sch_title.toUpperCase() + `</div>`;
                         html = html + "</div>";
                         html = html + "<div class='card_body'>";
                         html = html + "<div class='card_supporting_text'>Classroom: " + obj.package_name.toUpperCase() + "</div>";

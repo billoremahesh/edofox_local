@@ -319,7 +319,7 @@ class Schedule extends BaseController
 			}
 			return redirect()->to(base_url($redirect));
 			}else{
-				$session->setFlashdata('toastr_error', 'Error in processing.');
+				$session->setFlashdata('toastr_error', 'This date time schedule already exists');
 				return redirect()->to(base_url($redirect));
 			}
 			

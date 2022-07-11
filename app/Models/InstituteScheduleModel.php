@@ -58,7 +58,7 @@ class InstituteScheduleModel extends Model
         $date = $postData['date'];
          
 
-        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE (institute_schedule_data.DATE)='$date' AND institute_schedule.classroom_id=$class_room AND institute_schedule.institute_id=$institute_id ORDER BY DATE(institute_schedule_data.DATE) ASC";
+        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE (institute_schedule_data.DATE)='$date' AND institute_schedule_data.is_disabled=0 AND institute_schedule.classroom_id=$class_room AND institute_schedule.institute_id=$institute_id ORDER BY DATE(institute_schedule_data.DATE) ASC";
         $query = $db->query($sql_fetch_data);
         $result = $query->getResultArray(); 
         return $result;

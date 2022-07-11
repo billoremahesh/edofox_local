@@ -42,7 +42,7 @@
                                 <option value="Monthly" >Monthly</option>
                             </select></div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-6" id="schedule_date_div" style="display:none;" >
                         <b>Session Date: </b>
                            <input type="date" id="schedule_date" name="schedule_date" class="form-select" value="<?= $schedule_date ?>" required />
                         </div>
@@ -153,4 +153,7 @@
             }
 
         };
+
+
+        
     </script>

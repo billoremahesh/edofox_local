@@ -358,6 +358,11 @@
                         html = html + secondsToHms(obj.duration);
                         html = html + "</div>";
 
+                        
+                        html = html + "<div class='card_supporting_text'>Session Frequency:";
+                        html = html + obj.frequency;
+                        html = html + "</div>";
+
                         if (obj.total_students != null) {
                             html = html + "<div class='card_supporting_text'>Attendance: ";
                             if (obj.present_students != null) {

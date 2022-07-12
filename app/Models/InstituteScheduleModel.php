@@ -52,14 +52,16 @@ class InstituteScheduleModel extends Model
     public function fetch_holiday_list(array $postData){
         $db = \Config\Database::connect();
         $institute_id_filter_check = ""; 
-         
-        $institute_id = $postData['institute_id'];
-        $class_room = $postData['classroom'];
-        $date = $postData['date'];
-         
+        
+        $institute_id = $postData['institute_id']; 
 
-        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE (institute_schedule_data.DATE)='$date' AND institute_schedule_data.is_disabled=0 AND institute_schedule.classroom_id=$class_room AND institute_schedule.institute_id=$institute_id ORDER BY DATE(institute_schedule_data.DATE) ASC";
-        $query = $db->query($sql_fetch_data);
+        $institute = "";
+        if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
+            $institute_id = $postData['institute_id'];
+            $institute = "AND institute_schedule.institute_id=$institute_id";
+        } 
+        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE institute_schedule_data.is_disabled=0 AND institute_schedule.frequency='Holiday' $institute ORDER BY DATE(institute_schedule_data.DATE) ASC";
+        $query = $db->query($sql_fetch_data); 
         $result = $query->getResultArray(); 
         return $result;
     }
@@ -71,9 +73,22 @@ class InstituteScheduleModel extends Model
         $institute_id = $postData['institute_id'];
         $class_room = $postData['classroom'];
         $date = $postData['date'];
+
+        $institute_condn = "";
+        if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
+            $institute_id = $postData['institute_id'];
+            $institute_condn = " AND institute_schedule.institute_id= '$institute_id' ";
+        }
+        $frequencytype ="AND institute_schedule.frequency='Holiday'"; 
+
+        $classroom = "";
+        if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
+            $institute_id = $postData['institute_id'];
+            $classroom = " AND institute_schedule.classroom_id=$class_room";
+        } 
          
 
-        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE DATE(institute_schedule_data.DATE)='$date' AND institute_schedule.frequency='Holiday' AND institute_schedule.institute_id=$institute_id AND institute_schedule.classroom_id=$class_room";
+        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE DATE(institute_schedule_data.DATE)='$date' $frequencytype $institute_condn $classroom";
         $query = $db->query($sql_fetch_data);  
         $result = $query->getResultArray(); 
         return $result; 
@@ -85,8 +100,21 @@ class InstituteScheduleModel extends Model
         $institute_id = $postData['institute_id'];
         $class_room = $postData['classroom'];
         $date = $postData['date'];
+
+        $institute_condn = "";
+        if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
+            $institute_id = $postData['institute_id'];
+            $institute_condn = " AND institute_schedule.institute_id= '$institute_id' ";
+        } 
+        
+        $and_date = "";
+        if (isset($postData['date']) && !empty($postData['date'])) {
+            $date = $postData['date'];
+            $and_date = " AND DATE(institute_schedule_data.DATE)='$date'";
+        } 
+        $frequencytype ="AND institute_schedule.frequency='Holiday'";
          
-        $sql_fetch_data ="SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE DATE(institute_schedule_data.DATE)='$date' AND institute_schedule.frequency='Holiday' AND institute_schedule.institute_id=$institute_id AND institute_schedule.classroom_id IS null";
+        $sql_fetch_data ="SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE institute_schedule_data.is_disabled=0 $and_date $frequencytype $institute_condn AND institute_schedule.classroom_id IS null";
         $query = $db->query($sql_fetch_data); 
         $result = $query->getResultArray();  
         return $result;
@@ -218,8 +246,7 @@ class InstituteScheduleModel extends Model
     {
         $db = \Config\Database::connect();
          
-        $db->transStart();  
- 
+        $db->transStart();   
         if (isset($data['institute_id']) && !empty($data['institute_id'])) {
             $insert_data['institute_id'] = sanitize_input($data['institute_id']);
         }
@@ -565,9 +592,18 @@ class InstituteScheduleModel extends Model
         $attendance_month = explode('/',$attendance_month); 
         $month = $attendance_month[0];
         $year = $attendance_month[1];
+         
+        $institute ='';
+        if (isset($data['instituteID']) && !empty($data['instituteID'])) {
+            $institute = "AND student_institute.institute_id=$institute_id";
+        }
 
-        $institute = "AND student_institute.institute_id=$institute_id";
-        $classroom = "AND institute_schedule.classroom_id=$classroom_id";
+        $classroom ='';
+        if (isset($data['classroom']) && !empty($data['classroom'])) {
+            $classroom_id=$data['classroom']; 
+            $classroom = "AND institute_schedule.classroom_id=$classroom_id";
+        }
+ 
         $whereMonth = "AND MONTH(institute_schedule_data.DATE)=$month";
         $whereYear = "AND YEAR(institute_schedule_data.DATE)=$year";  
 
@@ -581,21 +617,55 @@ class InstituteScheduleModel extends Model
         $result_data['classes_schedule'] = $query->getResultArray();  
 
 
-        $classroomval="AND student_institute.package_id=$classroom_id";
-        $instituteval="AND student_institute.institute_id=$institute_id"; 
+        
+        
+        $classroomval ='';
+        if (isset($data['classroom']) && !empty($data['classroom'])) {
+            $classroom_id=$data['classroom']; 
+            $classroomval="AND student_institute.package_id=$classroom_id";
+        }
+
+        $instituteval ='';
+        if (isset($data['instituteID']) && !empty($data['instituteID'])) {
+            $institute_id=$data['instituteID']; 
+            $instituteval="AND student_institute.institute_id=$institute_id"; 
+        }
+
         $sql_fetch_data ="SELECT student.name,student.roll_no,student_institute.* FROM `student_institute` LEFT JOIN student ON student.id=student_institute.student_id WHERE student_institute.is_disabled=0 $classroomval $instituteval";
         $query = $db->query($sql_fetch_data); 
         $result_data['student'] = $query->getResultArray(); 
         $db->transComplete();   
+
+        $andMonth ='';
+        if (isset($month) && !empty($month)) { 
+            $andMonth="AND MONTH(institute_schedule_data.Date)=$month"; 
+        }
+        $andYear="";
+        if(isset($year)&&!empty($year)){
+        $andYear="AND YEAR(institute_schedule_data.DATE)=$year";
+        }
+
+        $institute_w ='';
+        if (isset($data['instituteID']) && !empty($data['instituteID'])) {
+            $institute_id=$data['instituteID']; 
+            $institute_w="AND institute_schedule.institute_id=$institute_id"; 
+        }
+        
+        $classroom_w ='';
+        if (isset($data['classroom']) && !empty($data['classroom'])) {
+            $classroom_id=$data['classroom']; 
+            $classroom_w="AND institute_schedule.classroom_id=$classroom_id"; 
+        }
 
         
         $sql_fetch_data ="SELECT count(*) as attendance,institute_schedule_data.Date, institute_schedule_attendance.student_id FROM `institute_schedule_attendance` 
         join institute_schedule_data on institute_schedule_data.id = institute_schedule_attendance.schedule_data_id 
         join institute_schedule on institute_schedule_data.schedule_id = institute_schedule.id 
         where institute_schedule_data.is_disabled=0
-        and MONTH(institute_schedule_data.Date)=$month
-        and YEAR(institute_schedule_data.DATE)=$year
-        and institute_schedule.institute_id = $institute_id and institute_schedule.classroom_id = $classroom_id 
+        $andMonth
+        $andYear
+        $institute_w
+        $classroom_w 
         and institute_schedule_attendance.is_present = 1 group by institute_schedule_data.date, institute_schedule_attendance.student_id ORDER BY DATE(institute_schedule_data.Date),institute_schedule_attendance.student_id";
          
         $query = $db->query($sql_fetch_data);

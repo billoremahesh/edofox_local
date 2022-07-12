@@ -19,6 +19,7 @@
 
 
                         <?php
+                        
                         $days_of_week_array = array(
                             '1' => 'Monday',
                             '2' => 'Tuesday',
@@ -28,29 +29,51 @@
                             '6' => 'Saturday',
                             '7' => 'Sunday'
                         );
+                     
                         ?>
 
                         <div class="col-12">
                             <div>Classroom: <b><?= $classroom_details['package_name']; ?></b></div>
-                            <div id="frequency_date" >Date: <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
-                            <div id="frequency_day" >Day of the week: <b><?= $days_of_week_array[$day]; ?></b></div>
+                            <!-- <div id="frequency_date" >Date: <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
+                            <div id="frequency_day" >Day of the week: <b><?= $days_of_week_array[$day]; ?></b></div> -->
                         </div>
                         <div class="col-6">
-                            <div><b>Session Frequency: </b><select name="session_frequency" id="session_frequency" class="form-select select2_dropdown" required>
+                            <div>
+                            <label class="form_label" for="schedule_date">Session Frequency</label>
+                            <select name="session_frequency" id="session_frequency" class="form-control form-select select2_dropdown" required>
                                     <option value="Weekly">Weekly</option>
                                     <option value="Date">Once</option>
                                     <option value="Monthly">Monthly</option>
                                 </select></div>
                         </div>
-                        <div class="col-6">
-                            <b>Session Date: </b>
-                            <input type="date" id="schedule_date" name="schedule_date" class="form-select" value="<?= $schedule_date ?>" required />
+                        <div class="col-6" id="day_of_week" >
+                        <div> 
+                        <label class="form_label" for="session_week">Day of the week</label>
+                         <br> <b><?= $days_of_week_array[$day]; ?></b>
+                        </div>
+                        </div>
+                        <div class="col-6" style="display:none;" id="date_of_month"  >
+                            <label class="form_label" for="schedule_date">Day of the month</label>
+                            <br> <b><?php
+                               $day_of_month = date_format(date_create($schedule_date), 'd'); 
+                            if($day_of_month==1){ 
+                                 echo "1st";
+                                 }else if($day_of_month==2){ 
+                                 echo "2nd";
+                                 }else{
+                                 echo $day_of_month.'th';
+                                 }
+                            
+                            ?></b>
+                        </div>
+                        <div class="col-6" style="display:none;" id="once_date"> 
+                        <div id="frequency_date" >Date: <br> <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
                         </div>
 
                         <div class="col-4">
                             <label class="form_label" for="session_subject">Which subject?</label>
 
-                            <select name="session_subject" id="session_subject" class="form-select select2_dropdown" required>
+                            <select name="session_subject" id="session_subject" class="form-control form-select select2_dropdown" required>
                                 <option value="">Select Subject</option>
                                 <?php
                                 if (!empty($subjects_list)) :
@@ -87,6 +110,7 @@
                 <div class="modal-footer">
                     <input type="hidden" name="session_week_day" value="<?= $day; ?>" />
                     <input type="hidden" name="session_classroom" value="<?= $classroom_id; ?>" />
+                    <input type="hidden" name="schedule_date" value="<?= $schedule_date ?>" />
                     <input type="hidden" name="institute_id" value="<?= $instituteID; ?>" required />
                     <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />
                     <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
@@ -159,7 +183,8 @@
                     $("#session_duration").html("");
                     Snackbar.show({
                         pos: 'top-center',
-                        text: 'Start and End time could not be same'
+                        text: 'Start and End time could not be same',
+                        background:'',
                     });
                     $("#session_end_time").val('');
                 }else{
@@ -186,14 +211,22 @@
             $( "#session_frequency" ).change(function() {
                 var getValue=$(this).val();
                 if(getValue=='Date'){  
-                $("#frequency_day").html("");
+                $("#once_date").show();   
+                $("#day_of_week").hide();
+                $("#date_of_month").hide();   
                 }else if(getValue=='Weekly'){ 
-                let day_week=`Day of the week: <b><?= $days_of_week_array[$day]; ?></b>`;
-                $("#frequency_day").html(day_week);
+                // let day_week=`Day of the week: <b></b>`;
+                // $("#frequency_day").html(day_week);
+                $("#day_of_week").show();
+                $("#date_of_month").hide();
+                $("#once_date").hide();   
                 }else if(getValue=='Monthly'){ 
-                let get_date = $("#schedule_date").val(); 
-                let day_month=`Date of the Month: <b>`+get_date+`</b>`;
-                $("#frequency_day").html(day_month);
+                // let get_date = $("#schedule_date").val(); 
+                // let day_month=`Date of the Month: <b>`+get_date+`</b>`;
+                // $("#frequency_day").html(day_month);
+                $("#day_of_week").hide();
+                $("#date_of_month").show();
+                $("#once_date").hide();   
                 }
             });
 

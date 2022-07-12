@@ -174,6 +174,7 @@ class Schedule extends BaseController
 		$InstituteScheduleModel = new InstituteScheduleModel();  
 		$post_data['institute_id'] = $instituteID;
 		$post_data['type'] = 'Holiday'; 
+		
 		$holiday_list = $InstituteScheduleModel->fetch_holiday_list($post_data); 
 		$data['holiday_list'] = $holiday_list;
 		$SubjectsModel = new SubjectsModel();
@@ -309,8 +310,9 @@ class Schedule extends BaseController
 		} else {
 			$data = $this->request->getVar();
 			$InstituteScheduleModel = new InstituteScheduleModel();
-			$data['institute_id'] = decrypt_cipher($data['institute_id']);
+			$data['institute_id'] = decrypt_cipher($data['institute_id']); 
 		    $if_exit= $InstituteScheduleModel->checkSchedule($data);
+		
 			 if($if_exit==1){
 			if ($InstituteScheduleModel->add_new_schedule($data)) {
 				$session->setFlashdata('toastr_success', 'Added New Session Schedule successfully.');

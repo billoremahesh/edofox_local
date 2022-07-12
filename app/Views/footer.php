@@ -89,7 +89,11 @@
 <script src="<?php echo base_url('assets/js/ckeditor.js'); ?>"></script> 
 <script src="<?php echo base_url('assets/js/multiselect_dropdown.js'); ?>"></script> 
 
-
+<script src="https://cdn.syncfusion.com/ej2/20.2.36/ej2-base/dist/global/ej2-base.min.js" type="text/javascript"></script>
+<script src="https://cdn.syncfusion.com/ej2/20.2.36/ej2-inputs/dist/global/ej2-inputs.min.js" type="text/javascript"></script> 
+<script src="https://cdn.syncfusion.com/ej2/20.2.36/ej2-lists/dist/global/ej2-lists.min.js" type="text/javascript"></script>
+<script src="https://cdn.syncfusion.com/ej2/20.2.36/ej2-popups/dist/global/ej2-popups.min.js" type="text/javascript"></script>
+<script src="https://cdn.syncfusion.com/ej2/20.2.36/ej2-calendars/dist/global/ej2-calendars.min.js" type="text/javascript"></script>
 
 <script>
   toastr.options = {

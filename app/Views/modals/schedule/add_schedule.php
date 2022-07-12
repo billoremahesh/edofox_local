@@ -19,7 +19,7 @@
 
 
                         <?php
-                        
+
                         $days_of_week_array = array(
                             '1' => 'Monday',
                             '2' => 'Tuesday',
@@ -29,7 +29,7 @@
                             '6' => 'Saturday',
                             '7' => 'Sunday'
                         );
-                     
+
                         ?>
 
                         <div class="col-12">
@@ -39,35 +39,36 @@
                         </div>
                         <div class="col-6">
                             <div>
-                            <label class="form_label" for="schedule_date">Session Frequency</label>
-                            <select name="session_frequency" id="session_frequency" class="form-control form-select select2_dropdown" required>
+                                <label class="form_label" for="schedule_date">Session Frequency</label>
+                                <select name="session_frequency" id="session_frequency" class="form-control form-select select2_dropdown" required>
                                     <option value="Weekly">Weekly</option>
                                     <option value="Date">Once</option>
                                     <option value="Monthly">Monthly</option>
-                                </select></div>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-6" id="day_of_week" >
-                        <div> 
-                        <label class="form_label" for="session_week">Day of the week</label>
-                         <br> <b><?= $days_of_week_array[$day]; ?></b>
+                        <div class="col-6" id="day_of_week">
+                            <div>
+                                <label class="form_label" for="session_week">Day of the week</label>
+                                <br> <b><?= $days_of_week_array[$day]; ?></b>
+                            </div>
                         </div>
-                        </div>
-                        <div class="col-6" style="display:none;" id="date_of_month"  >
+                        <div class="col-6" style="display:none;" id="date_of_month">
                             <label class="form_label" for="schedule_date">Day of the month</label>
                             <br> <b><?php
-                               $day_of_month = date_format(date_create($schedule_date), 'd'); 
-                            if($day_of_month==1){ 
-                                 echo "1st";
-                                 }else if($day_of_month==2){ 
-                                 echo "2nd";
-                                 }else{
-                                 echo $day_of_month.'th';
-                                 }
-                            
-                            ?></b>
+                                    $day_of_month = date_format(date_create($schedule_date), 'd');
+                                    if ($day_of_month == 1) {
+                                        echo "1st";
+                                    } else if ($day_of_month == 2) {
+                                        echo "2nd";
+                                    } else {
+                                        echo $day_of_month . 'th';
+                                    }
+
+                                    ?></b>
                         </div>
-                        <div class="col-6" style="display:none;" id="once_date"> 
-                        <div id="frequency_date" >Date: <br> <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
+                        <div class="col-6" style="display:none;" id="once_date">
+                            <div id="frequency_date">Date: <br> <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
                         </div>
 
                         <div class="col-4">
@@ -92,13 +93,13 @@
 
                         <div class="col-4">
                             <label class="form_label" for="session_start_time"> Session starts at</label>
-                            <input type="text" class="form-control session_time" name="session_start_time" id="session_start_time" placeholder="hh:mm" required />
+                            <input type="text" class="form-control session_time" name="session_start_time"  id="session_start_time" placeholder="hh:mm" required />
                         </div>
 
 
                         <div class="col-4">
                             <label class="form_label" for="session_end_time">Session ends at</label>
-                            <input type="text" class="form-control session_time" name="session_end_time" id="session_end_time"  placeholder="hh:mm" required />
+                            <input type="text" class="form-control session_time" name="session_end_time" id="session_end_time" placeholder="hh:mm" required />
                         </div>
 
 
@@ -137,23 +138,23 @@
         });
 
 
-        $("#session_start_time").flatpickr({
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            defaultDate: new Date(),
-            onChange: function(selectedDates, dateStr, instance) {
-                if (dateStr)
-                    instance.close();
-                $("#session_end_time").flatpickr({
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i",
-                    minDate: new Date(selectedDates)
-                });
-            },
+        // $("#session_start_time").flatpickr({
+        //     enableTime: true,
+        //     noCalendar: true,
+        //     dateFormat: "H:i",
+        //     defaultDate: new Date(),
+        //     onChange: function(selectedDates, dateStr, instance) {
+        //         if (dateStr)
+        //             instance.close();
+        //         $("#session_end_time").flatpickr({
+        //             enableTime: true,
+        //             noCalendar: true,
+        //             dateFormat: "H:i",
+        //             minDate: new Date(selectedDates)
+        //         });
+        //     },
 
-        });
+        // });
 
 
         function calculateTime() {
@@ -172,6 +173,7 @@
                 time_end.setHours(valuestop[0], valuestop[1])
 
                 time_diff = msToTime(time_end - time_start);
+                alert(time_diff);
                 if (time_diff == 'NaN:NaN:NaN') {
                     $("#session_duration").html("");
                     // Snackbar.show({
@@ -180,8 +182,8 @@
                     // });
                     $("#session_end_time").val('');
                     $("#session_duration").html("<b style='color:red' >Invalid Time format</b>");
-                
-                }else if(time_diff=='00:00:00'){
+
+                } else if (time_diff == '00:00:00') {
                     $("#session_duration").html("");
                     // Snackbar.show({
                     //     pos: 'top-center',
@@ -189,8 +191,8 @@
                     // });
                     $("#session_end_time").val('');
                     $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
-                  
-                }else{
+
+                } else {
                     let check_time = time_diff.includes("-");
                     if (check_time == false) {
                         $("#session_duration").html("<b>Session Duration:</b> " + time_diff);
@@ -201,8 +203,8 @@
                         //     pos: 'top-center',
                         //     text: 'End Time Should be greater than the start time'
                         // }); 
-                    $("#session_end_time").val('');
-                    $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
+                        $("#session_end_time").val('');
+                        $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
                     }
                 }
 
@@ -211,27 +213,49 @@
 
         };
 
-        
-            $( "#session_frequency" ).change(function() {
-                var getValue=$(this).val();
-                if(getValue=='Date'){  
-                $("#once_date").show();   
+
+        $("#session_frequency").change(function() {
+            var getValue = $(this).val();
+            if (getValue == 'Date') {
+                $("#once_date").show();
                 $("#day_of_week").hide();
-                $("#date_of_month").hide();   
-                }else if(getValue=='Weekly'){ 
+                $("#date_of_month").hide();
+            } else if (getValue == 'Weekly') {
                 // let day_week=`Day of the week: <b></b>`;
                 // $("#frequency_day").html(day_week);
                 $("#day_of_week").show();
                 $("#date_of_month").hide();
-                $("#once_date").hide();   
-                }else if(getValue=='Monthly'){ 
+                $("#once_date").hide();
+            } else if (getValue == 'Monthly') {
                 // let get_date = $("#schedule_date").val(); 
                 // let day_month=`Date of the Month: <b>`+get_date+`</b>`;
                 // $("#frequency_day").html(day_month);
                 $("#day_of_week").hide();
                 $("#date_of_month").show();
-                $("#once_date").hide();   
-                }
-            });
+                $("#once_date").hide();
+            }
+        });
 
+
+        var startDate = new ej.calendars.TimePicker({
+            placeholder: 'Select a time',
+            value: new Date(),
+            format: 'HH:mm',
+            step: 60
+        });
+        // Render initialized TimePicker.
+
+        startDate.appendTo('#session_start_time')
+        var endDate = new ej.calendars.TimePicker({
+            placeholder: 'Select a time',
+            value: new Date(),
+            format: 'HH:mm',
+            step: 60
+        });
+        endDate.appendTo('#session_end_time')
+
+        $("#session_end_time").click(function() {
+            var getValue = $(this).val();
+            alert(getValue);
+        });
     </script>

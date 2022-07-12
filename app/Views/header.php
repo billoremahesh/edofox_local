@@ -1,3 +1,5 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,6 +63,8 @@
     <link href="<?php echo base_url('assets/css/loading_indicater.css?v=20210902'); ?>" rel="stylesheet">
 
   
+<link href="https://cdn.syncfusion.com/ej2/20.2.36/ej2-base/styles/material.css" rel="stylesheet" type="text/css" /> 
+<link href="https://cdn.syncfusion.com/ej2/20.2.36/ej2-calendars/styles/material.css" rel="stylesheet" type="text/css" /> 
 </head>
 
 

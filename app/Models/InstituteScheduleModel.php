@@ -699,7 +699,7 @@ class InstituteScheduleModel extends Model
         
         $custom_start_date = $data['custom_start_date'];
         $custom_end_date = $data['custom_end_date'];
-
+        
         $institute = "AND student_institute.institute_id=$institute_id";
         $classroom = "AND institute_schedule.classroom_id=$classroom_id";
 

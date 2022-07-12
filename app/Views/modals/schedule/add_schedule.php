@@ -92,13 +92,13 @@
 
                         <div class="col-4">
                             <label class="form_label" for="session_start_time"> Session starts at</label>
-                            <input type="text" class="form-control session_time" name="session_start_time" id="session_start_time" required />
+                            <input type="text" class="form-control session_time" name="session_start_time" id="session_start_time" placeholder="hh:mm" required />
                         </div>
 
 
                         <div class="col-4">
                             <label class="form_label" for="session_end_time">Session ends at</label>
-                            <input type="text" class="form-control session_time" name="session_end_time" id="session_end_time" required />
+                            <input type="text" class="form-control session_time" name="session_end_time" id="session_end_time"  placeholder="hh:mm" required />
                         </div>
 
 
@@ -174,31 +174,35 @@
                 time_diff = msToTime(time_end - time_start);
                 if (time_diff == 'NaN:NaN:NaN') {
                     $("#session_duration").html("");
-                    Snackbar.show({
-                        pos: 'top-center',
-                        text: 'Time is Invalid'
-                    });
+                    // Snackbar.show({
+                    //     pos: 'top-center',
+                    //     text: 'Invalid Time format'
+                    // });
                     $("#session_end_time").val('');
+                    $("#session_duration").html("<b style='color:red' >Invalid Time format</b>");
+                
                 }else if(time_diff=='00:00:00'){
                     $("#session_duration").html("");
-                    Snackbar.show({
-                        pos: 'top-center',
-                        text: 'Start and End time could not be same',
-                        background:'',
-                    });
+                    // Snackbar.show({
+                    //     pos: 'top-center',
+                    //     text: 'End Time Should be greater than the start time', 
+                    // });
                     $("#session_end_time").val('');
+                    $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
+                  
                 }else{
                     let check_time = time_diff.includes("-");
                     if (check_time == false) {
                         $("#session_duration").html("<b>Session Duration:</b> " + time_diff);
 
                     } else {
-                        $("#session_duration").html("");
-                        Snackbar.show({
-                            pos: 'top-center',
-                            text: 'Time is Invalid'
-                        });
+                        // $("#session_duration").html("");
+                        // Snackbar.show({
+                        //     pos: 'top-center',
+                        //     text: 'End Time Should be greater than the start time'
+                        // }); 
                     $("#session_end_time").val('');
+                    $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
                     }
                 }
 

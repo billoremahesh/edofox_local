@@ -228,10 +228,27 @@ class InstituteScheduleModel extends Model
      * @return void
      * @author Hemant K <hemant.kulkarni@mattersoft.xyz>
      */
+
+    function addOrdinalNumberSuffix($num) {
+       
+        if (!in_array(($num % 100),array(11,12,13))){
+          switch ($num % 10) {
+            // Handle 1st, 2nd, 3rd
+            case 1:  return $num.' st';
+            case 2:  return $num.' nd';
+            case 3:  return $num.' rd';
+          }
+        }
+     
+        return $num.' th';
+      }
+
     public function  checkSchedule(array $data){
         $schedule_start = $data['session_start_time'];
+        $schedule_end = $data['session_end_time'];
         $schedule_date  = $data['schedule_date'];
         $db = \Config\Database::connect();
+      
         $sql = "SELECT * FROM institute_schedule WHERE date='$schedule_date' AND frequency IN('Date','Monthly','Weekly') AND ends_at > '$schedule_start'";
         $query = $db->query($sql);
         $result = $query->getRowArray();  

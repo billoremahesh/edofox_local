@@ -134,8 +134,13 @@ class Schedule extends BaseController
 		$ClassroomModel = new ClassroomModel();
 		$data['classroom_details'] = $ClassroomModel->get_classroom_details($classroom);
 		$SubjectsModel = new SubjectsModel();
+
 		$data['subjects_list'] = $SubjectsModel->get_subjects($instituteID);
 		$data['redirect'] = $redirect;
+		$InstituteScheduleModel = new InstituteScheduleModel();  
+		$day_of_month = date_format(date_create($schedule_date), 'd');
+		$dayofmonth=$InstituteScheduleModel->addOrdinalNumberSuffix($day_of_month); 
+		$data['dayofmonth']=$dayofmonth; 
 		echo view('modals/schedule/add_schedule', $data);
 	}
 	/*******************************************************/
@@ -255,8 +260,13 @@ class Schedule extends BaseController
 
 		$InstituteScheduleModel = new InstituteScheduleModel();
 		$data['schedule_details'] = $InstituteScheduleModel->fetch_institute_schedule_data(decrypt_cipher($data['schedule_id']));
+		$schedule_details=$data['schedule_details'];
+		$InstituteScheduleModel = new InstituteScheduleModel();  
+		$day_of_month = date_format(date_create($schedule_details['date']), 'd');
+		$dayofmonth=$InstituteScheduleModel->addOrdinalNumberSuffix($day_of_month); 
+		$data['dayofmonth']=$dayofmonth; 
 
-		$data['redirect'] = $redirect;
+		$data['redirect'] = $redirect; 
 		echo view('modals/schedule/update_schedule', $data);
 	}
 	/*******************************************************/
@@ -301,7 +311,9 @@ class Schedule extends BaseController
 		$result = $this->validate([
 			'session_title' => ['label' => 'Class Session Title', 'rules' => 'required|string|min_length[1]|max_length[240]'],
 			'session_classroom' => ['label' => 'Class Session Classroom', 'rules' => 'required'],
-			'session_subject' => ['label' => 'Class Session Subject', 'rules' => 'required']
+			'session_subject' => ['label' => 'Class Session Subject', 'rules' => 'required'],
+			'session_start_time'=>['label' => 'Session starts at', 'rules' => 'required'],
+			'session_end_time'=>['label' => 'Session ends at', 'rules' => 'required'],
 		]);
 
 		if (!$result) {
@@ -309,6 +321,7 @@ class Schedule extends BaseController
 			return redirect()->to(base_url($redirect))->withInput();
 		} else {
 			$data = $this->request->getVar();
+ 
 			$InstituteScheduleModel = new InstituteScheduleModel();
 			$data['institute_id'] = decrypt_cipher($data['institute_id']); 
 		    $if_exit= $InstituteScheduleModel->checkSchedule($data);

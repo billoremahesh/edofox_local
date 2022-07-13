@@ -13,7 +13,7 @@
 
 
                         <div class="col-12">
-                            <label class="form_label" for="session_title">Session Title</label>
+                            <label class="form_label" for="session_title">Session Title<span style="color:red;" >*</span></label>
                             <input type="text" class="form-control" name="session_title" id="session_title" maxlength="240" required>
                         </div>
 
@@ -55,24 +55,14 @@
                         </div>
                         <div class="col-6" style="display:none;" id="date_of_month">
                             <label class="form_label" for="schedule_date">Day of the month</label>
-                            <br> <b><?php
-                                    $day_of_month = date_format(date_create($schedule_date), 'd');
-                                    if ($day_of_month == 1) {
-                                        echo "1st";
-                                    } else if ($day_of_month == 2) {
-                                        echo "2nd";
-                                    } else {
-                                        echo $day_of_month . 'th';
-                                    }
-
-                                    ?></b>
+                            <br> <b><?= $dayofmonth; ?></b>
                         </div>
                         <div class="col-6" style="display:none;" id="once_date">
                             <div id="frequency_date">Date: <br> <b><?= date_format(date_create($schedule_date), 'd/m/y'); ?></b></div>
                         </div>
 
                         <div class="col-4">
-                            <label class="form_label" for="session_subject">Which subject?</label>
+                            <label class="form_label" for="session_subject">Which subject?<span style="color:red;" >*</span></label>
 
                             <select name="session_subject" id="session_subject" class="form-control form-select select2_dropdown" required>
                                 <option value="">Select Subject</option>
@@ -92,13 +82,13 @@
 
 
                         <div class="col-4">
-                            <label class="form_label" for="session_start_time"> Session starts at</label>
+                            <label class="form_label" for="session_start_time"> Session starts at<span style="color:red;" >*</span></label>
                             <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time"  min="00:00" max="12:00" placeholder="hh:mm" readonly required />
                         </div>
 
 
                         <div class="col-4">
-                            <label class="form_label" for="session_end_time">Session ends at</label>
+                            <label class="form_label" for="session_end_time">Session ends at<span style="color:red;" >*</span></label>
                             <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time"  min="00:00" max="12:00" placeholder="hh:mm" readonly required />
                         </div>
 
@@ -182,20 +172,12 @@
                 time_diff = msToTime(time_end - time_start);
 
                 if (time_diff == 'NaN:NaN:NaN') {
-                    $("#session_duration").html("");
-                    // Snackbar.show({
-                    //     pos: 'top-center',
-                    //     text: 'Invalid Time format'
-                    // });
+                    $("#session_duration").html(""); 
                     $("#session_end_time").val('');
                     $("#session_duration").html("<b style='color:red' >Invalid Time format</b>");
 
                 } else if (time_diff == '00:00:00') {
-                    $("#session_duration").html("");
-                    // Snackbar.show({
-                    //     pos: 'top-center',
-                    //     text: 'End Time Should be greater than the start time', 
-                    // });
+                    $("#session_duration").html(""); 
                     $("#session_end_time").val('');
                     $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
 
@@ -204,12 +186,7 @@
                     if (check_time == false) {
                         $("#session_duration").html("<b>Session Duration:</b> " + time_diff);
 
-                    } else {
-                        // $("#session_duration").html("");
-                        // Snackbar.show({
-                        //     pos: 'top-center',
-                        //     text: 'End Time Should be greater than the start time'
-                        // }); 
+                    } else { 
                         $("#session_end_time").val('');
                         $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
                     }

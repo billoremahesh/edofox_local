@@ -13,7 +13,7 @@
 
 
                     <div class="col-12">
-                        <label class="form_label" for="session_title">Session Title</label>
+                        <label class="form_label" for="session_title">Session Title<span style="color:red;" >*</span></label>
                         <input type="text" class="form-control" name="session_title" id="session_title" value="<?= $schedule_details['title']; ?>" maxlength="240" required>
                     </div>
 
@@ -38,31 +38,11 @@
 
 
                     <div class="col-12 col-md-12">
-                        <label class="form_label" for="session_classroom">Which Classroom?</label>
-
-                        <select name="session_classroom" id="session_classroom" class="form-select select2_dropdown" required>
-                            <option value="">Select Classroom</option>
-                            <?php
-                            if (!empty($classroom_list)) {
-                                foreach ($classroom_list as $row) {
-                                    $package_id = $row['id'];
-                                    $package_name = $row['package_name'];
-
-                                    $classroom_selected = "";
-                                    if ($package_id == $schedule_details['classroom_id']) {
-                                        $classroom_selected = " selected";
-                                    }
-
-                            ?>
-                                    <option value="<?= $package_id; ?>" <?= $classroom_selected; ?>> <?= $package_name; ?> </option>
-                            <?php
-                                }
-                            }
-                            ?>
-                        </select>
+                        <label class="form_label" for="session_classroom">Classroom :</label>
+                         <b><?= $schedule_details['package_name']; ?></b>
                     </div> 
 
-                    <div class="col-6"><b>Session Frequency:<br> </b><span class="badge bg-success"><?= $schedule_details['frequency']; ?></span></div>
+                    <div class="col-6"> <label class="form_label" for="session_classroom">Session Frequency:</label><br><span class="badge bg-success"><?= $schedule_details['frequency']; ?></span></div>
 
                     <div class="col-6" >
                     <div> 
@@ -71,17 +51,7 @@
                     <br> <b><?= date_format(date_create($schedule_details['date']), 'd/m/y'); ?></b>
                         <?php }else if($schedule_details['frequency']=='Monthly'){  ?>
                             <label class="form_label" for="session_week">Day of the Month</label>
-                            <br> <b><?php
-                           $day_of_month = date_format(date_create($schedule_details['date']), 'd'); 
-                        if($day_of_month==1){ 
-                             echo "1st";
-                             }else if($day_of_month==2){ 
-                             echo "2nd";
-                             }else{
-                             echo $day_of_month.'th';
-                             }
-                        
-                        ?></b>
+                            <br>  <b><?= $dayofmonth; ?></b>
                         <?php }else if($schedule_details['frequency']=='Weekly'){ ?>
                             <label class="form_label" for="session_week">Day of the week</label>
                             <br>  <b><?php
@@ -93,7 +63,7 @@
                     <br>
                     <div class="row">  
                     <div class="col-4">
-                        <label class="form_label" for="session_subject">Which subject?</label>
+                        <label class="form_label" for="session_subject">Which subject?<span style="color:red;" >*</span></label>
 
                         <select name="session_subject" id="session_subject" class="form-select select2_dropdown" required>
                             <option value="">Select Subject</option>
@@ -119,13 +89,13 @@
 
 
                     <div class="col-4">
-                        <label class="form_label" for="session_start_time"> Session starts at</label>
+                        <label class="form_label" for="session_start_time"> Session starts at<span style="color:red;" >*</span></label>
                         <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time" autocomplete="off" value="<?= $schedule_details['starts_at']; ?>" readonly required />
                     </div>
 
 
                     <div class="col-4">
-                        <label class="form_label" for="session_end_time">Session ends at</label>
+                        <label class="form_label" for="session_end_time">Session ends at<span style="color:red;" >*</span></label>
                         <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time" autocomplete="off" value="<?= $schedule_details['ends_at']; ?>" readonly required />
                     </div>
                     </div>
@@ -138,6 +108,7 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <input type="hidden" name="session_classroom" value="<?= $schedule_details['classroom_id'] ?>" required />
                 <input type="hidden" name="schedule_id" value="<?= $schedule_id; ?>" required />
                 <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />
                 <input type="hidden" name="session_week_day" id="session_week_day" value="<?= $schedule_details['day'] ?>" />

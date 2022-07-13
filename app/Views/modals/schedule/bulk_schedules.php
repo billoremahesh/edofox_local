@@ -104,10 +104,10 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control session_start_time" name="session_start_time[]" id="session_start_time_1" onchange="calculateTime(1)" required />
+                                            <input type="text" class="form-control session_start_time timepicker" name="session_start_time[]" id="session_start_time_1" onchange="calculateTime(1)" required />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control session_end_time" name="session_end_time[]" id="session_end_time_1" onchange="calculateTime(1)" required />
+                                            <input type="text" class="form-control session_end_time timepicker" name="session_end_time[]" id="session_end_time_1" onchange="calculateTime(1)" required />
                                         </td>
                                         <td>
                                             <div class="text-success" id="session_duration_1"></div>
@@ -145,22 +145,22 @@
         });
 
 
-        $("#session_start_time_1").flatpickr({
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            defaultDate: new Date(),
-            onChange: function(selectedDates, dateStr, instance) {
-                if (dateStr)
-                    instance.close();
-                $("#session_end_time_1").flatpickr({
-                    enableTime: true,
-                    noCalendar: true,
-                    dateFormat: "H:i",
-                    minDate: new Date(selectedDates)
-                });
-            },
-        });
+        // $("#session_start_time_1").flatpickr({
+        //     enableTime: true,
+        //     noCalendar: true,
+        //     dateFormat: "H:i",
+        //     defaultDate: new Date(),
+        //     onChange: function(selectedDates, dateStr, instance) {
+        //         if (dateStr)
+        //             instance.close();
+        //         $("#session_end_time_1").flatpickr({
+        //             enableTime: true,
+        //             noCalendar: true,
+        //             dateFormat: "H:i",
+        //             minDate: new Date(selectedDates)
+        //         });
+        //     },
+        // });
 
         function calculateTime(id) {
             var time_start = new Date();
@@ -179,7 +179,29 @@
 
                 time_diff = msToTime(time_end - time_start);
 
-                $("#session_duration_" + id).html(time_diff);
+
+                if (time_diff == 'NaN:NaN:NaN') {
+                    $("#session_duration_" + id).html(""); 
+                    $("#session_end_time_" + id).val('');
+                    $("#session_duration_" + id).html("<b style='color:red' >Invalid Time format</b>");
+
+                } else if (time_diff == '00:00:00') {
+                    $("#session_duration_" + id).html(""); 
+                    $("#session_end_time_" + id).val('');
+                    $("#session_duration_" + id).html("<b style='color:red' >Invalid Time</b>");
+
+                } else {
+                    let check_time = time_diff.includes("-");
+                    if (check_time == false) {
+                        $("#session_duration_" + id).html(time_diff);
+
+                    } else { 
+                        $("#session_end_time_" + id).val('');
+                        $("#session_duration_" + id).html("<b style='color:red' >Invalid Time</b>");
+                    }
+                }
+
+                // $("#session_duration_" + id).html(time_diff);
             }
 
         };
@@ -193,39 +215,91 @@
         function add_exam_section_structure() {
             var lastid = $(".exam_section_structure_tr:last").attr("id");
             var split_id = lastid.split("_");
+
             var nextindex = Number(split_id[4]) + 1;
             var html = "<tr class='exam_section_structure_tr' id='exam_section_structure_tr_" + nextindex + "'>";
 
             html = html + "<td> <select class='form-select' name='session_week_days[]' id='session_week_days_" + nextindex + "'><option value=''>Select Day</option>" + week_arr_str + "</select></td>";
 
-            html = html + "<td><input type='text' class='form-control session_start_time' name='session_start_time[]' id='session_start_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' required /></td>";
+            html = html + "<td><input type='text' class='form-control session_start_time timepicker' name='session_start_time[]' id='session_start_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' required /></td>";
 
-            html = html + "<td><input type='text' class='form-control session_end_time' name='session_end_time[]' id='session_end_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' required /></td>";
+            html = html + "<td><input type='text' class='form-control session_end_time timepicker' name='session_end_time[]' id='session_end_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' required /></td>";
 
             html = html + "<td><div class='text-success' id='session_duration_" + nextindex + "'></div></td>";
 
             html = html + "<td><span onclick='remove_extra_structure_div(" + nextindex + ")' class='remove_ed_icon'><i class='fas fa-trash'></i></span></td>";
-            html = html + "</tr>";
+            html = html + "</tr>"; 
 
             $("#exam_section_structure_tbl").append(html);
+            
+            let last_id=parseInt(nextindex)-1;
+            let last_start=$("#session_start_time_"+last_id).val();
+            let last_end=$("#session_end_time_"+last_id).val();  
 
 
-            $("#session_start_time_"+ nextindex).flatpickr({
-                enableTime: true,
-                noCalendar: true,
-                dateFormat: "H:i",
-                defaultDate: new Date(),
-                onChange: function(selectedDates, dateStr, instance) {
-                    if (dateStr)
-                        instance.close();
-                    $("#session_end_time_"+ nextindex).flatpickr({
-                        enableTime: true,
-                        noCalendar: true,
-                        dateFormat: "H:i",
-                        minDate: new Date(selectedDates)
+            $("#session_start_time_"+nextindex).val(last_start);
+            $("#session_end_time_"+nextindex).val(last_end);
+        
+            var e = document.getElementById('session_week_days_'+last_id);
+            var last_day = e.value;
+
+            $('#session_week_days_'+nextindex).val(last_day).attr("selected", "selected");
+
+            $("#session_start_time_"+ nextindex).timepicker({
+                timeFormat: "HH:mm",
+                interval: 15,
+                minTime: "06",
+                maxTime: "23:55",
+                defaultTime: "00",
+                startTime: "01:00",
+                dynamic: true,
+                dropdown: true,
+                scrollbar: false,
+                change: function(time) { 
+
+                //     let select_time =$("#session_start_time_"+nextindex).val(); 
+                //     if(select_time !=''){
+                //   $("#session_end_time_"+nextindex).val(get_Update_time(time));
+                //   calculateTime(nextindex);
+                //     }
+                // console.log(time,'time dy');
+
+
+                    $("#session_end_time_"+ nextindex).timepicker({
+                timeFormat: "HH:mm",
+                interval: 15,
+                minTime: "06",
+                maxTime: "23:55",
+                defaultTime: "00",
+                startTime: "01:00",
+                dynamic: true,
+                dropdown: true,
+                scrollbar: false,
+                change: function(time) { 
+                    calculateTime(nextindex);
+                }
                     });
-                },
+                
+                }
             });
+
+
+            // $("#session_start_time_"+ nextindex).flatpickr({
+            //     enableTime: true,
+            //     noCalendar: true,
+            //     dateFormat: "H:i",
+            //     defaultDate: new Date(),
+            //     onChange: function(selectedDates, dateStr, instance) {
+            //         if (dateStr)
+            //             instance.close();
+            //         $("#session_end_time_"+ nextindex).flatpickr({
+            //             enableTime: true,
+            //             noCalendar: true,
+            //             dateFormat: "H:i",
+            //             minDate: new Date(selectedDates)
+            //         });
+            //     },
+            // });
         }
 
         function remove_extra_structure_div(remove_id) {
@@ -243,4 +317,52 @@
                 $(".select2_dropdown").val(classroom_filter_val).trigger('change');
             }
         });
+
+
+        $(function() { 
+            $("#session_start_time_1").timepicker({
+                timeFormat: "HH:mm",
+                interval: 15,
+                minTime: "06",
+                maxTime: "23:55",
+                defaultTime: "00",
+                startTime: "01:00",
+                dynamic: true,
+                dropdown: true,
+                scrollbar: false,
+                change: function(time) { 
+                   let select_time =$("#session_start_time_1").val(); 
+                    if(select_time !=''){
+                  $("#session_end_time_1").val(get_Update_time(time));
+                  calculateTime(1);
+                    }
+              
+                    $("#session_end_time_1").timepicker({
+                timeFormat: "HH:mm",
+                interval: 15,
+                minTime: "06",
+                maxTime: "23:55",
+                defaultTime: "00",
+                startTime: "01:00",
+                dynamic: true,
+                dropdown: true,
+                scrollbar: false,
+                change: function(time) { 
+                    calculateTime(1);
+                }
+                    });
+                
+                }
+            });
+        });
+
+        function get_Update_time(time){ 
+              var d1 = new Date(time); 
+              d2 = new Date ( d1 );
+                    d2.setMinutes ( d1.getMinutes() + 30 );
+                    let hour = d2.getHours() < 10 ? '0'+d2.getHours() : d2.getHours();
+                    let minutes = d2.getMinutes() < 10 ? '0'+d2.getMinutes() : d2.getMinutes();
+                    const hoursAndMinutes = hour + ':' + minutes; 
+                    return hoursAndMinutes;
+        }
     </script>

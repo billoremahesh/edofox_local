@@ -93,13 +93,13 @@
 
                         <div class="col-4">
                             <label class="form_label" for="session_start_time"> Session starts at</label>
-                            <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time" placeholder="hh:mm" required />
+                            <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time"  min="00:00" max="12:00" placeholder="hh:mm" readonly required />
                         </div>
 
 
                         <div class="col-4">
                             <label class="form_label" for="session_end_time">Session ends at</label>
-                            <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time" placeholder="hh:mm" required />
+                            <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time"  min="00:00" max="12:00" placeholder="hh:mm" readonly required />
                         </div>
 
 
@@ -164,9 +164,8 @@
 
             //get values
             var valuestart = $("input[name='session_start_time']").val();
-            var valuestop = $("input[name='session_end_time']").val();
-
-
+            var valuestop = $("input[name='session_end_time']").val(); 
+            
             if (valuestart != '' && valuestop != '') {
                 var valuestart = valuestart.split(':');
                 var valuestop = valuestop.split(':');

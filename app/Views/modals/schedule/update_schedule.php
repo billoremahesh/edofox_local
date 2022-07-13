@@ -120,13 +120,13 @@
 
                     <div class="col-4">
                         <label class="form_label" for="session_start_time"> Session starts at</label>
-                        <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time" autocomplete="off" value="<?= $schedule_details['starts_at']; ?>" required />
+                        <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time" autocomplete="off" value="<?= $schedule_details['starts_at']; ?>" readonly required />
                     </div>
 
 
                     <div class="col-4">
                         <label class="form_label" for="session_end_time">Session ends at</label>
-                        <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time" autocomplete="off" value="<?= $schedule_details['ends_at']; ?>" required />
+                        <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time" autocomplete="off" value="<?= $schedule_details['ends_at']; ?>" readonly required />
                     </div>
                     </div>
 

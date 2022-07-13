@@ -61,10 +61,12 @@
     <link href="<?php echo base_url('assets/css/common.css?v=20220406'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/material_design.css?v=20220413'); ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/loading_indicater.css?v=20210902'); ?>" rel="stylesheet">
+   
+    
+     <!-- timepicker  css -->
+    <link href="<?php echo base_url('assets/css/new_timepicker/new_timepicker.css'); ?>" rel="stylesheet" />
 
-  
-<link href="https://cdn.syncfusion.com/ej2/20.2.36/ej2-base/styles/material.css" rel="stylesheet" type="text/css" /> 
-<link href="https://cdn.syncfusion.com/ej2/20.2.36/ej2-calendars/styles/material.css" rel="stylesheet" type="text/css" /> 
+ 
 </head>
 
 

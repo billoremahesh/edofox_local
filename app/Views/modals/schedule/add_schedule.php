@@ -93,13 +93,13 @@
 
                         <div class="col-4">
                             <label class="form_label" for="session_start_time"> Session starts at</label>
-                            <input type="text" class="form-control session_time" name="session_start_time"  id="session_start_time" placeholder="hh:mm" required />
+                            <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time" placeholder="hh:mm" required />
                         </div>
 
 
                         <div class="col-4">
                             <label class="form_label" for="session_end_time">Session ends at</label>
-                            <input type="text" class="form-control session_time" name="session_end_time" id="session_end_time" placeholder="hh:mm" required />
+                            <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time" placeholder="hh:mm" required />
                         </div>
 
 
@@ -138,21 +138,22 @@
         });
 
 
-        // $("#session_start_time").flatpickr({
+        // $(".timepicker").timepicker({
         //     enableTime: true,
         //     noCalendar: true,
-        //     dateFormat: "H:i",
+        //     dateFormat: "HH:mm:ss", 
         //     defaultDate: new Date(),
-        //     onChange: function(selectedDates, dateStr, instance) {
-        //         if (dateStr)
-        //             instance.close();
-        //         $("#session_end_time").flatpickr({
-        //             enableTime: true,
-        //             noCalendar: true,
-        //             dateFormat: "H:i",
-        //             minDate: new Date(selectedDates)
-        //         });
-        //     },
+        //     // onChange: function(selectedDates, dateStr, instance) {
+        //     //     alert(selectedDates);
+        //     //     // if (dateStr)
+        //     //     //     instance.close();
+        //     //     // $("#session_end_time").flatpickr({
+        //     //     //     enableTime: true,
+        //     //     //     noCalendar: true,
+        //     //     //     dateFormat: "H:i",
+        //     //     //     minDate: new Date(selectedDates)
+        //     //     // });
+        //     // },
 
         // });
 
@@ -165,15 +166,22 @@
             var valuestart = $("input[name='session_start_time']").val();
             var valuestop = $("input[name='session_end_time']").val();
 
+
             if (valuestart != '' && valuestop != '') {
                 var valuestart = valuestart.split(':');
                 var valuestop = valuestop.split(':');
 
-                time_start.setHours(valuestart[0], valuestart[1])
-                time_end.setHours(valuestop[0], valuestop[1])
+                var valuestart1 = valuestart[1].split(' ');
+                var valuestop1 = valuestop[1].split(' ');
+
+                console.log(valuestart1, 'valuestart');
+                console.log(valuestop1, 'valuestart');
+
+                time_start.setHours(valuestart[0], valuestart1[0])
+                time_end.setHours(valuestop[0], valuestop1[0])
 
                 time_diff = msToTime(time_end - time_start);
-                alert(time_diff);
+
                 if (time_diff == 'NaN:NaN:NaN') {
                     $("#session_duration").html("");
                     // Snackbar.show({
@@ -235,27 +243,28 @@
                 $("#once_date").hide();
             }
         });
+ 
+ 
+        $(function() {
+            $(".timepicker").timepicker({
+                timeFormat: "HH:mm",
+                interval: 15,
+                minTime: "06",
+                maxTime: "23:55",
+                defaultTime: "00",
+                startTime: "01:00",
+                dynamic: true,
+                dropdown: true,
+                scrollbar: false,change: function(time) {
 
-
-        var startDate = new ej.calendars.TimePicker({
-            placeholder: 'Select a time',
-            value: new Date(),
-            format: 'HH:mm',
-            step: 60
+                let start = $("#session_start_time").val();
+                let end = $("#session_end_time").val(); 
+                if ((start != '') && (end != '')) {
+                calculateTime();
+                }
+                }
+            });
         });
-        // Render initialized TimePicker.
 
-        startDate.appendTo('#session_start_time')
-        var endDate = new ej.calendars.TimePicker({
-            placeholder: 'Select a time',
-            value: new Date(),
-            format: 'HH:mm',
-            step: 60
-        });
-        endDate.appendTo('#session_end_time')
-
-        $("#session_end_time").click(function() {
-            var getValue = $(this).val();
-            alert(getValue);
-        });
+ 
     </script>

@@ -120,13 +120,13 @@
 
                     <div class="col-4">
                         <label class="form_label" for="session_start_time"> Session starts at</label>
-                        <input type="text" class="form-control session_time" name="session_start_time" id="session_start_time" autocomplete="off" value="<?= $schedule_details['starts_at']; ?>" required />
+                        <input type="text" class="form-control timepicker" name="session_start_time" id="session_start_time" autocomplete="off" value="<?= $schedule_details['starts_at']; ?>" required />
                     </div>
 
 
                     <div class="col-4">
                         <label class="form_label" for="session_end_time">Session ends at</label>
-                        <input type="text" class="form-control session_time" name="session_end_time" id="session_end_time" autocomplete="off" value="<?= $schedule_details['ends_at']; ?>" required />
+                        <input type="text" class="form-control timepicker" name="session_end_time" id="session_end_time" autocomplete="off" value="<?= $schedule_details['ends_at']; ?>" required />
                     </div>
                     </div>
 
@@ -166,42 +166,42 @@
         document.querySelector('.select2-search__field').focus();
     });
 
-    $("#session_start_time").flatpickr({
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        defaultDate: selected_start_time,
-        onChange: function(selectedDates, dateStr, instance) {
-            if (dateStr)
-                instance.close();
-            $("#session_end_time").flatpickr({
-                enableTime: true,
-                noCalendar: true,
-                dateFormat: "H:i",
-                minDate: new Date(selectedDates)
-            });
-        },
-    });
+    // $("#session_start_time").flatpickr({
+    //     enableTime: true,
+    //     noCalendar: true,
+    //     dateFormat: "H:i",
+    //     defaultDate: selected_start_time,
+    //     onChange: function(selectedDates, dateStr, instance) {
+    //         if (dateStr)
+    //             instance.close();
+    //         $("#session_end_time").flatpickr({
+    //             enableTime: true,
+    //             noCalendar: true,
+    //             dateFormat: "H:i",
+    //             minDate: new Date(selectedDates)
+    //         });
+    //     },
+    // });
 
-    $('.start_time').datetimepicker({
-        pickDate: false,
-        pickTime: true,
-        use24hours: true,
-        format: 'hh:ii',
-        autoclose: true,
-        fontAwesome: 'font-awesome',
-        pickerPosition: "bottom-left"
-    });
+    // $('.start_time').datetimepicker({
+    //     pickDate: false,
+    //     pickTime: true,
+    //     use24hours: true,
+    //     format: 'hh:ii',
+    //     autoclose: true,
+    //     fontAwesome: 'font-awesome',
+    //     pickerPosition: "bottom-left"
+    // });
 
-    $('.end_time').datetimepicker({
-        pickDate: false,
-        pickTime: true,
-        use24hours: true,
-        format: 'hh:ii',
-        autoclose: true,
-        fontAwesome: 'font-awesome',
-        pickerPosition: "bottom-left"
-    });
+    // $('.end_time').datetimepicker({
+    //     pickDate: false,
+    //     pickTime: true,
+    //     use24hours: true,
+    //     format: 'hh:ii',
+    //     autoclose: true,
+    //     fontAwesome: 'font-awesome',
+    //     pickerPosition: "bottom-left"
+    // });
 
 
     function calculateTime() {
@@ -257,4 +257,28 @@
         }
 
     };
+
+
+    
+    $(function() {
+            $(".timepicker").timepicker({
+                timeFormat: "HH:mm",
+                interval: 15,
+                minTime: "06",
+                maxTime: "23:55pm",
+                defaultTime: "00",
+                startTime: "01:00",
+                dynamic: true,
+                dropdown: true,
+                scrollbar: false,change: function(time) {
+
+                let start = $("#session_start_time").val();
+                let end = $("#session_end_time").val();
+                console.log('hello');
+                if ((start != '') && (end != '')) {
+                calculateTime();
+                }
+                }
+            });
+        });
 </script>

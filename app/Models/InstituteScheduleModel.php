@@ -762,10 +762,18 @@ class InstituteScheduleModel extends Model
         $attendance_date=$data['attendance_date'];  
         $institute = "AND student_institute.institute_id=$institute_id";
         $classroom = "AND institute_schedule.classroom_id=$classroom_id"; 
+        
+        $classroomval=""; 
+        if (isset($data['classroom']) && !empty($data['classroom'])) {
+        $classroomval="AND student_institute.package_id=$classroom_id";
+         }
+        
+         $instituteval=""; 
+        if (isset($data['instituteID']) && !empty($data['instituteID'])) {
+        $instituteval="AND student_institute.institute_id=$institute_id"; 
+         }
  
 
-        $classroomval="AND student_institute.package_id=$classroom_id";
-        $instituteval="AND student_institute.institute_id=$institute_id"; 
         $sql_fetch_data ="SELECT student.name,student.roll_no,student_institute.* FROM `student_institute` LEFT JOIN student ON student.id=student_institute.student_id WHERE student_institute.is_disabled=0 $classroomval $instituteval";
         $query = $db->query($sql_fetch_data); 
         $result_data['student'] = $query->getResultArray(); 

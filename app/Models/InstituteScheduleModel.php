@@ -289,6 +289,8 @@ class InstituteScheduleModel extends Model
             $insert_data['frequency'] = sanitize_input($data['session_frequency']);
         }
 
+      
+
         // Add Multiple Schdules
         if (isset($data['session_week_days']) && !empty($data['session_week_days'])) {
 
@@ -309,9 +311,16 @@ class InstituteScheduleModel extends Model
                     $end_time = strtotime($data['session_end_time'][$key] . ":00");
                     $add_duration = abs($end_time - $start_time);
                 }
-
-                $insert_data['duration'] =  $add_duration;
+ 
+                $insert_data['duration'] =  $add_duration; 
                 $db->table('institute_schedule')->insert($insert_data);
+                // for  select day of  date find
+                $daysWeekArray = array('1' => 'Monday','2' => 'Tuesday','3' => 'Wednesday','4' => 'Thursday','5' => 'Friday','6' => 'Saturday','7' => 'Sunday');   
+                $day_name=$daysWeekArray[$value];  
+                $insert_tran_data['Date']=date( 'Y-m-d', strtotime( $day_name.' this week' ) );   
+                $insert_tran_data['schedule_id']=$db->insertID(); 
+                $db->table('institute_schedule_data')->insert($insert_tran_data);
+
             }
         } else {
             if (isset($data['session_week_day']) && !empty($data['session_week_day'])) {
@@ -335,10 +344,13 @@ class InstituteScheduleModel extends Model
 
             $insert_data['duration'] =  $add_duration;
             $db->table('institute_schedule')->insert($insert_data);
+
+            $insert_tran_data['schedule_id']=$db->insertID();
+            $db->table('institute_schedule_data')->insert($insert_tran_data);
+
         }
 
-         $insert_tran_data['schedule_id']=$db->insertID();
-         $db->table('institute_schedule_data')->insert($insert_tran_data);
+      
 
 
         $schedule_id = $db->insertID();

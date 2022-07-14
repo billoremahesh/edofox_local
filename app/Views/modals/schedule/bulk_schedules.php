@@ -104,10 +104,10 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control session_start_time timepicker" name="session_start_time[]" id="session_start_time_1" onchange="calculateTime(1)" required />
+                                            <input type="text" class="form-control session_start_time timepicker" name="session_start_time[]" id="session_start_time_1" onchange="calculateTime(1)" placeholder="hh:mm" readonly required />
                                         </td>
                                         <td>
-                                            <input type="text" class="form-control session_end_time timepicker" name="session_end_time[]" id="session_end_time_1" onchange="calculateTime(1)" required />
+                                            <input type="text" class="form-control session_end_time timepicker" name="session_end_time[]" id="session_end_time_1" onchange="calculateTime(1)" placeholder="hh:mm" readonly required />
                                         </td>
                                         <td>
                                             <div class="text-success" id="session_duration_1"></div>
@@ -221,9 +221,9 @@
 
             html = html + "<td> <select class='form-select' name='session_week_days[]' id='session_week_days_" + nextindex + "'><option value=''>Select Day</option>" + week_arr_str + "</select></td>";
 
-            html = html + "<td><input type='text' class='form-control session_start_time timepicker' name='session_start_time[]' id='session_start_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' required /></td>";
+            html = html + "<td><input type='text' class='form-control session_start_time timepicker' name='session_start_time[]' id='session_start_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' placeholder='hh:mm' readonly required /></td>";
 
-            html = html + "<td><input type='text' class='form-control session_end_time timepicker' name='session_end_time[]' id='session_end_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' required /></td>";
+            html = html + "<td><input type='text' class='form-control session_end_time timepicker' name='session_end_time[]' id='session_end_time_" + nextindex + "' onchange='calculateTime(" + nextindex + ")' placeholder='hh:mm' readonly required /></td>";
 
             html = html + "<td><div class='text-success' id='session_duration_" + nextindex + "'></div></td>";
 
@@ -256,15 +256,16 @@
                 dropdown: true,
                 scrollbar: false,
                 change: function(time) { 
+                 let check_time = get_Update_time(time,0);
+                if(check_time !='00:00'){
+                    $("#session_end_time_"+nextindex).val(get_Update_time(time,30));
+                  calculateTime(nextindex);
+                    
+                }  
+                 
+                console.log(time,'time dy');
 
-                //     let select_time =$("#session_start_time_"+nextindex).val(); 
-                //     if(select_time !=''){
-                //   $("#session_end_time_"+nextindex).val(get_Update_time(time));
-                //   calculateTime(nextindex);
-                //     }
-                // console.log(time,'time dy');
-
-
+                console.log(time,'time dy');
                     $("#session_end_time_"+ nextindex).timepicker({
                 timeFormat: "HH:mm",
                 interval: 15,
@@ -333,7 +334,7 @@
                 change: function(time) { 
                    let select_time =$("#session_start_time_1").val(); 
                     if(select_time !=''){
-                  $("#session_end_time_1").val(get_Update_time(time));
+                  $("#session_end_time_1").val(get_Update_time(time,30));
                   calculateTime(1);
                     }
               
@@ -356,10 +357,10 @@
             });
         });
 
-        function get_Update_time(time){ 
-              var d1 = new Date(time); 
-              d2 = new Date ( d1 );
-                    d2.setMinutes ( d1.getMinutes() + 30 );
+        function get_Update_time(time,add_time){ 
+              var d1 = new Date(time);  
+              d2 = new Date ( d1 ); 
+                    d2.setMinutes ( d1.getMinutes() + add_time );
                     let hour = d2.getHours() < 10 ? '0'+d2.getHours() : d2.getHours();
                     let minutes = d2.getMinutes() < 10 ? '0'+d2.getMinutes() : d2.getMinutes();
                     const hoursAndMinutes = hour + ':' + minutes; 

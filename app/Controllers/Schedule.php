@@ -321,10 +321,12 @@ class Schedule extends BaseController
 			return redirect()->to(base_url($redirect))->withInput();
 		} else {
 			$data = $this->request->getVar();
+
+		
  
 			$InstituteScheduleModel = new InstituteScheduleModel();
 			$data['institute_id'] = decrypt_cipher($data['institute_id']); 
-		    $if_exit= $InstituteScheduleModel->checkSchedule($data);
+		    $if_exit=1;// $InstituteScheduleModel->checkSchedule($data);
 		
 			 if($if_exit==1){
 			if ($InstituteScheduleModel->add_new_schedule($data)) {

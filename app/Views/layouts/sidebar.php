@@ -162,6 +162,17 @@ $userType = session()->get('user_type');
                     </li>
                 <?php endif; ?>
 
+                <?php if (in_array("view_syllabus", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
+                    <li>
+                        <a class="nav-link <?= ($uri->getTotalSegments() == 1 && $uri->getSegment(1) == 'syllabus') ? 'active' : 'link-dark'; ?>" href="<?= base_url('syllabus'); ?>">
+                            <span class="align-middle me-2 material-icons">
+                                class
+                            </span>
+                            <span class="align-middle"> Syllabus</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
                 <?php if (in_array("view_classrooms", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
 
                     <?php

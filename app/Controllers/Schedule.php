@@ -325,20 +325,19 @@ class Schedule extends BaseController
 		
  
 			$InstituteScheduleModel = new InstituteScheduleModel();
-			$data['institute_id'] = decrypt_cipher($data['institute_id']); 
-		    $if_exit=1;// $InstituteScheduleModel->checkSchedule($data);
-		
-			 if($if_exit==1){
-			if ($InstituteScheduleModel->add_new_schedule($data)) {
+			$data['institute_id'] = decrypt_cipher($data['institute_id']);  
+
+				$result=$InstituteScheduleModel->add_new_schedule($data);
+			 
+			if ($result =="") {
 				$session->setFlashdata('toastr_success', 'Added New Session Schedule successfully.');
-			} else {
-				$session->setFlashdata('toastr_error', 'Error in processing.');
-			}
-			return redirect()->to(base_url($redirect));
-			}else{
-				$session->setFlashdata('toastr_error', 'This date time schedule already exists');
+				return redirect()->to(base_url($redirect));
+			} else { 
+				$session->setFlashdata('toastr_error', 'This schedule '.$result.'  already exists');
 				return redirect()->to(base_url($redirect));
 			}
+			// return redirect()->to(base_url($redirect));
+			 
 			
 		}
 	}

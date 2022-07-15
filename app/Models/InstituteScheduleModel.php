@@ -243,13 +243,23 @@ class InstituteScheduleModel extends Model
         return $num.' th';
       }
 
-    public function  checkSchedule(array $data){
-        $schedule_start = $data['session_start_time'];
-        $schedule_end = $data['session_end_time'];
-        $schedule_date  = $data['schedule_date'];
-        $db = \Config\Database::connect();
+    public function  checkSchedule(array $data,$schedule_type){
       
-        $sql = "SELECT * FROM institute_schedule WHERE date='$schedule_date' AND frequency IN('Date','Monthly','Weekly') AND ends_at > '$schedule_start'";
+        $start_at = $data['starts_at'];
+        $end_at = $data['ends_at'];
+        $date  = $data['date'];
+        $session_classroom = $data['classroom_id'];
+        $institute_id = $data['institute_id']; 
+        $scheduleType='';
+       if($schedule_type ='bulk'){
+        $day =$data['day'];
+        $scheduleType="AND institute_schedule.day =$day";
+       }else{
+        $scheduleType="AND date(institute_schedule_data.DATE)='$date'";
+       }
+
+        $db = \Config\Database::connect();
+        $sql ="select * from institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id where ((starts_at >= '$start_at' and starts_at < '$end_at') OR (ends_at > '$start_at' and ends_at <= '$end_at') OR (starts_at < '$start_at' and ends_at > '$end_at')) and institute_schedule.is_disabled = 0 and classroom_id = $session_classroom $scheduleType and type = 'Session'";
         $query = $db->query($sql);
         $result = $query->getRowArray();  
        if($result==''){
@@ -262,7 +272,7 @@ class InstituteScheduleModel extends Model
     public function add_new_schedule(array $data)
     {
         $db = \Config\Database::connect();
-         
+        $exits_schedule=""; 
         $db->transStart();   
         if (isset($data['institute_id']) && !empty($data['institute_id'])) {
             $insert_data['institute_id'] = sanitize_input($data['institute_id']);
@@ -313,13 +323,21 @@ class InstituteScheduleModel extends Model
                 }
  
                 $insert_data['duration'] =  $add_duration; 
-                $db->table('institute_schedule')->insert($insert_data);
-                // for  select day of  date find
+                
                 $daysWeekArray = array('1' => 'Monday','2' => 'Tuesday','3' => 'Wednesday','4' => 'Thursday','5' => 'Friday','6' => 'Saturday','7' => 'Sunday');   
                 $day_name=$daysWeekArray[$value];  
-                $insert_tran_data['Date']=date( 'Y-m-d', strtotime( $day_name.' this week' ) );   
-                $insert_tran_data['schedule_id']=$db->insertID(); 
-                $db->table('institute_schedule_data')->insert($insert_tran_data);
+                $insert_tran_data['date']=date( 'Y-m-d', strtotime( $day_name.' this week' ) );   
+                $insert_data['date']=$insert_tran_data['date'];
+                $if_exit=$this->checkSchedule($insert_data,'bulk'); 
+           
+                if($if_exit==0){
+                    $exits_schedule =$exits_schedule . $insert_data['starts_at'].'-'.$insert_data['ends_at'].', ';  
+                }else if($if_exit==1){ 
+                  
+                $db->table('institute_schedule')->insert($insert_data);  
+                $insert_tran_data['schedule_id']=$db->insertID();  
+                $db->table('institute_schedule_data')->insert($insert_tran_data); 
+                }
 
             }
         } else {
@@ -341,25 +359,30 @@ class InstituteScheduleModel extends Model
                 $end_time = strtotime($data['session_end_time'] . ":00");
                 $add_duration = abs($end_time - $start_time);
             }
-
+          
+            $if_exit=$this->checkSchedule($insert_data,'single'); 
+            if($if_exit==0){
+              
+                $exits_schedule .= $insert_data['starts_at'].'-'.$insert_data['ends_at']; 
+                return $exits_schedule;
+            }
             $insert_data['duration'] =  $add_duration;
-            $db->table('institute_schedule')->insert($insert_data);
-
+            $db->table('institute_schedule')->insert($insert_data); 
             $insert_tran_data['schedule_id']=$db->insertID();
             $db->table('institute_schedule_data')->insert($insert_tran_data);
 
         }
-
-      
-
-
+     
+      if(!empty($exits_schedule)){
+        return $exits_schedule;
+      } 
+    
         $schedule_id = $db->insertID();
 
-        $db->transComplete();
-
+        $db->transComplete(); 
         if ($db->transStatus() === FALSE) {
             // generate an error... or use the log_message() function to log your error
-            return false;
+            return $exits_schedule;
         } else {
             // Activity Log
             $log_info =  [
@@ -370,7 +393,7 @@ class InstituteScheduleModel extends Model
             ];
             $UserActivityModel = new UserActivityModel();
             $UserActivityModel->log('added', $log_info);
-            return true;
+            return $exits_schedule;
         }
     }
     /*******************************************************/
@@ -857,7 +880,7 @@ class InstituteScheduleModel extends Model
         return true;
      }
      /** student attendance percentages start*/
-
+ 
    
 
 }

@@ -171,8 +171,7 @@ $userType = session()->get('user_type');
                             <span class="align-middle"> Syllabus</span>
                         </a>
                     </li>
-                <?php endif; ?>
-
+                <?php endif; ?> 
                 <?php if (in_array("view_classrooms", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
 
                     <?php

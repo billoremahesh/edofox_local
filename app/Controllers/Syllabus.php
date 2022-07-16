@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\ChaptersModel;
 use \App\Models\ClassroomModel;
 use \App\Models\UserActivityModel;
 use \App\Models\SubjectsModel;
@@ -553,5 +554,50 @@ class Syllabus extends BaseController
 		$instituteID = decrypt_cipher(session()->get('instituteID'));
 	 
 		return view('pages/syllabus/overview', $data);
+	}
+
+	/**
+	 * Add Classroom Modal
+	 *
+	 * @param string $redirect
+	 *
+	 * @return void
+	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+	 */
+	public function add_syllabus_configuration_modal($redirect = 'syllabus')
+	{
+		$data['title'] = "Syllabus Configuration";
+		$data['instituteID'] = session()->get('instituteID');
+		$data['redirect'] = $redirect; 
+		$instituteID = decrypt_cipher(session()->get('instituteID'));
+		$SyllabusModel=new SyllabusModel();
+		$data['syllabuslist'] =$SyllabusModel->get_syllabus($instituteID);  
+        $ChaptersModel=new ChaptersModel();
+		$data['chapter_list'] = $ChaptersModel->get_subject_chapters(1,$instituteID); 
+		$data['validation'] =  \Config\Services::validation();
+		echo view('modals/syllabus/syllabus_configuration', $data);
+	}
+	/*******************************************************/
+
+	
+	public function syllabus_configuration($syllabus_id, $redirect = 'syllabus')
+	{
+		// Log Activity  
+
+		$this->activity->page_access_activity('Syllabus', '/syllabus');
+		$data['title'] = "Syllabus configuration";
+		$data['instituteID'] = session()->get('instituteID');
+		$instituteID = decrypt_cipher(session()->get('instituteID'));
+        $SyllabusModel= new SyllabusModel(); 
+		$data['syllabus_details'] = $SyllabusModel->get_syllabus_record(decrypt_cipher($syllabus_id)); 
+		return view('pages/syllabus/syllabus_configuration', $data);
+	}
+	/*******************************************************/
+
+	public  function get_syllabus_details(){  
+		$subject_id =  sanitize_input($this->request->getVar('subject_id'));
+        $ChaptersModel = new ChaptersModel();
+        $result = $ChaptersModel->get_subject_chapters($subject_id, decrypt_cipher(session()->get('instituteID')));
+        echo json_encode($result);
 	}
 }

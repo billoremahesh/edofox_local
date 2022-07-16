@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use PhpParser\Node\Expr\FuncCall;
 
 class SyllabusModel extends Model
 {
@@ -181,20 +182,26 @@ class SyllabusModel extends Model
               
 
                 $update_btn = "";
-                $delete_btn = "";
+                $update_btn = "";
+                $syll_config_btn = "";
             
                 if (in_array("manage_syllabus", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) {
-
+                    
                     // Update Option
                     $update_btn = "<li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','update_syllabus_modal','syllabus/update_syllabus_modal/" . $package_id . "');" . "> Update Syllabus </a></li>";
-
+                    
                     // Disable Option
                     $delete_btn = "<li role='separator' class='dropdown-divider'></li><li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','delete_syllabus_modal','syllabus/delete_syllabus_modal/" . $package_id . "');" . "> Disable Syllabus </a></li>";
+                    
+                     // Disable Option
+                     $syll_config_btn = "<li role='separator' class='dropdown-divider'></li><li><a class='btn btn-sm' href=". base_url('syllabus/syllabus_configuration/'.$package_id) ." > Syllabus Configuration </a></li>";
+          
+                    
                 }
 
  
                 $dropdown_wrapper_code = htmlspecialchars("<div class='dropdown'><button class='btn btn-default dropdown-toggle more_option_button' type='button' id='classroomDropdownMenu' data-bs-toggle='dropdown'  data-bs-auto-close='outside'  aria-expanded='false'><i class='fa fa-ellipsis-h' aria-hidden='true'></i>
-                </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='classroomDropdownMenu'>  $update_btn $delete_btn  </ul></div>");
+                </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='classroomDropdownMenu'>  $update_btn $delete_btn $syll_config_btn  </ul></div>");
             }
 
             $nestedData[] = htmlspecialchars_decode($dropdown_wrapper_code);
@@ -372,4 +379,46 @@ class SyllabusModel extends Model
     }
     /*******************************************************/
 
+    public function get_syllabus(int $institute_id)
+    {
+
+        $db = \Config\Database::connect();
+        $sql = "SELECT * 
+        FROM syllabus 
+        WHERE ( institute_id = :institute_id: 
+        OR institute_id IS NULL ) AND is_disabled = 0
+        ORDER BY syllabus_name";
+
+        $query = $db->query($sql, [
+            'institute_id' => sanitize_input($institute_id)
+        ]);
+
+        return $query->getResultArray();
+    }
+
+    
+    /**
+     * Get Classroom Details
+     *
+     * @param [Integer] $classroom_id
+     *
+     * @return Array
+     * @author sunil <sunil@mattersoft.xyz>
+     */
+    public function get_syllabus_record($syllabus_id)
+    {
+        $db = \Config\Database::connect();
+        $sql = "SELECT syllabus.*,test_subjects.subject
+        FROM syllabus LEFT JOIN test_subjects ON test_subjects.subject_id=syllabus.subject_id 
+        WHERE syllabus.id = :id: ";
+ 
+
+        $query = $this->db->query($sql, [
+            'id' => sanitize_input($syllabus_id)
+        ]); 
+        return $query->getRowArray();
+    }
+    /*******************************************************/
+
+     
 }

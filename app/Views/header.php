@@ -66,6 +66,11 @@
      <!-- timepicker  css -->
     <link href="<?php echo base_url('assets/css/new_timepicker/new_timepicker.css'); ?>" rel="stylesheet" />
 
+    <!-- for treeview css --> 
+    <link rel="stylesheet" href="<?php echo base_url('assets/treeview/css/metisMenu.css'); ?>" />  
+    <link rel="stylesheet" href="<?php echo base_url('assets/treeview/css/app.css'); ?>">
+    <link rel="stylesheet" href="<?php echo base_url('assets/treeview/css/mm-folder.css'); ?>"> 
+
  
 </head>
 

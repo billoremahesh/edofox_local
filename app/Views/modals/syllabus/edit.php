@@ -20,7 +20,7 @@
                         <select name="subject_name" id="subject_name" class="form-control">
                             <option value="">Select Subject</option> 
                             <?php foreach($subjectlist as $value){    ?> 
-                                 <option value="<?= $value['subject_id'] ?>" <?php echo $syllabus_details['subject_id'] == $value['subject_id']  ? "selected" : "" ?> ><?= $value['subject'] ?></option>
+                                 <option value="<?= $value['subject_id'] ?>" id="tree1" <?php echo $syllabus_details['subject_id'] == $value['subject_id']  ? "selected" : "" ?> ><?= $value['subject'] ?></option>
                                 <?php } ?>
                         </select> 
                      </div>
@@ -75,8 +75,8 @@
         columns: 1,
         placeholder: 'Select Classroom',
         search: true,
-        selectAll: true,
-        default:[7231,7213],
+        selectAll: true, 
 
     });
+  
 </script>

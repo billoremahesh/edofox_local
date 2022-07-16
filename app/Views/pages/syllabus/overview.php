@@ -53,12 +53,13 @@
 
 
                     <?php if (in_array("manage_classrooms", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
-                        <a href="#" onclick="show_add_modal('modal_div','add_syllabus_modal','syllabus/add_syllabus_modal/syllabus');" data-toggle='tooltip' title='Add New Classroom'>
+                        <a href="#" onclick="show_add_modal('modal_div','add_syllabus_modal','syllabus/add_syllabus_modal/syllabus');" data-toggle='tooltip' title='Add New Syllabus'>
                             <span class="material-icons action_button_plus_icon">
                                 add
                             </span>
                         </a>
                     <?php endif; ?>
+ 
                 </div>
             </div>
 
@@ -131,13 +132,13 @@
                 "exportOptions": {
                     "columns": ':visible:not(.not_to_export)'
                 },
-                messageTop: "Classrooms"
+                messageTop: "Syllabus"
             }, {
                 extend: 'print',
                 exportOptions: {
                     columns: ':visible:not(.not_to_print)'
                 },
-                title: "Classrooms ",
+                title: "Syllabus ",
                 customize: function(win) {
                     $(win.document.body).find('h1').css('text-align', 'center');
                     $(win.document.body).css('font-size', '9px');

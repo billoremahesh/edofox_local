@@ -257,8 +257,7 @@ class SyllabusModel extends Model
  
         $syllabus_data = [
             'is_disabled' => '1'
-        ];
-
+        ]; 
         $id = sanitize_input(decrypt_cipher($data['syllabus_id']));
         $db->table('syllabus')->update($syllabus_data, ['id' => $id]);
        
@@ -311,4 +310,66 @@ class SyllabusModel extends Model
         return $query->getResultArray();
     }
     /*******************************************************/
+
+    
+
+    /**
+     * Update Syllabus
+     *
+     * @param [Array] $data
+     *
+     * @return void
+     * @author sunil <sunil@mattersoft.xyz>
+     */
+    public function update_syllabus($data)
+    {
+        $db = \Config\Database::connect();
+
+        $db->transStart();
+      
+        $this->delete_syllabus($data);
+        $syllabus_id = decrypt_cipher($data['syllabus_id']);
+         // update syllabus  
+         $syllabus_data = [
+            'subject_id' => strtoupper(sanitize_input($data['subject_name'])),
+            'syllabus_name' => $data['syllabus_name'],
+            'description' => $data['description'],
+            'institute_id' => decrypt_cipher(session()->get('instituteID')),
+            'is_disabled' => '0'
+        ];   
+      
+        $id = sanitize_input(decrypt_cipher($data['syllabus_id']));
+        $db->table('syllabus')->update($syllabus_data, ['id' => $id]);
+  
+    // update syllabus_classroom_map
+
+        foreach($data['session_classroom'] as $class){
+            $syllabus_classroom = [
+                'classroom_id' => strtoupper(sanitize_input($class)),
+                'syllabus_id' => $syllabus_id, 
+            ];   
+            $db->table('syllabus_classroom_map')->insert($syllabus_classroom); 
+        }
+
+
+        $db->transComplete();
+
+        if ($db->transStatus() === FALSE) {
+            // generate an error... or use the log_message() function to log your error
+            return false;
+        } else {
+            // Activity Log
+            $log_info =  [
+                'username' =>  session()->get('username'),
+                'item' => "Syllabus Id " . $syllabus_id,
+                'institute_id' =>  decrypt_cipher(session()->get('instituteID')), 
+                'admin_id' =>  decrypt_cipher(session()->get('login_id'))
+            ];
+            $UserActivityModel = new UserActivityModel();
+            $UserActivityModel->log('modified', $log_info);
+            return true;
+        }
+    }
+    /*******************************************************/
+
 }

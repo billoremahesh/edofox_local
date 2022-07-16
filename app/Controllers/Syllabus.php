@@ -290,16 +290,15 @@ class Syllabus extends BaseController
 	 * @return void
 	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
 	 */
-	public function update_classroom_submit()
+	public function update_syllabus_submit()
 	{
 		$session = session();
 		$redirect = $this->request->getVar('redirect');
 		$result = $this->validate([
-			'package_name' => ['label' => 'Classroom Name', 'rules' => 'required|string|min_length[1]|max_length[120]'],
-			'package_price' => ['label' => 'Price', 'rules' => 'required|string|min_length[1]|max_length[120]'],
-			'package_offline_price' => ['label' => 'Offline Price', 'rules' => 'required|string|min_length[1]|max_length[120]'],
-			'package_type' => ['label' => 'Type', 'rules' => 'permit_empty|string|min_length[1]|max_length[120]'],
-			'is_public_check' => ['label' => 'Is Public', 'rules' => 'permit_empty|string|min_length[1]|max_length[120]']
+			'subject_name' => ['label' => 'Subject Name', 'rules' => 'required'],
+			'syllabus_name' => ['label' => 'Syllabus Name', 'rules' => 'required|max_length[50]'],
+			'session_classroom' => ['label' => 'Classroom', 'rules' => 'required'],
+			'description' => ['label' => 'description', 'rules' => 'required']
 		]);
 
 		if (!$result) {
@@ -307,9 +306,9 @@ class Syllabus extends BaseController
 			return redirect()->to(base_url($redirect))->withInput();
 		} else {
 			$data = $this->request->getVar();
-			$ClassroomModel = new ClassroomModel();
-			if ($ClassroomModel->update_classroom($data)) {
-				$session->setFlashdata('toastr_success', 'Classroom updated successfully.');
+			$SyllabusModel = new SyllabusModel();
+			if ($SyllabusModel->update_syllabus($data)) {
+				$session->setFlashdata('toastr_success', 'Syllabus updated successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
 			}

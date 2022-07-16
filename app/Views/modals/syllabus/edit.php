@@ -1,12 +1,19 @@
-    <div class="modal fade" id="update_syllabus_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<style>
+    .ms-options-wrap button{
+        overflow: hidden;
+    }
+    
+</style>
+<div class="modal fade" id="update_syllabus_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
+            <?php $selected_class=[];  foreach($syllabus_classroom as $sy_val){ $selected_class[]= $sy_val['classroom_id']; } ?>
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <h6 class="modal-title"><?= $title; ?></h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <?php echo form_open('classrooms/update_classroom_submit'); ?>
+                <?php echo form_open('syllabus/update_syllabus_submit'); ?>
                 <div class="modal-body row g-3">   
                 <div class="col-md-12">
                         <label class="form_label" for="subject_name">Subject Name</label> 
@@ -31,8 +38,8 @@
                                     $package_id = $row['id'];
                                     $package_name = $row['package_name'];
                             ?>
-                                    <option value="<?= $package_id; ?>" <?php echo in_array($package_id, $syllabus_classroom)?"class='selected'":""; ?> > <?= $package_name; ?> </option>
-                            <?php
+                                    <option value="<?= $package_id; ?>" > <?= $package_name; ?> </option>
+                            <?php 
                                 }
                             }
                             ?>
@@ -47,7 +54,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <input type="hidden" name="classroom_id" value="<?= $classroom_id; ?>" required />
+                    <input type="hidden" name="syllabus_id" value="<?= $classroom_id; ?>" required />
                     <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />
                     <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success" name="update_package_submit">Update</button>
@@ -60,10 +67,16 @@
 
     
 <script>
+
+    var selectedClassroom =<?php echo json_encode($selected_class);?>; 
+       $("#session_classroom").val(selectedClassroom);
+
       $('#session_classroom').multiselect({ 
         columns: 1,
         placeholder: 'Select Classroom',
         search: true,
-        selectAll: true
+        selectAll: true,
+        default:[7231,7213],
+
     });
 </script>

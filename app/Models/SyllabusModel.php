@@ -224,7 +224,7 @@ class SyllabusModel extends Model
 
     
     /**
-     * Get Classroom Details
+     * Get Syllabus Details
      *
      * @param [Integer] $classroom_id
      *

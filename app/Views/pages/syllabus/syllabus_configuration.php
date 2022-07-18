@@ -2,8 +2,26 @@
 <?php include_once(APPPATH . "Views/header.php"); ?>
 
 <!-- Custom CSS -->
+<style>
+.crud-btn {
+    width: 30px !important;
+    height: 30px;
+    background-color: rgb(11, 59, 233);
+    color: #fff;
+    border: 0px;
+    border-radius: 50%;
+    margin-right: 7px;
+    text-align: center !important;
+    line-height: 30px !important;
+}
+.crud-btn:hover {
+    background-color: rgb(107,126,197);
+    color: #fff;
+    
+}
+</style>
 <link href="<?php echo base_url('assets/css/classrooms/overview.css?v=20220331'); ?>" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <div id="content">
     <div class="container-fluid mt-4">
@@ -45,12 +63,18 @@
                                                     <span class="fa fa-fw fa-folder"></span> 
                                                     <?php echo strtoupper($syllabus_details['subject']); ?>
                                                 </a>
+                                                <div style="margin-left: 33px;" >    
+                                               <span>  <i class="fa fa-pencil crud-btn"></i></span>
+                                                  <span ><i class="fa fa-fw fa-plus crud-btn"></i></span> 
+                                                  <span ><i class="fa fa-fw fa-trash crud-btn"></i></span> 
+                                                  <span ><i class="fa fa-fw fa-eye crud-btn" ></i></span> 
+                                                </div>
                                                 <ul id="chapater" >
                                                 </ul>
                                             <li>
                                                 <a href="#">
-                                                    <span class="fa fa-fw fa-file-pdf"></span>
-                                                    PDF
+                                                    <span><i class="fa fa-fw fa-plus"> </i></span> ADD SYLLABUS
+                                                    
                                                 </a>
                                             </li>
                                         </ul>

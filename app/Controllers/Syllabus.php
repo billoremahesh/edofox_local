@@ -564,17 +564,18 @@ class Syllabus extends BaseController
 	 * @return void
 	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
 	 */
-	public function add_syllabus_configuration_modal($redirect = 'syllabus')
-	{
+	public function add_syllabus_configuration_modal($syllabus_id)
+	{  
 		$data['title'] = "Syllabus Configuration";
-		$data['instituteID'] = session()->get('instituteID');
-		$data['redirect'] = $redirect; 
-		$instituteID = decrypt_cipher(session()->get('instituteID'));
+		$data['instituteID'] = session()->get('instituteID'); 
+		$data['redirect'] = 'syllabus/syllabus_configuration/';  
+		$instituteID = decrypt_cipher(session()->get('instituteID')); 
 		$SyllabusModel=new SyllabusModel();
-		$data['syllabuslist'] =$SyllabusModel->get_syllabus($instituteID);  
-        $ChaptersModel=new ChaptersModel();
-		$data['chapter_list'] = $ChaptersModel->get_subject_chapters(1,$instituteID); 
-		$data['validation'] =  \Config\Services::validation();
+		$syllabusDetails =$SyllabusModel->get_syllabus_details($syllabus_id);  
+		$data['syllabusDetails']=$syllabusDetails; 
+		$data['selected_chapter']=$SyllabusModel->selected_chapter($syllabus_id);
+		$data['chapter_list'] = $SyllabusModel->get_subject_chapters($syllabusDetails['subject_id'],$instituteID); 
+		$data['validation'] =  \Config\Services::validation(); 
 		echo view('modals/syllabus/syllabus_configuration', $data);
 	}
 	/*******************************************************/
@@ -589,6 +590,7 @@ class Syllabus extends BaseController
 		$data['instituteID'] = session()->get('instituteID');
 		$instituteID = decrypt_cipher(session()->get('instituteID'));
         $SyllabusModel= new SyllabusModel(); 
+		$data['redirect']=$redirect;
 		$data['syllabus_details'] = $SyllabusModel->get_syllabus_record(decrypt_cipher($syllabus_id)); 
 		return view('pages/syllabus/syllabus_configuration', $data);
 	}
@@ -596,8 +598,70 @@ class Syllabus extends BaseController
 
 	public  function get_syllabus_details(){  
 		$subject_id =  sanitize_input($this->request->getVar('subject_id'));
-        $ChaptersModel = new ChaptersModel();
+		$syllabus_id =sanitize_input($this->request->getVar('syllabus_id')); 
+        $SyllabusModel = new SyllabusModel();
+		$check_syllabus_chapter=$SyllabusModel->check_syllabus_chapter($syllabus_id); 
+		$result=[];
+		if($check_syllabus_chapter==null){
+		$ChaptersModel = new ChaptersModel();		
         $result = $ChaptersModel->get_subject_chapters($subject_id, decrypt_cipher(session()->get('instituteID')));
-        echo json_encode($result);
+		}else{
+        $SyllabusModel = new SyllabusModel();		
+        $result = $SyllabusModel->get_selected_chapters($syllabus_id);
+		}
+
+		echo json_encode($result);
 	}
+
+	public function update_syllabus_topic(){
+		$data =$this->request->getVar();
+		$SyllabusModel= new SyllabusModel(); 
+
+		$chapter_id =  sanitize_input($this->request->getVar('chapter_id'));
+        $ChaptersModel = new ChaptersModel();
+        $data['chapter_details'] = $ChaptersModel->get_chapter_details($chapter_id);
+      
+		$result = $SyllabusModel->update_syllabus_topic($data);  
+        echo  json_encode($result);
+
+	}
+
+	
+	/**
+	 * Submit Methods (Add, Edit, Delete)
+	 */
+
+	/**
+	 * Add Classroom Submit 
+	 *
+	 * @return void
+	 * @author sunil
+	 */
+	public function add_syllabus_chapter_submit()
+	{
+		$session = session();
+		$redirect = $this->request->getVar('redirect');
+		$result = $this->validate([
+			'chapter' => ['label' => 'Chapter Name', 'rules' => 'required'],
+			'difficulty' => ['label' => 'difficulty', 'rules' => 'required'],
+			'importance' => ['label' => 'importance', 'rules' => 'required']
+		]);
+
+		if (!$result) {
+			$session->setFlashdata('toastr_error', 'Validation failed.');
+			return redirect()->to(base_url($redirect))->withInput();
+		} else {
+			$data = $this->request->getVar();    
+
+			$SyllabusModel = new SyllabusModel();
+			if ($SyllabusModel->add_syllabus_chapter($data)) {
+				$session->setFlashdata('toastr_success', 'Added New Chapter In Syllabuse successfully.');
+			} else {
+				$session->setFlashdata('toastr_error', 'Error in processing.');
+			} 
+			$redirect=$redirect.'/'.encrypt_string($data['syllabus_id']);
+			return redirect()->to(base_url($redirect));
+		}
+	}
+	/*******************************************************/
 }

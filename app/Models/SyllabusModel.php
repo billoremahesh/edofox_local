@@ -420,5 +420,106 @@ class SyllabusModel extends Model
     }
     /*******************************************************/
 
+    public function add_syllabus_chapter($data){ 
+            $db = \Config\Database::connect();
+    
+            $db->transStart();  
+            $syllabus_id =$data['syllabus_id'];
+             
+            $syllabus_data = [
+                'is_disabled' => '1'
+            ];  
+            $db->table('syllabus_topics')->update($syllabus_data, ['syllabus_id' => $syllabus_id]);
+
+            foreach($data['chapter'] as  $value){
+            $ChaptersModel = new ChaptersModel();
+			$chapter_details = $ChaptersModel->get_chapter_details($value);
+         
+                $topic_data = [
+                    'syllabus_id'=>$data['syllabus_id'],
+                    'difficulty'=>$data['difficulty'],
+                    'importance'=>$data['importance'],
+                    'topic_name'=>$chapter_details['chapter_name'],
+                    'chapter_id'=>$value
+                ];   
+                $db->table('syllabus_topics')->insert($topic_data); 
+          
+            } 
+     
+            $db->transComplete();
+    
+            if ($db->transStatus() === FALSE) {
+                // generate an error... or use the log_message() function to log your error
+                return false;
+            } else {
+                // Activity Log
+                $log_info =  [
+                    'username' =>  session()->get('username'),
+                    'item' => "Syllabus Id " . $syllabus_id,
+                    'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
+                    'admin_id' =>  decrypt_cipher(session()->get('login_id'))
+                ];
+                $UserActivityModel = new UserActivityModel();
+                $UserActivityModel->log('added', $log_info);
+                return true;
+            } 
+    }
+
+    public  function check_syllabus_chapter($syllabus_id){
+        $db = \Config\Database::connect();
+        $sql = "SELECT * FROM `syllabus_topics` WHERE syllabus_id=:id: AND is_disabled=0";
+  
+        $query = $this->db->query($sql, [
+            'id' => sanitize_input($syllabus_id)
+        ]); 
+        return $query->getRowArray(); 
+    }
+
+    public function get_selected_chapters($syllabus_id){
+        $db = \Config\Database::connect(); 
+
+        $sql  ="SELECT chapters.* FROM `syllabus_topics` JOIN chapters ON chapters.id=syllabus_topics.chapter_id WHERE syllabus_topics.syllabus_id=:id: AND syllabus_topics.is_disabled=0";
+        $query = $this->db->query($sql, [
+            'id' => sanitize_input($syllabus_id)
+        ]); 
+ 
+        return $query->getResultArray(); 
+    }
+
+    public function get_subject_chapters($subject_id, $institute_id)
+    {
+
+        $db = \Config\Database::connect();
+        $sql = "SELECT chapters.*,IF(questionsCount.que_count IS NULL, 0,questionsCount.que_count) que_count 
+        FROM chapters
+        LEFT JOIN (select count(*) as que_count,chapter from test_questions where (status = 'A' or status is NULL) and institute_id = :institute_id: and is_dummy = 0  group by chapter) as questionsCount 
+        ON questionsCount.chapter = chapters.id 
+        WHERE subject = :subject_id: 
+        AND (institute_id = :institute_id: OR institute_id IS NULL) 
+        AND (status != 'D' OR status is null) 
+        ORDER BY chapter_name";
+
+        $query = $db->query($sql, [
+            'institute_id' => sanitize_input($institute_id),
+            'subject_id' => sanitize_input($subject_id)
+        ]);
+
+        return $query->getResultArray();
+    }
+
+    public function selected_chapter($syllabus_id){
+        $db = \Config\Database::connect();
+        $sql = "SELECT * FROM `syllabus_topics` WHERE syllabus_id=:id: AND is_disabled=0";
+        $query = $this->db->query($sql, [
+            'id' => sanitize_input($syllabus_id)
+        ]); 
+        $result= $query->getResultArray();
+        $s_chapter_id=[];
+        foreach($result as $value){
+            $s_chapter_id[]=$value['chapter_id'];
+        }  
+        return $s_chapter_id;
+    }
+
      
 }

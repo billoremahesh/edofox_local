@@ -426,10 +426,10 @@ class SyllabusModel extends Model
             $db->transStart();  
             $syllabus_id =$data['syllabus_id'];
              
-            $syllabus_data = [
-                'is_disabled' => '1'
-            ];  
-            $db->table('syllabus_topics')->update($syllabus_data, ['syllabus_id' => $syllabus_id]);
+            // $syllabus_data = [
+            //     'is_disabled' => '1'
+            // ];  
+            // $db->table('syllabus_topics')->update($syllabus_data, ['syllabus_id' => $syllabus_id]);
 
             foreach($data['chapter'] as  $value){
             $ChaptersModel = new ChaptersModel();
@@ -514,12 +514,110 @@ class SyllabusModel extends Model
             'id' => sanitize_input($syllabus_id)
         ]); 
         $result= $query->getResultArray();
-        $s_chapter_id=[];
+
+        $s_chapter_id=[]; 
+        $data=[];
         foreach($result as $value){
             $s_chapter_id[]=$value['chapter_id'];
-        }  
-        return $s_chapter_id;
+            $data['difficulty']=$value['difficulty'];
+            $data['importance']=$value['importance'];
+        } 
+        $data['s_chapter_id']=$s_chapter_id;
+
+        return $data;
     }
+
+    
+    public function update_syllabus_chapter($data){ 
+        $db = \Config\Database::connect();
+
+        $db->transStart();  
+        $syllabus_id =$data['syllabus_id'];
+         
+        $syllabus_data = [
+            'is_disabled' => '1'
+        ];  
+        $db->table('syllabus_topics')->update($syllabus_data, ['syllabus_id' => $syllabus_id]);
+
+        foreach($data['chapter'] as  $value){
+        $ChaptersModel = new ChaptersModel();
+        $chapter_details = $ChaptersModel->get_chapter_details($value);
+     
+            $topic_data = [
+                'syllabus_id'=>$data['syllabus_id'],
+                'difficulty'=>$data['difficulty'],
+                'importance'=>$data['importance'],
+                'topic_name'=>$chapter_details['chapter_name'],
+                'chapter_id'=>$value
+            ];   
+            $db->table('syllabus_topics')->insert($topic_data); 
+      
+        } 
+ 
+        $db->transComplete();
+
+        if ($db->transStatus() === FALSE) {
+            // generate an error... or use the log_message() function to log your error
+            return false;
+        } else {
+            // Activity Log
+            $log_info =  [
+                'username' =>  session()->get('username'),
+                'item' => "Syllabus Id " . $syllabus_id,
+                'institute_id' =>  decrypt_cipher(session()->get('instituteID')),-
+                'admin_id' =>  decrypt_cipher(session()->get('login_id'))
+            ];
+            $UserActivityModel = new UserActivityModel();
+            $UserActivityModel->log('added', $log_info);
+            return true;
+        } 
+}
+
+
+ /**
+     * Delete Syllabus 
+     *
+     * @param [Array] $data
+     *
+     * @return void
+     * @author  sunil <sunil@mattersoft.xyz>
+     */
+    public function delete_syllabus_topics($data)
+    {
+        $db = \Config\Database::connect();
+
+        $db->transStart();
+ 
+        $syllabus_data = [
+            'is_disabled' => '1'
+        ]; 
+        $id = sanitize_input($data['syllabus_id']);
+        
+        $result =  $db->table('syllabus_topics')->update($syllabus_data, ['syllabus_id' => $id]);
+        
+        
+        $syllabus_data = $this->get_syllabus_details($id);
+        $db->transComplete();
+      
+        if ($db->transStatus() === FALSE) {
+            // generate an error... or use the log_message() function to log your error
+            return false;
+        } else {
+            // Activity Log
+            $log_info =  [
+                'username' =>  session()->get('username'),
+                'item' => strtoupper("Syllabus Name : ") . $syllabus_data['syllabus_name'],
+                'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
+                'admin_id' =>  decrypt_cipher(session()->get('login_id'))
+            ];
+            $UserActivityModel = new UserActivityModel();
+            $UserActivityModel->log('deleted', $log_info);
+            return true;
+        }
+    }
+    /*******************************************************/
+    
+
 
      
 }

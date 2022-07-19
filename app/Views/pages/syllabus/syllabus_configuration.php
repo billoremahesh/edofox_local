@@ -66,14 +66,26 @@
                                                     <?php echo strtoupper($syllabus_details['subject']); ?>
                                                 </a>
                                                 <div style="margin-left: 33px;">
-                                                    <span> <i class="fa fa-pencil crud-btn"></i></span>
+                                                     <span class="inln" >
+                                                        <?php $syllabus_id=$syllabus_details['id']; ?>
+                                                        <a href="#" onclick="show_add_modal('modal_div','add_syllabus_modal','syllabus/update_syllabus_configuration_modal/<?= $syllabus_id ?>');" data-toggle='tooltip' title='Update topic in Syllabus' style="display: inherit;" >
+                                                           <i class="fa fa-pencil crud-btn"></i>
+                                                        </a>
+                                                    </span>
                                                     <span class="inln" >
                                                         <?php $syllabus_id=$syllabus_details['id']; ?>
-                                                        <a href="#" onclick="show_add_modal('modal_div','add_syllabus_modal','syllabus/add_syllabus_configuration_modal/<?= $syllabus_id ?>');" data-toggle='tooltip' title='Add New Syllabus' style="display: inherit;" >
+                                                        <a href="#" onclick="show_add_modal('modal_div','add_syllabus_modal','syllabus/add_syllabus_configuration_modal/<?= $syllabus_id ?>');" data-toggle='tooltip' title='Add new  Topic in Syllabus' style="display: inherit;" >
                                                             <i class="fa fa-fw fa-plus crud-btn"></i>
                                                         </a>
                                                     </span>
-                                                    <span><i class="fa fa-fw fa-trash crud-btn"></i></span>
+
+                                                    <span class="inln" >
+                                                        <?php $syllabus_id=$syllabus_details['id']; ?>
+                                                        <a href="#" onclick="show_add_modal('modal_div','delete_syllabus_topic_modal','syllabus/delete_syllabus_configuration_modal/<?= $syllabus_id ?>');" data-toggle='tooltip' title='Delete Topic in Syllabus' style="display: inherit;" >
+                                                        <i class="fa fa-fw fa-trash crud-btn"></i>
+                                                        </a>
+                                                    </span>
+                                                  
                                                     <!-- <span><i class="fa fa-fw fa-eye crud-btn"></i></span> -->
                                                 </div>
                                                 <ul id="chapater">

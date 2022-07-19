@@ -13,7 +13,7 @@
                     <h6 class="modal-title"><?= $title; ?></h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <?php echo form_open('syllabus/add_syllabus_chapter_submit'); ?>
+                <?php echo form_open('syllabus/update_syllabus_chapter_submit'); ?>
                 <div class="modal-body row g-3">
                     <div class="col-md-12">
                         <label class="form_label" for="subject_name">Syllabus Name</label> 
@@ -28,35 +28,34 @@
                                 foreach ($chapter_list as $row) {
                                     $chapter_id = $row['id'];
                                     $chapter_name = $row['chapter_name'];
-                                    if(in_array($chapter_id,$selected_chapter) !=true){
+                                  
                             ?>
                                     <option value="<?= $chapter_id; ?>"> <?= $chapter_name; ?> </option>
                             <?php
-                                }}
+                                }
                             }
                             ?>
                         </select>
                     </div>
                     <div class="col-md-12">
+                        <?php $difficultys=[1,2,3,4,5]; ?>
                         <label class="form_label" for="difficulty">Difficulty</label>
                         <select name="difficulty" id="difficulty" class="form-control" required>
                             <option value="" >-Select Difficulty-</option>
-                            <option value="1" >1</option>
-                            <option value="2" >2</option>
-                            <option value="3" >3</option>
-                            <option value="4" >4</option>
-                            <option value="5" >5</option>
+                           <?php foreach($difficultys as $value){ ?>
+                             <option value="<?= $value ?>" <?php echo $difficulty==$value?'selected':''; ?>  ><?= $value ?></option>
+                            <?php } ?>
                         </select>
                     </div>
 
                     <div class="col-md-12">
+                        <?php $importances=['Low','Medium','High','Very High']; ?>
                         <label class="form_label" for="importance">important</label>
                         <select name="importance" id="importance" class="form-control" required> 
-                            <option value="" >-Select Importance-</option>
-                            <option value="Low" >Low</option>
-                            <option value="Medium" >Medium</option>
-                            <option value="High" >High</option>
-                            <option value="Very High" >Very High</option>
+                            <option value="" >-Select Importance-</option> 
+                            <?php foreach($importances as $value){ ?>
+                            <option value="<?= $value ?>" <?php echo $importance==$value?'selected':''; ?> ><?= $value ?></option>
+                                <?php } ?>
                         </select>
                     </div>
                
@@ -79,11 +78,11 @@
 <script>
 
     
-var selectedClassroom =<?php echo json_encode($selected_chapter);?>;  
+var selectedClassroom =<?php echo json_encode($s_chapter_id);?>;  
        $("#chapter").val(selectedClassroom);
       $('#chapter').multiselect({ 
         columns: 1,
-        placeholder: 'Select Chapter',
+        placeholder: 'Select Chapter', 
         search: true,
         selectAll: true
     });

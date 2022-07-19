@@ -573,7 +573,8 @@ class Syllabus extends BaseController
 		$SyllabusModel=new SyllabusModel();
 		$syllabusDetails =$SyllabusModel->get_syllabus_details($syllabus_id);  
 		$data['syllabusDetails']=$syllabusDetails; 
-		$data['selected_chapter']=$SyllabusModel->selected_chapter($syllabus_id);
+		$select_data=$SyllabusModel->selected_chapter($syllabus_id); 
+		$data['selected_chapter']=$select_data['s_chapter_id'];
 		$data['chapter_list'] = $SyllabusModel->get_subject_chapters($syllabusDetails['subject_id'],$instituteID); 
 		$data['validation'] =  \Config\Services::validation(); 
 		echo view('modals/syllabus/syllabus_configuration', $data);
@@ -661,6 +662,125 @@ class Syllabus extends BaseController
 			} 
 			$redirect=$redirect.'/'.encrypt_string($data['syllabus_id']);
 			return redirect()->to(base_url($redirect));
+		}
+	}
+	/*******************************************************/
+
+	/**
+	 * Add Classroom Modal
+	 *
+	 * @param string $redirect
+	 *
+	 * @return void
+	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+	 */
+	public function update_syllabus_configuration_modal($syllabus_id)
+	{  
+		$data['title'] = "Update Syllabus Configuration";
+		$data['instituteID'] = session()->get('instituteID'); 
+		$data['redirect'] = 'syllabus/syllabus_configuration/';  
+		$instituteID = decrypt_cipher(session()->get('instituteID')); 
+		$SyllabusModel=new SyllabusModel();
+		$syllabusDetails =$SyllabusModel->get_syllabus_details($syllabus_id);  
+		$data['syllabusDetails']=$syllabusDetails; 
+		$result=$SyllabusModel->selected_chapter($syllabus_id); 
+		$data['s_chapter_id']=$result['s_chapter_id'];
+		$data['difficulty']=$result['difficulty'];
+		$data['importance']=$result['importance']; 
+		$data['chapter_list'] = $SyllabusModel->get_subject_chapters($syllabusDetails['subject_id'],$instituteID); 
+		$data['validation'] =  \Config\Services::validation(); 
+	 
+		echo view('modals/syllabus/update_syllabus_configuration', $data);
+	}
+	/*******************************************************/
+
+
+		/**
+	 * Add Classroom Submit 
+	 *
+	 * @return void
+	 * @author sunil
+	 */
+	public function update_syllabus_chapter_submit()
+	{
+		$session = session();
+		$redirect = $this->request->getVar('redirect');
+		$result = $this->validate([
+			'chapter' => ['label' => 'Chapter Name', 'rules' => 'required'],
+			'difficulty' => ['label' => 'difficulty', 'rules' => 'required'],
+			'importance' => ['label' => 'importance', 'rules' => 'required']
+		]);
+
+		if (!$result) {
+			$session->setFlashdata('toastr_error', 'Validation failed.');
+			return redirect()->to(base_url($redirect))->withInput();
+		} else {
+			$data = $this->request->getVar();    
+
+			$SyllabusModel = new SyllabusModel();
+			if ($SyllabusModel->update_syllabus_chapter($data)) {
+				$session->setFlashdata('toastr_success', 'Chapter Syllabus Updated Successfully.');
+			} else {
+				$session->setFlashdata('toastr_error', 'Error in processing.');
+			} 
+			$redirect=$redirect.'/'.encrypt_string($data['syllabus_id']);
+			return redirect()->to(base_url($redirect));
+		}
+	}
+
+	
+
+	/**
+	 * Delete Classroom Modal
+	 *
+	 * @param [Integer] $classroom_id
+	 * @param string $redirect
+	 *
+	 * @return void
+	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+	 */
+	public function delete_syllabus_configuration_modal($syllabus_id)
+	{
+		$data['title'] = "Delete Syllabus of topics";
+		$data['syllabus_id'] = $syllabus_id;
+		$data['redirect'] = 'syllabus/syllabus_configuration/';  
+		$data['validation'] =  \Config\Services::validation();
+		$SyllabusModel = new SyllabusModel();
+		$data['syllabus_details'] = $SyllabusModel->get_syllabus_record($syllabus_id);  
+		echo view('modals/syllabus/syllabus_configuration_delete', $data);
+	}
+	/*******************************************************/
+
+   
+
+	/**
+	 * Delete Classroom Submit 
+	 *
+	 * @return void
+	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+	 */
+	public function delete_syllabus_topic_submit()
+	{
+		$session = session();
+		$redirect = $this->request->getVar('redirect');
+		$result = $this->validate([
+			'syllabus_id' => ['label' => 'Syllabus ID', 'rules' => 'required|string|min_length[1]']
+		]);
+
+		if (!$result) {
+			$session->setFlashdata('toastr_error', 'Validation failed.');
+			return redirect()->to(base_url($redirect))->withInput();
+		} else {
+			$data = $this->request->getVar();
+		 
+			$SyllabusModel = new SyllabusModel();
+			if ($SyllabusModel->delete_syllabus_topics($data)) {
+				$session->setFlashdata('toastr_success', 'Syllabus topics deleted successfully.');
+			} else {
+				$session->setFlashdata('toastr_error', 'Error in processing.');
+			}
+			$redirect=$redirect.'/'.encrypt_string($data['syllabus_id']); 
+			return redirect()->to(base_url($redirect)); 
 		}
 	}
 	/*******************************************************/

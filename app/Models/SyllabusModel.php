@@ -517,6 +517,8 @@ class SyllabusModel extends Model
 
         $s_chapter_id=[]; 
         $data=[];
+        $data['difficulty']="";
+        $data['importance']="";
         foreach($result as $value){
             $s_chapter_id[]=$value['chapter_id'];
             $data['difficulty']=$value['difficulty'];
@@ -531,7 +533,7 @@ class SyllabusModel extends Model
     public function update_syllabus_chapter($data){ 
         $db = \Config\Database::connect();
 
-        $db->transStart();  
+        $db->transStart(); 
         $syllabus_id =$data['syllabus_id'];
          
         $syllabus_data = [
@@ -542,7 +544,6 @@ class SyllabusModel extends Model
         foreach($data['chapter'] as  $value){
         $ChaptersModel = new ChaptersModel();
         $chapter_details = $ChaptersModel->get_chapter_details($value);
-     
             $topic_data = [
                 'syllabus_id'=>$data['syllabus_id'],
                 'difficulty'=>$data['difficulty'],
@@ -551,24 +552,21 @@ class SyllabusModel extends Model
                 'chapter_id'=>$value
             ];   
             $db->table('syllabus_topics')->insert($topic_data); 
-      
         } 
- 
-        $db->transComplete();
-
+        $db->transComplete();   
         if ($db->transStatus() === FALSE) {
             // generate an error... or use the log_message() function to log your error
             return false;
         } else {
             // Activity Log
-            $log_info =  [
-                'username' =>  session()->get('username'),
-                'item' => "Syllabus Id " . $syllabus_id,
-                'institute_id' =>  decrypt_cipher(session()->get('instituteID')),-
-                'admin_id' =>  decrypt_cipher(session()->get('login_id'))
-            ];
-            $UserActivityModel = new UserActivityModel();
-            $UserActivityModel->log('added', $log_info);
+            // $log_info =  [
+            //     'username' =>  session()->get('username'),
+            //     'item' => "Syllabus Id " . $syllabus_id,
+            //     'institute_id' =>  decrypt_cipher(session()->get('instituteID')),-
+            //     'admin_id' =>  decrypt_cipher(session()->get('login_id'))
+            // ]; 
+            // $UserActivityModel = new UserActivityModel();
+            // $UserActivityModel->log('added', $log_info);
             return true;
         } 
 }

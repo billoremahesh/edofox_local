@@ -716,13 +716,13 @@ class Syllabus extends BaseController
 			return redirect()->to(base_url($redirect))->withInput();
 		} else {
 			$data = $this->request->getVar();    
-
+		
 			$SyllabusModel = new SyllabusModel();
 			if ($SyllabusModel->update_syllabus_chapter($data)) {
 				$session->setFlashdata('toastr_success', 'Chapter Syllabus Updated Successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
-			} 
+			}
 			$redirect=$redirect.'/'.encrypt_string($data['syllabus_id']);
 			return redirect()->to(base_url($redirect));
 		}

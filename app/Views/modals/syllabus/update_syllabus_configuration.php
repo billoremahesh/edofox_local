@@ -27,7 +27,7 @@
                             if (!empty($chapter_list)) {
                                 foreach ($chapter_list as $row) {
                                     $chapter_id = $row['id'];
-                                    $chapter_name = $row['chapter_name'];
+                                    $chapter_name = $row['topic_name'];
                                   
                             ?>
                                     <option value="<?= $chapter_id; ?>"> <?= $chapter_name; ?> </option>
@@ -86,4 +86,39 @@ var selectedClassroom =<?php echo json_encode($s_chapter_id);?>;
         search: true,
         selectAll: true
     });
+
+    
+    $(".ms-search").change(function(e) {
+        add_new_topic(e.target.value);
+
+    });
+
+
+    function add_new_topic(value) {
+        var diff = document.getElementById("difficulty");
+        var difficulty = diff.options[diff.selectedIndex].value;
+
+        var imp = document.getElementById("importance");
+        var importance = imp.options[imp.selectedIndex].value;
+
+        let syllabus_id ="<?= $syllabusDetails['id'] ?>";
+
+        jQuery.ajax({
+            url: base_url + '/syllabus/add_new_topic',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                new_topic: value,
+                syllabus_id: syllabus_id,
+                difficulty: difficulty,
+                importance: importance,
+            },
+            success: function(result) {
+                
+                $('#add_syllabus_modal').modal('hide');
+                location.reload();
+            }
+        });
+    }
+
 </script>

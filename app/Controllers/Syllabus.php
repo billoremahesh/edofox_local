@@ -573,9 +573,10 @@ class Syllabus extends BaseController
 		$SyllabusModel=new SyllabusModel();
 		$syllabusDetails =$SyllabusModel->get_syllabus_details($syllabus_id);  
 		$data['syllabusDetails']=$syllabusDetails; 
-		$select_data=$SyllabusModel->selected_chapter($syllabus_id); 
+		$select_data=$SyllabusModel->selected_chapter($syllabus_id);  
 		$data['selected_chapter']=$select_data['s_chapter_id'];
 		$data['chapter_list'] = $SyllabusModel->get_subject_chapters($syllabusDetails['subject_id'],$instituteID); 
+	 
 		$data['validation'] =  \Config\Services::validation(); 
 		echo view('modals/syllabus/syllabus_configuration', $data);
 	}
@@ -602,10 +603,11 @@ class Syllabus extends BaseController
 		$syllabus_id =sanitize_input($this->request->getVar('syllabus_id')); 
         $SyllabusModel = new SyllabusModel();
 		$check_syllabus_chapter=$SyllabusModel->check_syllabus_chapter($syllabus_id); 
+		 
 		$result=[];
 		if($check_syllabus_chapter==null){
-		$ChaptersModel = new ChaptersModel();		
-        $result = $ChaptersModel->get_subject_chapters($subject_id, decrypt_cipher(session()->get('instituteID')));
+		$SyllabusModel = new SyllabusModel();		
+        $result = $SyllabusModel->get_subject_chapters($subject_id, decrypt_cipher(session()->get('instituteID')));
 		}else{
         $SyllabusModel = new SyllabusModel();		
         $result = $SyllabusModel->get_selected_chapters($syllabus_id);
@@ -784,4 +786,14 @@ class Syllabus extends BaseController
 		}
 	}
 	/*******************************************************/
+
+	public function add_new_topic(){
+		$session = session();
+		$data = $this->request->getVar();
+		$SyllabusModel=new SyllabusModel();
+		$new_topic=$SyllabusModel->add_new_topic($data);
+	
+		$session->setFlashdata('toastr_success', 'Added New Chapter In Syllabuse successfully.');
+		echo json_decode($new_topic);
+	} 
 }

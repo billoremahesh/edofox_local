@@ -69,7 +69,7 @@
                     <thead>
                         <tr>
                             <th> # </th>
-                            <th> syllabus </th>
+                            <th> Syllabus </th>
                             <th> Subject Name </th> 
                             <th> Description </th> 
                             <th class="not_to_export not_to_print"> Actions </th>

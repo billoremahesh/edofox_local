@@ -478,7 +478,7 @@ class SyllabusModel extends Model
     public function get_selected_chapters($syllabus_id){
         $db = \Config\Database::connect(); 
 
-        $sql  ="SELECT chapters.* FROM `syllabus_topics` JOIN chapters ON chapters.id=syllabus_topics.chapter_id WHERE syllabus_topics.syllabus_id=:id: AND syllabus_topics.is_disabled=0";
+        $sql  ="SELECT * FROM `syllabus_topics` WHERE syllabus_id=:id:  AND is_disabled=0";
         $query = $this->db->query($sql, [
             'id' => sanitize_input($syllabus_id)
         ]); 
@@ -490,7 +490,7 @@ class SyllabusModel extends Model
     {
 
         $db = \Config\Database::connect();
-        $sql = "SELECT chapters.*,IF(questionsCount.que_count IS NULL, 0,questionsCount.que_count) que_count 
+        $sql = "SELECT chapters.id,chapters.chapter_name as topic_name,IF(questionsCount.que_count IS NULL, 0,questionsCount.que_count) que_count 
         FROM chapters
         LEFT JOIN (select count(*) as que_count,chapter from test_questions where (status = 'A' or status is NULL) and institute_id = :institute_id: and is_dummy = 0  group by chapter) as questionsCount 
         ON questionsCount.chapter = chapters.id 
@@ -504,7 +504,8 @@ class SyllabusModel extends Model
             'subject_id' => sanitize_input($subject_id)
         ]);
 
-        return $query->getResultArray();
+        $result = $query->getResultArray();
+        return $result;
     }
 
     public function selected_chapter($syllabus_id){
@@ -514,7 +515,6 @@ class SyllabusModel extends Model
             'id' => sanitize_input($syllabus_id)
         ]); 
         $result= $query->getResultArray();
-
         $s_chapter_id=[]; 
         $data=[];
         $data['difficulty']="";
@@ -524,8 +524,7 @@ class SyllabusModel extends Model
             $data['difficulty']=$value['difficulty'];
             $data['importance']=$value['importance'];
         } 
-        $data['s_chapter_id']=$s_chapter_id;
-
+        $data['s_chapter_id']=$s_chapter_id; 
         return $data;
     }
 
@@ -615,6 +614,39 @@ class SyllabusModel extends Model
     }
     /*******************************************************/
     
+    public function add_new_topic($data){
+        $db = \Config\Database::connect();
+        $db->transStart();
+     // add syllabus
+        $syllabus_data = [
+            'syllabus_id ' => $data['syllabus_id'],
+            'topic_name' => $data['new_topic'],
+            'difficulty' => $data['difficulty'],
+            'importance' => $data['importance'],
+        ];  
+        $db->table('syllabus_topics')->insert($syllabus_data);
+        $syllabus_id = $db->insertID();
+    // syllabus_classroom_map 
+ 
+
+        $db->transComplete();
+
+        if ($db->transStatus() === FALSE) {
+            // generate an error... or use the log_message() function to log your error
+            return false;
+        } else {
+            // Activity Log
+            $log_info =  [
+                'username' =>  session()->get('username'),
+                'item' => "Classroom Id " . $syllabus_id,
+                'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
+                'admin_id' =>  decrypt_cipher(session()->get('login_id'))
+            ];
+            $UserActivityModel = new UserActivityModel();
+            $UserActivityModel->log('added', $log_info);
+            return true;
+        }
+    }
 
 
      

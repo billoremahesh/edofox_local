@@ -144,7 +144,7 @@
         result.forEach((element) => {
 
             // html = html + `<li><a href="#"><span class="fa fa-fw fa-file" style="color:#28a5d5;" ></span><input type="checkbox" name="add_syllabus_topic" id="add_syllabus_topic` + element.id + `" class="add_syllabus_topic" onclick="addSyllabusTopic(` + element.id + `)" value=` + element.id + ` /> ` + element.chapter_name + `</a></li>`;
-            html = html + `<li><a href="#"><span class="fa fa-fw fa-file" style="color:#28a5d5;" ></span>` + element.topic_name + `</a></li>`;
+            html = html + `<li><a href="#"> &nbsp;&nbsp;&nbsp;` + element.topic_name + `</a></li>`;
         });
         return html;
     }

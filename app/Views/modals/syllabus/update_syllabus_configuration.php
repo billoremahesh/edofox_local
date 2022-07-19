@@ -19,6 +19,10 @@
                         <label class="form_label" for="subject_name">Syllabus Name</label> 
                          <p><b><?= $syllabusDetails['syllabus_name'] ?></b></p>
                      </div>
+
+                     <div class="col-md-12">
+            <div id="custom_loader"></div>
+            </div>
                   
                     <div class="col-md-12">
                         <label class="form_label" for="chapter">Chapters Name</label>
@@ -89,6 +93,8 @@ var selectedClassroom =<?php echo json_encode($s_chapter_id);?>;
 
     
     $(".ms-search").change(function(e) {
+        $('#add_syllabus_modal').modal('hide');
+        toggle_custom_loader(true, "custom_loader");
         add_new_topic(e.target.value);
 
     });

@@ -309,7 +309,7 @@ class Syllabus extends BaseController
 			$data = $this->request->getVar();
 			$SyllabusModel = new SyllabusModel();
 			if ($SyllabusModel->update_syllabus($data)) {
-				$session->setFlashdata('toastr_success', 'Syllabus updated successfully.');
+				$session->setFlashdata('toastr_success', 'Syllabus Updated Successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
 			}
@@ -658,7 +658,7 @@ class Syllabus extends BaseController
 
 			$SyllabusModel = new SyllabusModel();
 			if ($SyllabusModel->add_syllabus_chapter($data)) {
-				$session->setFlashdata('toastr_success', 'Added New Chapter In Syllabuse successfully.');
+				$session->setFlashdata('toastr_success', 'Added New Chapter Successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
 			} 
@@ -721,7 +721,7 @@ class Syllabus extends BaseController
 		
 			$SyllabusModel = new SyllabusModel();
 			if ($SyllabusModel->update_syllabus_chapter($data)) {
-				$session->setFlashdata('toastr_success', 'Chapter Syllabus Updated Successfully.');
+				$session->setFlashdata('toastr_success', 'Chapter Updated Successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
 			}
@@ -777,7 +777,7 @@ class Syllabus extends BaseController
 		 
 			$SyllabusModel = new SyllabusModel();
 			if ($SyllabusModel->delete_syllabus_topics($data)) {
-				$session->setFlashdata('toastr_success', 'Syllabus topics deleted successfully.');
+				$session->setFlashdata('toastr_success', 'Chapter Deleted Successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
 			}
@@ -793,7 +793,7 @@ class Syllabus extends BaseController
 		$SyllabusModel=new SyllabusModel();
 		$new_topic=$SyllabusModel->add_new_topic($data);
 	
-		$session->setFlashdata('toastr_success', 'Added New Chapter In Syllabuse successfully.');
+		$session->setFlashdata('toastr_success', 'Added New Chapter Successfully.');
 		echo json_decode($new_topic);
 	} 
 }

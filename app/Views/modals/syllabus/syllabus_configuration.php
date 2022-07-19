@@ -14,6 +14,9 @@
             </div>
             <?php echo form_open('syllabus/add_syllabus_chapter_submit'); ?>
             <div class="modal-body row g-3">
+            <div class="col-md-12">
+            <div id="custom_loader"></div>
+            </div>
                 <div class="col-md-12">
                     <label class="form_label" for="subject_name">Syllabus Name</label>
                     <p><b><?= $syllabusDetails['syllabus_name'] ?></b></p>
@@ -89,6 +92,8 @@
 
 
     $(".ms-search").change(function(e) {
+        $('#add_syllabus_modal').modal('hide');
+        toggle_custom_loader(true, "custom_loader");
         add_new_topic(e.target.value);
 
     });
@@ -99,10 +104,9 @@
         var difficulty = diff.options[diff.selectedIndex].value;
 
         var imp = document.getElementById("importance");
-        var importance = imp.options[imp.selectedIndex].value;
-
+        var importance = imp.options[imp.selectedIndex].value; 
         let syllabus_id ="<?= $syllabusDetails['id'] ?>";
-
+         if(importance !='' || difficulty !=''){
         jQuery.ajax({
             url: base_url + '/syllabus/add_new_topic',
             type: 'POST',
@@ -113,11 +117,11 @@
                 difficulty: difficulty,
                 importance: importance,
             },
-            success: function(result) {  
-                $('#add_syllabus_modal').modal('hide');
+            success: function(result) {   
                 location.reload();
             }
         });
+    } 
     }
 
     // $('select[id="chapter"]').find('option[value=' + $(this).val() + ']').attr("selected", true); 

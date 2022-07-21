@@ -261,7 +261,7 @@ class InstituteScheduleModel extends Model
 
         $db = \Config\Database::connect();
         $sql ="select * from institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id where ((starts_at >= '$start_at' and starts_at < '$end_at') OR (ends_at > '$start_at' and ends_at <= '$end_at') OR (starts_at < '$start_at' and ends_at > '$end_at')) and institute_schedule.is_disabled = 0 and classroom_id = $session_classroom $scheduleType and type = 'Session'";
-        $query = $db->query($sql);
+        $query = $db->query($sql); 
         $result = $query->getRowArray();  
        if($result==''){
         return 1;

@@ -71,6 +71,7 @@
                             <th> # </th>
                             <th> Syllabus </th>
                             <th> Subject Name </th> 
+                            <th style="width:300px !important;" > Classroom Name </th> 
                             <th> Description </th> 
                             <th class="not_to_export not_to_print"> Actions </th>
                         </tr>
@@ -109,7 +110,7 @@
         classroomsListTable = $('#classroomsListTable').DataTable({
             stateSave: true,
             "columnDefs": [{
-                "targets": [3, 4],
+                "targets": [4, 5],
                 "orderable": false,
             }, {
                 "targets": -1,
@@ -154,7 +155,7 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
-                'url': base_url + "/syllabus/load_classrooms",
+                'url': base_url + "/syllabus/load_syllabus",
                 "type": "POST",
                 "data": function(d) {
                     d.classroom_status = $('#classroom_status').val(),

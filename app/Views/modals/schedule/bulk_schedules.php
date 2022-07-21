@@ -358,6 +358,7 @@
         });
 
         function get_Update_time(time,add_time){ 
+            console.log(time,'time'); 
               var d1 = new Date(time);  
               d2 = new Date ( d1 ); 
                     d2.setMinutes ( d1.getMinutes() + add_time );

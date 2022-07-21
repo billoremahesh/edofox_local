@@ -118,7 +118,7 @@
                 importance: importance,
             },
             success: function(result) {   
-                location.reload();
+                // location.reload();
             }
         });
     } 

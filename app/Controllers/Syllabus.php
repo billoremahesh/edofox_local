@@ -25,12 +25,12 @@ class Syllabus extends BaseController
 
 
 	/**
-	 * Load Classrooms 
+	 * Load syllabus 
 	 *
 	 * @return void
 	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
 	 */
-	public function load_classrooms()
+	public function load_syllabus()
 	{
 		// POST data
 		$postData = object_to_array($this->request->getVar());
@@ -557,7 +557,7 @@ class Syllabus extends BaseController
 	}
 
 	/**
-	 * Add Classroom Modal
+	 * Add Syllabus Configuration Modal
 	 *
 	 * @param string $redirect
 	 *
@@ -593,7 +593,15 @@ class Syllabus extends BaseController
 		$instituteID = decrypt_cipher(session()->get('instituteID'));
         $SyllabusModel= new SyllabusModel(); 
 		$data['redirect']=$redirect;
-		$data['syllabus_details'] = $SyllabusModel->get_syllabus_record(decrypt_cipher($syllabus_id)); 
+		$syllabus_id=decrypt_cipher($syllabus_id); 
+		$SyllabusModel=new SyllabusModel(); 
+		$syllabusDetails =$SyllabusModel->get_syllabus_details($syllabus_id);  
+		$data['syllabusDetails']=$syllabusDetails; 
+		$select_data=$SyllabusModel->selected_chapter($syllabus_id);  
+		$data['selected_chapter']=$select_data['s_chapter_id'];
+		$data['chapter_list'] = $SyllabusModel->get_subject_chapters($syllabusDetails['subject_id'],$instituteID); 
+	 
+		$data['syllabus_details'] = $SyllabusModel->get_syllabus_record($syllabus_id); 
 		return view('pages/syllabus/syllabus_configuration', $data);
 	}
 	/*******************************************************/
@@ -604,15 +612,17 @@ class Syllabus extends BaseController
         $SyllabusModel = new SyllabusModel();
 		$check_syllabus_chapter=$SyllabusModel->check_syllabus_chapter($syllabus_id); 
 		 
-		$result=[];
-		if($check_syllabus_chapter==null){
-		$SyllabusModel = new SyllabusModel();		
-        $result = $SyllabusModel->get_subject_chapters($subject_id, decrypt_cipher(session()->get('instituteID')));
-		}else{
-        $SyllabusModel = new SyllabusModel();		
-        $result = $SyllabusModel->get_selected_chapters($syllabus_id);
-		}
+		// $result=[];
+		// if($check_syllabus_chapter==null){
+		// $SyllabusModel = new SyllabusModel();		
+        // $result = $SyllabusModel->get_subject_chapters($subject_id, decrypt_cipher(session()->get('instituteID')));
+		// }else{
+        // $SyllabusModel = new SyllabusModel();		
+        // $result = $SyllabusModel->get_selected_chapters($syllabus_id);
+		// }
 
+		$SyllabusModel = new SyllabusModel();		
+        $result = $SyllabusModel->get_selected_chapters($syllabus_id); 
 		echo json_encode($result);
 	}
 
@@ -635,7 +645,7 @@ class Syllabus extends BaseController
 	 */
 
 	/**
-	 * Add Classroom Submit 
+	 * Add syllabus Submit 
 	 *
 	 * @return void
 	 * @author sunil
@@ -796,4 +806,82 @@ class Syllabus extends BaseController
 		$session->setFlashdata('toastr_success', 'Added New Chapter Successfully.');
 		echo json_decode($new_topic);
 	} 
+
+
+	/**
+	 * Add Classroom Modal
+	 *
+	 * @param string $redirect
+	 *
+	 * @return void
+	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+	 */
+	public function add_child_syllabus_configuration_modal($syllabus_parent_id)
+	{  
+		$data['title'] = "Syllabus Configuration";
+		$data['instituteID'] = session()->get('instituteID'); 
+		$data['redirect'] = 'syllabus/syllabus_configuration/';  
+		$instituteID = decrypt_cipher(session()->get('instituteID')); 
+		$SyllabusModel=new SyllabusModel();
+		$syllabusDetails =$SyllabusModel->get_child_syllabus_details($syllabus_parent_id);   
+		$data['syllabusDetails']=$syllabusDetails; 
+		$select_data=$SyllabusModel->selected_chapter($syllabusDetails['id']);  
+		$data['selected_chapter']=$select_data['s_chapter_id'];
+		$data['chapter_list'] = $SyllabusModel->get_subject_chapters($syllabusDetails['subject_id'],$instituteID); 
+	 
+		$data['validation'] =  \Config\Services::validation(); 
+		echo view('modals/syllabus/child_syllabus_configuration', $data);
+	}
+	/*******************************************************/
+
+	/**
+	 * Add syllabus Submit 
+	 *
+	 * @return void
+	 * @author sunil
+	 */
+	public function add_child_syllabus_chapter_submit()
+	{
+		$session = session();
+		$redirect = $this->request->getVar('redirect');
+		$result = $this->validate([
+			'chapter' => ['label' => 'Chapter Name', 'rules' => 'required'],
+			'difficulty' => ['label' => 'difficulty', 'rules' => 'required'],
+			'importance' => ['label' => 'importance', 'rules' => 'required']
+		]);
+
+		if (!$result) {
+			$session->setFlashdata('toastr_error', 'Validation failed.');
+			return redirect()->to(base_url($redirect))->withInput();
+		} else {
+			$data = $this->request->getVar();    
+
+			$SyllabusModel = new SyllabusModel();
+			if ($SyllabusModel->add_child_syllabus_chapter($data)) {
+				$session->setFlashdata('toastr_success', 'Added New Chapter Successfully.');
+			} else {
+				$session->setFlashdata('toastr_error', 'Error in processing.');
+			} 
+			$redirect=$redirect.'/'.encrypt_string($data['syllabus_id']);
+			return redirect()->to(base_url($redirect));
+		}
+	}
+	/*******************************************************/
+
+	public function delete_topics(){
+		$session = session();
+		$data =$this->request->getVar();
+		$SyllabusModel= new SyllabusModel();  
+		$result = $SyllabusModel->delete_topics($data);  
+        echo  json_encode($result);
+
+	}
+
+	public function add_topics(){
+		$data =$this->request->getVar();  
+		$SyllabusModel = new SyllabusModel();
+		$result =$SyllabusModel->add_topics($data);
+		echo json_encode($result);
+	}
+
 }

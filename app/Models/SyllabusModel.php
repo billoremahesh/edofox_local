@@ -496,11 +496,11 @@ class SyllabusModel extends Model
     public function get_child_chapter($sub_parent)
     {
         $db = \Config\Database::connect();
-
-        $sql  = "SELECT * FROM `syllabus_topics` WHERE parent=:id:  AND is_disabled=0";
+ 
+        $sql  = "SELECT syllabus_topics.*,chapters.institute_id FROM `syllabus_topics` LEFT JOIN chapters ON chapters.id=syllabus_topics.chapter_id WHERE syllabus_topics.parent=:id: AND syllabus_topics.is_disabled=0";
         $query = $this->db->query($sql, [
             'id' => sanitize_input($sub_parent)
-        ]);
+        ]); 
 
         return $query->getResultArray();
     }
@@ -509,10 +509,11 @@ class SyllabusModel extends Model
     {
         $db = \Config\Database::connect();
 
-        $sql  = "SELECT * FROM `syllabus_topics` WHERE syllabus_id=:id:  AND is_disabled=0 AND parent IS NULL";
+        $sql  = "SELECT syllabus_topics.*,chapters.institute_id FROM `syllabus_topics` LEFT JOIN chapters ON chapters.id=syllabus_topics.chapter_id WHERE syllabus_topics.syllabus_id=:id: AND syllabus_topics.is_disabled=0 AND syllabus_topics.parent IS NULL";
         $query = $this->db->query($sql, [
             'id' => sanitize_input($syllabus_id)
         ]);
+       
         $parent = $query->getResultArray();
 
         $sql  = "SELECT parent FROM `syllabus_topics` WHERE syllabus_id=:id:  AND is_disabled=0 AND parent IS NOT NULL GROUP BY parent";
@@ -799,7 +800,11 @@ class SyllabusModel extends Model
 
         $db = \Config\Database::connect();
 
-        $db->transStart();
+        $db->transStart(); 
+         if($data['isChecked']=='true' && $data['topic_type'] == 'single' && $data['chapter_id'] !=''){ 
+          $ChaptersModel = new ChaptersModel();
+          $result = $ChaptersModel->delete_chapter($data);  
+         }
 
         $topic_data = [
             'is_disabled' => '1'
@@ -843,7 +848,7 @@ class SyllabusModel extends Model
 
     public function add_topics($data){
         $db = \Config\Database::connect(); 
-        $db->transStart(); 
+        $db->transStart();   
         $syllabus_id = $data['syllabus_id']; 
         if(array_key_exists('chapter', $data)){
         foreach ($data['chapter'] as  $value) {
@@ -871,22 +876,29 @@ class SyllabusModel extends Model
             $db->table('syllabus_topics')->insert($topic_data);
         }
         }else{
-              $topic_data=[];
+              $topic_data=[];   
+            if($data['checkbox']=='true'){
+                $chapter_data = [
+                    'chapter_name' =>$data['new_topic_name'], 
+                    'subject' =>$data['subject_id'], 
+                    'institute_id' =>decrypt_cipher(session()->get('instituteID')),
+                ];    
+                $db->table('chapters')->insert($chapter_data);
+                $topic_data['chapter_id']=$db->insertID();
+            }
+         
+
             if($data['parent_topic_id']==''){
-                $topic_data = [
-                    'syllabus_id' => $data['syllabus_id'],
-                    'difficulty' => $data['difficulty'],
-                    'importance' => $data['importance'],
-                    'topic_name' => $data['new_topic_name'], 
-                ];
+                $topic_data['syllabus_id']=$data['syllabus_id'];
+                $topic_data['difficulty']=$data['difficulty'];
+                $topic_data['importance']=$data['importance'];
+                $topic_data['topic_name']=$data['new_topic_name'];
                 }else{
-                    $topic_data = [
-                        'syllabus_id' => $data['syllabus_id'],
-                        'difficulty' => $data['difficulty'],
-                        'importance' => $data['importance'],
-                        'topic_name' => $data['new_topic_name'], 
-                        'parent' => $data['parent_topic_id']
-                    ];    
+                $topic_data['syllabus_id']=$data['syllabus_id'];
+                $topic_data['difficulty']=$data['difficulty'];
+                $topic_data['importance']=$data['importance'];
+                $topic_data['topic_name']=$data['new_topic_name'];
+                $topic_data['parent']=$data['parent_topic_id'];  
                 }
  
             $db->table('syllabus_topics')->insert($topic_data); 

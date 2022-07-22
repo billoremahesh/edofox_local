@@ -45,11 +45,6 @@
             </div>
         </div>
 
-
-
-
-
-
         <div class="bg-white rounded shadow p-4" style="width: 900px; margin: 0 auto;">
 
             <div class="text-center" style="background: #ddd2c8e0;"><b style="font-size: 20px;"> <?php echo strtoupper($syllabus_details['syllabus_name']); ?> ( <?php echo strtoupper($syllabus_details['subject']); ?> )</b></div>
@@ -71,7 +66,7 @@
                         <span class="inln">
                             <?php $syllabus_id = $syllabus_details['id']; ?>
                             <a href="#" data-toggle='tooltip' title='Delete Topic in Syllabus' style="display: inherit;">
-                                <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(<?= $syllabus_id ?>,'<?= $syllabus_details['syllabus_name'] ?>','all')"></i>
+                                <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(<?= $syllabus_id ?>,'<?= $syllabus_details['syllabus_name'] ?>','all',<?= $syllabus_id ?>,null)"></i>
                             </a>
                         </span>
 
@@ -118,10 +113,15 @@
             </div>
             <div class="modal-body">
                 <span id="confirmation_msg"></span>
+
+                <div class="col-md-12" id="delete_checkbox_div" style="display:none;">
+                    <input type="checkbox" name="delete_checkbox" id="delete_checkbox" /> <label class="form_label" for="chapter" style="color:red;">Delete from <b>chapters database</b></label>
+                </div>
             </div>
             <div class="modal-footer">
                 <input type="hidden" name="topic_id" id="topic_id" />
                 <input type="hidden" name="topic_type" id="topic_type" />
+                <input type="hidden" name="chapter_id" id="chapter_id" />
                 <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-danger" onclick="delete_topics()"> Yes </button>
             </div>
@@ -172,6 +172,7 @@
                         </select>
                     </div>
 
+
                     <div class="col-md-12">
                         <label class="form_label" for="chapter">Chapters Name<span style="color:red;">*</span></label>
                         <select name="chapter[]" class="form-control" multiple id="chapter" style="broder:1px solid #ced4da;" required>
@@ -191,11 +192,16 @@
                         </select>
                     </div>
 
+                    <div class="col-md-12" id="checkbox_div" style="display:none;">
+                        <input type="checkbox" name="checkbox" id="checkbox" value="yes" checked="checked" /> <label class="form_label" for="chapter" style="color:red;"> Add <b>New Chapter</b> to Chapters database</label>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="syllabus_id" id="syllabus_id" value="<?= $syllabus_details['id'] ?>" />
                     <input type="hidden" name="parent_topic_id" id="parent_topic_id" value="" />
                     <input type="hidden" name="new_topic_name" id="new_topic_name" value="" />
+                    <input type="hidden" name="subject_id" id="subject_id" value="<?= $syllabus_details['subject_id'] ?>" />
                     <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-success" onclick="add_topic_data()" name="add_package_form_submit">Add</button>
                 </div>
@@ -225,7 +231,7 @@
                 subject_id: <?= $syllabus_details['subject_id'] ?>,
                 syllabus_id: <?= $syllabus_details['id'] ?>
             },
-            success: function(result) { 
+            success: function(result) {
                 $("#main-menu").html("");
                 var syllabus_topic = get_chepter_list1(result);
                 $("#main-menu").append(syllabus_topic);
@@ -239,7 +245,7 @@
         result.parent.forEach((element) => {
             html = html + `    <a href="#">
                                             <span class="fa fa-fw fa-folder"></span>
-                                            ` + element.topic_name + ` <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)"  style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single')"></i>
+                                            ` + element.topic_name + ` <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)"  style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single',` + element.chapter_id + `,` + element.institute_id + `)"></i>
                                         </a>
                                         <ul> ` + add_child_chapter1(result, element.id) + `
                                            
@@ -258,7 +264,7 @@
                                 <a href="#" aria-expanded="true">
                                     <span class="fa fa-fw fa-folder"></span>
                                          ` + element.topic_name + `
-                                    <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)" style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single')" ></i>
+                                    <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)" style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single',` + element.chapter_id + `,` + element.institute_id + `)" ></i>
                                 </a> <ul> ` + add_child_chapter2(result, element.id) + `
                                            
                                            </ul>  
@@ -278,7 +284,7 @@
                                 <a href="#" aria-expanded="true">
                                     <span class="fa fa-fw fa-folder"></span>
                                          ` + element.topic_name + `
-                                    <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)" style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single')"></i>
+                                    <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)" style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single',` + element.chapter_id + `,` + element.institute_id + `)"></i>
                                 </a> <ul> ` + add_child_chapter3(result, element.id) + `
                                            
                                            </ul>  
@@ -297,7 +303,7 @@
                                 <a href="#" aria-expanded="true">
                                     <span class="fa fa-fw fa-folder"></span>
                                          ` + element.topic_name + `
-                                    <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)" style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single')"></i>
+                                    <i class="fa fa-fw fa-plus crud-btn" onclick="add_topic_modal(` + element.id + `)" style="margin-left: 5px;"></i> <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single',` + element.chapter_id + `,` + element.institute_id + `)"></i>
                                 </a> <ul> ` + add_child_chapter4(result, element.id) + `
                                            
                                            </ul>  
@@ -316,7 +322,7 @@
                                 <a href="#" aria-expanded="true">
                                     <span class="fa fa-fw fa-folder"></span>
                                          ` + element.topic_name + `
-                                     <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single')"></i>
+                                     <i class="fa fa-fw fa-trash crud-btn" onclick="delete_child_topic(` + element.id + `,'` + element.topic_name + `','single',` + element.chapter_id + `,` + element.institute_id + `)"></i>
                                 </a> <ul> ` + add_child_chapter3(result, element.id) + `
                                            
                                            </ul>  
@@ -372,15 +378,23 @@
 
     }
 
-    function delete_child_topic(topic_id, name, type) {
-
+    function delete_child_topic(topic_id, name, type, chapter_id, institute_id) {
+        console.log(institute_id, 'institute_id');
         if (type == 'single') {
             msg = `<p> Are you sure, you want to delete this <b >` + name + `</b> Topic?</p>`;
         } else {
             msg = `<p> Are you sure, you want to delete this <b >` + name + `</b> Syllabus of All Topic?</p>`;
         }
 
+        if (institute_id != null) {
+            $("#delete_checkbox_div").show();
+        } else {
+            $("#delete_checkbox_div").hide();
+        }
+
+        $('#delete_checkbox').prop('checked', false); // Checks it
         $("#topic_id").val(topic_id);
+        $("#chapter_id").val(chapter_id);
         $("#topic_type").val(type);
         $("#confirmation_msg").html(msg);
         $('#delete_syllabus_topics_modal').modal('show');
@@ -391,13 +405,17 @@
         toggle_custom_loader(true, "custom_loader");
         let topic_id = $("#topic_id").val();
         let topic_type = $("#topic_type").val();
+        let isChecked = $('#delete_checkbox').prop('checked');
+        let chapter_id = $("#chapter_id").val();
         jQuery.ajax({
             url: base_url + '/syllabus/delete_topics',
             type: 'POST',
             dataType: 'json',
             data: {
                 topic_id: topic_id,
-                topic_type: topic_type
+                topic_type: topic_type,
+                isChecked: isChecked,
+                chapter_id: chapter_id
             },
             success: function(result) {
                 if (topic_type == 'single') {
@@ -417,6 +435,7 @@
     }
 
     function add_topic_modal(parent_id) {
+
         $("#chapter option:selected").removeAttr("selected");
         $("#new_topic_name").val("");
         $('#topic_data').trigger("reset");
@@ -436,8 +455,9 @@
         let parent_topic_id = $("#parent_topic_id").val();
         let syllabus_id = $("#syllabus_id").val();
         let new_topic_name = $("#new_topic_name").val();
-
-        if ((difficulty == '' && importance == '') || (chapter.length == 0 && new_topic_name == '')) {
+        let isChecked = $('#checkbox').prop('checked');
+        let subject_id = $("#subject_id").val();
+        if ((difficulty == '' && importance == '') || (chapter.length == 0 && $.trim(new_topic_name) == '')) {
             return false;
         }
 
@@ -454,9 +474,12 @@
                 difficulty: difficulty,
                 parent_topic_id: parent_topic_id,
                 syllabus_id: syllabus_id,
-                new_topic_name: new_topic_name
+                new_topic_name: new_topic_name,
+                checkbox: isChecked,
+                subject_id: subject_id
             },
             success: function(result) {
+                $("#checkbox_div").hide();
                 msg = `Topic Added Successfully.`;
                 Snackbar.show({
                     pos: 'top-center',
@@ -468,8 +491,6 @@
 
     }
 
-    var selectedClassroom = <?php echo json_encode($selected_chapter); ?>;
-    $("#chapter").val(selectedClassroom);
     $('#chapter').multiselect({
         columns: 1,
         placeholder: 'Select Chapter',
@@ -478,10 +499,17 @@
     });
 
 
+    $(".ms-options").click(function(e) {
+        $("#checkbox_div").hide();
+    });
 
     $(".ms-search").change(function(e) {
+
+        $("#checkbox_div").show();
         $("#new_topic_name").val(e.target.value);
-        add_topic_data();
+        $(".ms-options-wrap button").html(e.target.value);
+        $(".ms-options").hide();
+        // add_topic_data();
 
     });
 </script>

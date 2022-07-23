@@ -305,14 +305,13 @@ class Academic extends BaseController
 			$session->setFlashdata('toastr_error', 'Validation failed.');
 			return redirect()->to(base_url($redirect))->withInput();
 		} else {
-			$data = $this->request->getVar();
-			// return false;
-			// $SyllabusModel = new SyllabusModel();
-			// if ($SyllabusModel->update_syllabus($data)) {
-			// 	$session->setFlashdata('toastr_success', 'Syllabus Updated Successfully.');
-			// } else {
-			// 	$session->setFlashdata('toastr_error', 'Error in processing.');
-			// }
+			$data = $this->request->getVar(); 
+			$AcademicModel = new AcademicModel();
+			if ($AcademicModel->update_academic_plan($data)) {
+				$session->setFlashdata('toastr_success', 'Academic plan Updated Successfully.');
+			} else {
+				$session->setFlashdata('toastr_error', 'Error in processing.');
+			}
 			return redirect()->to(base_url($redirect));
 		}
 	}

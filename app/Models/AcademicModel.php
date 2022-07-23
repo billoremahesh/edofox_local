@@ -302,36 +302,27 @@ class AcademicModel extends Model
      * @return void
      * @author sunil <sunil@mattersoft.xyz>
      */
-    public function update_syllabus($data)
+    public function update_academic_plan($data)
     {
         $db = \Config\Database::connect();
 
-        $db->transStart();
+        $db->transStart(); 
 
-        $this->delete_syllabus($data);
-        $syllabus_id = decrypt_cipher($data['syllabus_id']);
-        // update syllabus  
-        $syllabus_data = [
-            'subject_id' => strtoupper(sanitize_input($data['subject_name'])),
-            'syllabus_name' => $data['syllabus_name'],
-            'description' => $data['description'],
+        $this->delete_academic($data);
+        $academic_id = decrypt_cipher($data['academic_id']);
+        // update academic  
+        $syllabus_data = [ 
+            'academic_plan_name' => $data['academic_plan'],
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'syllabus_id' =>$data['syllabus_name'],
             'institute_id' => decrypt_cipher(session()->get('instituteID')),
             'is_disabled' => '0'
         ];
 
-        $id = sanitize_input(decrypt_cipher($data['syllabus_id']));
-        $db->table('syllabus')->update($syllabus_data, ['id' => $id]);
-
-        // update syllabus_classroom_map
-
-        foreach ($data['session_classroom'] as $class) {
-            $syllabus_classroom = [
-                'classroom_id' => strtoupper(sanitize_input($class)),
-                'syllabus_id' => $syllabus_id,
-            ];
-            $db->table('syllabus_classroom_map')->insert($syllabus_classroom);
-        }
-
+        $id = sanitize_input(decrypt_cipher($data['academic_id']));
+        $db->table('academic_plan')->update($syllabus_data, ['id' => $id]);
+ 
 
         $db->transComplete();
 
@@ -342,7 +333,7 @@ class AcademicModel extends Model
             // Activity Log
             $log_info =  [
                 'username' =>  session()->get('username'),
-                'item' => "Syllabus Id " . $syllabus_id,
+                'item' => "academic Id " . $academic_id,
                 'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
                 'admin_id' =>  decrypt_cipher(session()->get('login_id'))
             ];

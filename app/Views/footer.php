@@ -92,6 +92,7 @@
  <!-- timepicker  js -->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js'></script>
  
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <!-- treeview js  --> 
   <script src="<?php echo base_url('assets/treeview/js/metisMenu.js'); ?>"></script> 
   <script src="<?php echo base_url('assets/treeview/js/mm-folder.js'); ?>" charset="utf-8"></script>

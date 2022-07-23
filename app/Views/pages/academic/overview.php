@@ -53,7 +53,7 @@
 
 
                     <?php if (in_array("manage_classrooms", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
-                        <a href="#" onclick="show_add_modal('modal_div','add_syllabus_modal','syllabus/add_syllabus_modal/syllabus');" data-toggle='tooltip' title='Add New Syllabus'>
+                        <a href="#" onclick="show_add_modal('modal_div','add_syllabus_modal','academic/add_academic_modal/academic');" data-toggle='tooltip' title='Add New Academic plan'>
                             <span class="material-icons action_button_plus_icon">
                                 add
                             </span>
@@ -69,10 +69,10 @@
                     <thead>
                         <tr>
                             <th> # </th>
-                            <th> Syllabus </th>
-                            <th> Subject Name </th> 
-                            <th style="width:300px !important;" > Classroom Name </th> 
-                            <th> Description </th> 
+                            <th> Academic Plan</th>
+                            <th> Start Date </th> 
+                            <th> End Date </th> 
+                            <th style="width:25%;" > Syllabus </th> 
                             <th class="not_to_export not_to_print"> Actions </th>
                         </tr>
                     </thead>
@@ -133,13 +133,13 @@
                 "exportOptions": {
                     "columns": ':visible:not(.not_to_export)'
                 },
-                messageTop: "Syllabus"
+                messageTop: "Academic Plan"
             }, {
                 extend: 'print',
                 exportOptions: {
                     columns: ':visible:not(.not_to_print)'
                 },
-                title: "Syllabus ",
+                title: "Academic Plan ",
                 customize: function(win) {
                     $(win.document.body).find('h1').css('text-align', 'center');
                     $(win.document.body).css('font-size', '9px');
@@ -155,7 +155,7 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
-                'url': base_url + "/syllabus/load_syllabus",
+                'url': base_url + "/academic/load_Academic",
                 "type": "POST",
                 "data": function(d) {
                     d.classroom_status = $('#classroom_status').val(),
@@ -168,7 +168,7 @@
             },
             'drawCallback': function(data) {
                 console.log(data.json);
-                $('#total_classrooms').html("Total Syllabus: " + data.json.recordsFiltered);
+                $('#total_classrooms').html("Total Academic plan: " + data.json.recordsFiltered);
                 initializeTooltip();
             },
             "dataSrc": "Data",
@@ -210,4 +210,3 @@
         waitForElementToDisplay("#classroomsListTable_filter", 1000, 1);
     });
 </script>
-

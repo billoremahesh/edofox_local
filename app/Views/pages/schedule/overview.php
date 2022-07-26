@@ -271,7 +271,152 @@
                 success: function(result) {
                     $('#schedule_cards_div').html(format_schedule(result));
                     toggle_custom_loader(false, "custom_loader");
-                    $("#error_message").html("");
+                }});
+
+        }
+    }
+
+    var options = {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+    };
+
+    function addScheduleCard(obj, dateString) {
+        var html = ""
+        var title = obj.title;
+        console.log(title, 'title');
+        var sch_title = obj.title.toUpperCase();
+        title_length = sch_title.length;
+        if (parseInt(title_length) > 25) {
+            sch_title = sch_title.substring(0, 25);
+            sch_title = sch_title + ' ...';
+        }
+
+        if (obj.title != null) {
+            html = html + "<li class='schedule_card position-relative'>";
+            if (obj.subject != null) {
+                html = html + "<div class='badge subject_badge'>" + obj.subject.subjectName.toUpperCase() + "</div>";
+            }
+            html = html + "<div class='card_head'>";
+            html = html + `<div class='card_title' data-bs-toggle='tooltip' data-bs-placement='top' title="` + title + `" >` + sch_title.toUpperCase() + `</div>`;
+            html = html + "</div>";
+            html = html + "<div class='card_body'>";
+            if (obj.classroom != null) {
+                html = html + "<div class='card_supporting_text'>Classroom: " + obj.classroom.name.toUpperCase() + "</div>";
+            }
+
+            if (obj.startsAt != null && obj.endsAt != null && obj.startsAt != "" && obj.endsAt != "") {
+                html = html + "<div class='card_supporting_text'>" + formatAMPM(obj.startsAt) + "-" + formatAMPM(obj.endsAt) + "</div>";
+            }
+
+            if (obj.duration != null) {
+                html = html + "<div class='card_supporting_text'>Duration: ";
+                html = html + secondsToHms(obj.duration);
+                html = html + "</div>";
+            }
+
+            html = html + "<div class='card_supporting_text'>Session Frequency:";
+            html = html + obj.frequency;
+            html = html + "</div>";
+
+            if (obj.totalStudents != null) {
+                html = html + "<div class='card_supporting_text'>Attendance: ";
+                if (obj.presentStudents != null) {
+                    html = html + obj.presentStudents + "/" + obj.totalStudents;
+                } else {
+                    html = html + "0/" + obj.totalStudents;
+                }
+
+                html = html + "</div>";
+            }
+
+            if (ui_module == 'Schedule') {
+                html = html + "<div class='d-flex justify-content-between my-2'><span class='material-icons schedule_btns schedule_edit_btn' onclick=" +
+                    "show_edit_modal('modal_div','update_schedule_modal','/schedule/update_schedule_modal/" +
+                    obj.id +
+                    "');" +
+                    ">edit</span><span class='material-icons schedule_btns schedule_delete_btn  mx-2' onclick=" +
+                    "show_edit_modal('modal_div','delete_schedule_modal','/schedule/delete_schedule_modal/" +
+                    obj.id +
+                    "');" +
+                    ">delete</span></div>";
+            } else {
+
+                if (obj.conductAttendance) {
+                    html = html + "<div class='d-flex justify-content-between my-2'><a class='btn btn-sm btn-primary mx-2' href='" +
+                        base_url + "/attendance/take_attendance/" +
+                        obj.id + "/" + dateString + "'>Take attendance</a></div>";
+                } else if (obj.totalStudents != null) {
+                    html = html + "<div class='d-flex justify-content-between my-2'><a class='material-icons schedule_btns schedule_view_btn' target='_blank' href='" +
+                        base_url + "/attendance/overview/" +
+                        obj.id + "/" + dateString + "'>visibility</a></div>";
+                }
+
+
+            }
+
+            html = html + "</div>";
+            html = html + "</li>";
+            return html;
+        }
+    }
+
+    function formatSchedule(result) {
+        var html = "";
+        var classroom = $("#classroom_filter").val();
+        var schedule_date = $("#schedule_date").val();
+        if (result == null || result.status == null || result.status.statusCode != 200) {
+            var error = "Some error in fetching your schedule ..";
+            if (result != null && result.status != null) {
+                error = result.status.responseText;
+            }
+            html = "<div class='default_card'><h4>" + error + "</h4></div>";
+            return html;
+        }
+        if (result == null || result.calendar == null || result.calendar.length == 0) {
+            html = "<div class='default_card'><h4>No schedule available</h4></div>";
+        } else {
+            html = html + "<div class='kanban'>";
+            html = html + "<div class='kanban-container'>";
+            result.calendar.forEach(function(day) {
+                var formatted_date = new Date(day.date);
+                formatted_date = formatted_date.toLocaleDateString("en-US", options)
+
+                if (day.type == "Holiday") {
+                    var formatted_date = new Date(day.date);
+                    formatted_date = formatted_date.toLocaleDateString("en-US", options)
+                    holiday_content = formatted_date + ' <span  class="float-end bracketsty" data-bs-toggle="tooltip" data-bs-placement="top" title="' + day.holidayName + '" > <span class="holiday_title">' + day.holidayName + '</span> </span>';
+                    html = html + "<div class='kanban-column'>";
+                    html = html + "<div class='kanban-column-header' style='background-color:red !important' >" + holiday_content + "</div>";
+                    html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
+                } else {
+                    var formatted_date = new Date(day.date);
+                    formatted_date = formatted_date.toLocaleDateString("en-US", options)
+                    html = html + "<div class='kanban-column'>";
+                    html = html + "<div class='kanban-column-header'>" + formatted_date + "</div>";
+                    html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
+                }
+
+                var lastEndsAt = "";
+                if (day.schedule != null && day.schedule.length > 0) {
+                    day.schedule.forEach(function(obj) {
+                        html = html + addScheduleCard(obj, day.dateString);
+                        lastEndsAt = obj.endsAt;
+                    });
+                }
+                if (ui_module == 'Schedule') {
+                    if(lastEndsAt != "") {
+                        lastEndsAt = "/" + lastEndsAt;
+                    }
+                    html = html + "<li>";
+                    html = html + "<div>";
+                    html = html + "<button class='btn btn-outline-primary' onclick=" +
+                        "show_edit_modal('modal_div','add_schedule_modal','/schedule/add_schedule_modal/" +
+                        classroom + "/" + day.dateString + lastEndsAt + "');" +
+                        "> Add Schedule</button>";
+                    html = html + "</div>";
+                    html = html + "</li>";
                 }
             });
         }

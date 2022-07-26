@@ -131,7 +131,7 @@ $userType = session()->get('user_type');
                                 <span class="align-middle me-2 material-icons">
                                     cast_for_education
                                 </span>
-                                <span class="align-middle"> DLP </span>
+                                <span class="align-middle"> Learning Content </span>
                             </a>
                         </li>
                     <?php
@@ -168,7 +168,8 @@ $userType = session()->get('user_type');
                             <span class="align-middle me-2 material-icons">
                                 class
                             </span>
-                            <span class="align-middle"> Syllabus</span>
+                            <span class="align-middle"> Syllabus <span class="badge rounded-pill bg-warning" data-bs-toggle="tooltip" title="Beta Release for early adopters">Beta</span>
+</span>
                         </a>
                     </li>
                 <?php endif; ?> 

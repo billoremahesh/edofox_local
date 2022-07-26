@@ -91,14 +91,19 @@ form label.selected {
         <body>
             <?php 
             $snos=1;
-             
             foreach($subject_attendanc_present as $key=>$value){ 
                  $absent=0;
                 if(in_array($value['subject_id'],$abset_tem)) {
                   $absents = $subject_attend_abs[$value['subject_id']]; 
                   $absent=$absents['present_count'];
                 }  
-                $persn = round(($absent*100)/$value['present_count']);
+                if(isset($absent) && $absent > 0) {
+                    $persn = round(($absent*100)/($value['present_count'] + $absent));
+                } else {
+                    //As no absent entries found.. student was present 100%
+                    $persn = 100;
+                }
+                
 
                 ?>
             <tr class="<?php if($key % 2 == 0){ echo "odd"; }else{ echo "even"; } ?>" >

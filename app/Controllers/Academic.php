@@ -582,26 +582,29 @@ class Academic extends BaseController
 	/*******************************************************/
 
 	
-	public function syllabus_configuration($syllabus_id, $redirect = 'syllabus')
+	public function academic_plan_configuration($academic_id, $redirect = 'academic')
 	{
-		// Log Activity  
-
-		$this->activity->page_access_activity('Syllabus', '/syllabus');
-		$data['title'] = "Syllabus configuration";
+		// Log Activity   
+		 
+		$this->activity->page_access_activity('Academic Plan', '/academic');
+		$data['title'] = "Academic Plan configuration";
 		$data['instituteID'] = session()->get('instituteID');
-		$instituteID = decrypt_cipher(session()->get('instituteID'));
-        $SyllabusModel= new SyllabusModel(); 
+		$instituteID = decrypt_cipher(session()->get('instituteID')); 
 		$data['redirect']=$redirect;
-		$syllabus_id=decrypt_cipher($syllabus_id); 
-		$SyllabusModel=new SyllabusModel(); 
-		$syllabusDetails =$SyllabusModel->get_syllabus_details($syllabus_id);  
-		$data['syllabusDetails']=$syllabusDetails; 
+		$academic_id=decrypt_cipher($academic_id); 
+		$AcademicModel=new AcademicModel(); 
+		$academicDetails =$AcademicModel->get_academic_details($academic_id);    
+		$data['academicdetails']=$academicDetails; 
+		$syllabus_id=$academicDetails['syllabus_id'];
+		$SyllabusModel= new SyllabusModel(); 
 		$select_data=$SyllabusModel->selected_chapter($syllabus_id);  
+		$data['syllabus_classes']=$AcademicModel->get_selected_classes($syllabus_id); 
 		$data['selected_chapter']=$select_data['s_chapter_id'];
-		$data['chapter_list'] = $SyllabusModel->get_subject_chapters($syllabusDetails['subject_id'],$instituteID); 
+		$data['chapter_list'] = $AcademicModel->get_subject_chapters($academicDetails['subject_id'],$instituteID); 
 	 
-		$data['syllabus_details'] = $SyllabusModel->get_syllabus_record($syllabus_id); 
-		return view('pages/syllabus/syllabus_configuration', $data);
+		$data['syllabus_details'] = $SyllabusModel->get_syllabus_record($syllabus_id);   
+	    
+		return view('pages/academic/academic_configuration', $data);
 	}
 	/*******************************************************/
 
@@ -880,6 +883,13 @@ class Academic extends BaseController
 		$data =$this->request->getVar();  
 		$SyllabusModel = new SyllabusModel();
 		$result =$SyllabusModel->add_topics($data);
+		echo json_encode($result);
+	}
+
+	public function get_classroom_staff(){
+		$data =$this->request->getVar();  
+		$AcademicModel = new AcademicModel();
+		$result =$AcademicModel->get_classroom_staff($data['classroom_id']);
 		echo json_encode($result);
 	}
 

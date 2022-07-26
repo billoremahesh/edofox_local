@@ -193,17 +193,19 @@ class AcademicModel extends Model
                 if (in_array("manage_syllabus", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) {
 
                     // Update Option
-                    $update_btn = "<li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','update_academic_modal','academic/update_academic_modal/" . $academic_id . "');" . "> Update Acadenuc plan </a></li>";
+                    $update_btn = "<li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','update_academic_modal','academic/update_academic_modal/" . $academic_id . "');" . "> Update Academic plan </a></li>";
 
                     // Disable Option
-                    $delete_btn = "<li role='separator' class='dropdown-divider'></li><li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','delete_academic_modal','academic/delete_academic_modal/" . $academic_id . "');" . "> Disable Acadenuc plan </a></li>";
+                    $delete_btn = "<li role='separator' class='dropdown-divider'></li><li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','delete_academic_modal','academic/delete_academic_modal/" . $academic_id . "');" . "> Disable Academic plan </a></li>";
 
-                    // Disable Option
+                    // academic configuration 
+                    $academic_configuration = "<li role='separator' class='dropdown-divider'></li><li><a class='btn btn-sm' href=" . base_url('academic/academic_plan_configuration/' . $academic_id) . " > Academic plan Configuration </a></li>";
+
                }
 
 
                 $dropdown_wrapper_code = htmlspecialchars("<div class='dropdown'><button class='btn btn-default dropdown-toggle more_option_button' type='button' id='classroomDropdownMenu' data-bs-toggle='dropdown'  data-bs-auto-close='outside'  aria-expanded='false'><i class='fa fa-ellipsis-h' aria-hidden='true'></i>
-                </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='classroomDropdownMenu'>  $update_btn $delete_btn  </ul></div>");
+                </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='classroomDropdownMenu'>  $update_btn $delete_btn $academic_configuration </ul></div>");
             }
 
             $nestedData[] = htmlspecialchars_decode($dropdown_wrapper_code);
@@ -361,29 +363,7 @@ class AcademicModel extends Model
         return $query->getResultArray();
     }
 
-
-    /**
-     * Get Classroom Details
-     *
-     * @param [Integer] $classroom_id
-     *
-     * @return Array
-     * @author sunil <sunil@mattersoft.xyz>
-     */
-    public function get_syllabus_record($syllabus_id)
-    {
-        $db = \Config\Database::connect();
-        $sql = "SELECT syllabus.*,test_subjects.subject
-        FROM syllabus LEFT JOIN test_subjects ON test_subjects.subject_id=syllabus.subject_id 
-        WHERE syllabus.id = :id: ";
-
-
-        $query = $this->db->query($sql, [
-            'id' => sanitize_input($syllabus_id)
-        ]);
-        return $query->getRowArray();
-    }
-    /*******************************************************/
+ 
 
     public function add_syllabus_chapter($data)
     {
@@ -501,27 +481,7 @@ class AcademicModel extends Model
         $result = $query->getResultArray();
         return $result;
     }
-
-    public function selected_chapter($syllabus_id)
-    {
-        $db = \Config\Database::connect();
-        $sql = "SELECT * FROM `syllabus_topics` WHERE syllabus_id=:id: AND is_disabled=0";
-        $query = $this->db->query($sql, [
-            'id' => sanitize_input($syllabus_id)
-        ]);
-        $result = $query->getResultArray();
-        $s_chapter_id = [];
-        $data = [];
-        $data['difficulty'] = "";
-        $data['importance'] = "";
-        foreach ($result as $value) {
-            $s_chapter_id[] = $value['chapter_id'];
-            $data['difficulty'] = $value['difficulty'];
-            $data['importance'] = $value['importance'];
-        }
-        $data['s_chapter_id'] = $s_chapter_id;
-        return $data;
-    }
+ 
 
 
     public function update_syllabus_chapter($data)
@@ -883,15 +843,32 @@ class AcademicModel extends Model
     public function get_academic_details($syllabus_id)
     {
         $db = \Config\Database::connect(); 
-        $sql = "SELECT academic_plan.*
-        FROM academic_plan 
-        WHERE id = :id: ";
+        $sql = "SELECT academic_plan.*,syllabus.subject_id FROM academic_plan LEFT JOIN syllabus ON syllabus.id=academic_plan.syllabus_id WHERE academic_plan.id= :id:  AND academic_plan.is_disabled=0";
 
         $query = $this->db->query($sql, [
             'id' => sanitize_input($syllabus_id)
-        ]); 
+        ]);  
         return $query->getRowArray();
     }
     /*******************************************************/
+
+    public function get_selected_classes($syllabus_id){
+        $db = \Config\Database::connect(); 
+        $sql = "SELECT packages.id,packages.package_name,syllabus_classroom_map.syllabus_id FROM `syllabus_classroom_map` LEFT JOIN packages ON packages.id=syllabus_classroom_map.classroom_id WHERE syllabus_classroom_map.syllabus_id= :id: AND syllabus_classroom_map.is_disabled=0";
+        $query = $this->db->query($sql, [
+            'id' => sanitize_input($syllabus_id)
+        ]);  
+        return $query->getResultArray();
+    }
+
+    public function get_classroom_staff($classroom_id){
+        $db = \Config\Database::connect();  
+        $sql="SELECT * FROM admin_package_map LEFT JOIN admin ON admin.id=admin_package_map.admin_id WHERE admin_package_map.package_id= :id: ";
+
+        $query = $this->db->query($sql, [
+            'id' => sanitize_input($classroom_id)
+        ]);  
+        return $query->getResultArray();
+    }
     
 }

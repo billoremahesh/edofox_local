@@ -30,6 +30,41 @@
                 </div>
                 <hr />
 
+                
+                <?php if(!empty($uploaded_questions)):?>
+                    <div class="col-10">
+                        <h6> Existing exam sections </h6>
+                        <table class="table table-bordered table-condensed my-4" id="exam_existing_sections">
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Starts from</th>
+                                <th>No Of Questions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                                $lastCount = 1;
+                                foreach ($uploaded_questions as $existing_section) {
+                                    $sectionName = $existing_section['section'];
+                                    $count = $existing_section['section_count'];
+                                    $from = $existing_section['question_number'];
+                                    $lastCount = $from + $count;
+                                    ?>
+                                    <tr>
+                                        <td><?= $sectionName ?></td>
+                                        <td><?= $from ?></td>
+                                        <td><?= $count ?></td>
+                                    </tr>
+                                    <?php
+                                }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                <?php endif; ?>
+
                 <div class="row justify-content-between">
                     <div class="col-10">
                         <h6> Exam Section Wise Configurations </h6>
@@ -40,6 +75,7 @@
                         </button>
                     </div>
                 </div>
+                
 
                 <table class="table table-bordered table-condensed my-4" id="exam_section_structure_tbl">
                     <thead>
@@ -57,7 +93,7 @@
                     <tbody>
 
                         <?php
-                        if (!empty($test_template_data)) {
+                        if (!empty($test_template_data) && empty($uploaded_questions)) {
                             $template_id = $test_details['template_id'];
                             $index_no = 1;
                             foreach ($test_template_data as $template_data) {
@@ -128,7 +164,9 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control" name='exam_sections_from_question[]' value="<?= $template_data['from_question']; ?>" id="from_question_<?= $index_no; ?>" />
+                                        <input type="number" class="form-control" name='exam_sections_from_question[]' value="<?= $template_data['from_question']; ?>" id="from_question_<?= $index_no; ?>" 
+                                        value="<?= isset($lastCount) && $lastCount > 0 ? $lastCount : "" ?>"
+                                        />
                                     </td>
                                     <td>
                                         <input type="number" class="form-control" name='exam_sections_to_question[]' value="<?= $template_data['to_question']; ?>" id="to_question_<?= $index_no; ?>" />
@@ -169,7 +207,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="number" class="form-control" name='exam_sections_from_question[]' id="from_question_1" />
+                                    <input type="number" class="form-control" name='exam_sections_from_question[]' id="from_question_1" value="<?= isset($lastCount) && $lastCount > 0 ? $lastCount : "" ?>"/>
                                 </td>
                                 <td>
                                     <input type="number" class="form-control" name='exam_sections_to_question[]' id="to_question_1" />
@@ -185,6 +223,8 @@
                     </tbody>
 
                 </table>
+
+                
 
 
                 <p id="uploadError" class="text-danger"></p>

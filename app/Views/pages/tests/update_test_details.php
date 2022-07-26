@@ -510,6 +510,15 @@
 
 
 <script>
+    var selectedTemplate = "";
+    <?php 
+    if(isset($test_details['omr_template'])) {
+    ?>
+        selectedTemplate = <?=$test_details['omr_template']?>;
+    <?php
+    }    
+    ?>
+
     function render_omr_template() {
         var mode_of_conduction = $("#exam_conduction").val();
         if (mode_of_conduction == "Offline") {
@@ -519,7 +528,7 @@
                 method: "POST",
                 data: {},
                 success: function(result) {
-                    $("#omr_template").html(format_omr_templates(result));
+                    $("#omr_template").html(format_omr_templates(result, selectedTemplate));
                 }
             });
         } else {
@@ -544,7 +553,11 @@
             data = JSON.parse(data);
             html = html + "<option></option>";
             for (var i = 0; i < data.length; i++) {
-                html = html + "<option value='" + data[i].id + "'>" + data[i].omr_template_name + "</option>";
+                var selected = "";
+                if(selectedTemplate != "" && selectedTemplate == data[i].id) {
+                    selected = "selected";
+                }
+                html = html + "<option value='" + data[i].id + "' " + selected + ">" + data[i].omr_template_name + "</option>";
             };
         } else {
             html = html + "<option></option>";

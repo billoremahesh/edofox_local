@@ -12,6 +12,12 @@ class QuestionBank extends BaseController
 
     public function index()
     {
+        // Check Authorized User
+		if (!isAuthorized("view_question_bank")) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+			return redirect()->to(base_url('/home'));
+		}
         // Log Activity 
         $this->activity->page_access_activity('Question Bank', '/questionBank');
         $data['title'] = "Manage Question Bank";

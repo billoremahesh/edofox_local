@@ -4,11 +4,18 @@ namespace App\Controllers;
 
 use \App\Models\ClassroomModel;
 use \App\Models\UserActivityModel;
+use \App\Models\StudentModel;
 
 class Classrooms extends BaseController
 {
 	public function index()
 	{
+		// Check Authorized User
+		if (!isAuthorized("view_classrooms")) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+			return redirect()->to(base_url('/home'));
+		}
 		// Log Activity 
 		$this->activity->page_access_activity('Classrooms', '/classrooms');
 		$data['title'] = "Classrooms";
@@ -147,6 +154,27 @@ class Classrooms extends BaseController
 		$ClassroomModel = new ClassroomModel();
 		$data['classroom_details'] = $ClassroomModel->get_classroom_details(decrypt_cipher($classroom_id));
 		echo view('modals/classrooms/delete', $data);
+	}
+	/*******************************************************/
+
+	/**
+	 * Empty Classroom Modal
+	 *
+	 * @param [Integer] $classroom_id
+	 * @param string $redirect
+	 *
+	 * @return void
+	 * @author Ajinkya K
+	 */
+	public function empty_classroom_modal($classroom_id, $redirect = 'classrooms')
+	{
+		$data['title'] = "Empty Classroom";
+		$data['classroom_id'] = $classroom_id;
+		$data['redirect'] = $redirect;
+		$data['validation'] =  \Config\Services::validation();
+		$ClassroomModel = new ClassroomModel();
+		$data['classroom_details'] = $ClassroomModel->get_classroom_details(decrypt_cipher($classroom_id));
+		echo view('modals/classrooms/empty_classroom', $data);
 	}
 	/*******************************************************/
 
@@ -322,7 +350,15 @@ class Classrooms extends BaseController
 		} else {
 			$data = $this->request->getVar();
 			$ClassroomModel = new ClassroomModel();
+			
 			if ($ClassroomModel->delete_classroom($data)) {
+				if(isset($data['delete_students']) && $data['delete_students'] == 'Y') {
+					//Delete all student profiles of this classroom
+					$StudentModel = new StudentModel();
+					//Classroom details are required to track activity of which classroom is getting updated
+					$data['classroom_details'] = $ClassroomModel->get_classroom_details(decrypt_cipher($data['classroom_id']));
+					$StudentModel->delete_classroom_students($data);
+				}
 				$session->setFlashdata('toastr_success', 'Classroom deleted successfully.');
 			} else {
 				$session->setFlashdata('toastr_error', 'Error in processing.');
@@ -331,6 +367,41 @@ class Classrooms extends BaseController
 		}
 	}
 	/*******************************************************/
+
+	/**
+	 * Empty Classroom Submit 
+	 *
+	 * @return void
+	 * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+	 */
+	public function empty_classroom_submit()
+	{
+		$session = session();
+		$redirect = $this->request->getVar('redirect');
+		$result = $this->validate([
+			'classroom_id' => ['label' => 'Classroom ID', 'rules' => 'required|string|min_length[1]']
+		]);
+
+		if (!$result) {
+			$session->setFlashdata('toastr_error', 'Validation failed.');
+			return redirect()->to(base_url($redirect))->withInput();
+		} else {
+			$data = $this->request->getVar();
+			$ClassroomModel = new ClassroomModel();
+			//Delete all student profiles of this classroom
+			$StudentModel = new StudentModel();
+			//Classroom details are required to track activity of which classroom is getting updated
+			$data['classroom_details'] = $ClassroomModel->get_classroom_details(decrypt_cipher($data['classroom_id']));
+			if($StudentModel->delete_classroom_students($data)) {
+				$session->setFlashdata('toastr_success', 'Classroom students deleted successfully.');
+			} else {
+				$session->setFlashdata('toastr_error', 'Error in processing.');
+			}
+			return redirect()->to(base_url($redirect));
+		}
+	}
+	/*******************************************************/
+	
 
 
 	/**

@@ -305,7 +305,7 @@ class Academic extends BaseController
 			$session->setFlashdata('toastr_error', 'Validation failed.');
 			return redirect()->to(base_url($redirect))->withInput();
 		} else {
-			$data = $this->request->getVar(); 
+			$data = $this->request->getVar();  
 			$AcademicModel = new AcademicModel();
 			if ($AcademicModel->update_academic_plan($data)) {
 				$session->setFlashdata('toastr_success', 'Academic plan Updated Successfully.');
@@ -892,5 +892,8 @@ class Academic extends BaseController
 		$result =$AcademicModel->get_classroom_staff($data['classroom_id']);
 		echo json_encode($result);
 	}
+
+	
+	
 
 }

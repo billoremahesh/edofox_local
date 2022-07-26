@@ -236,13 +236,20 @@ foreach ($exams_data as $row) :
     </td>";
     if (in_array('manage_tests', $perms) || in_array("all_perms", session()->get('perms'))) :
 
+        $addQuestionsHtml = "<li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/add_test_img_questions/' . $encrypted_test_id) . "'> Add Questions in Test from images </a></li><li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/generate_chapter_wise_test/' . $encrypted_test_id) . "'> Auto-create exam chapter-wise from question bank </a></li><li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/parse_pdf/' . $encrypted_test_id) . "'> Import PDF question paper </a></li><li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/question_bank/' . $encrypted_test_id) . "'> Pick questions from question bank </a></li>";
+        if ($exam_conduction == "Offline") {
+            $addQuestionsHtml = $addQuestionsHtml . "<li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/update_exam_pdf_paper/' . $encrypted_test_id) . "'> Update Offline Test Paper </a></li>";
+        }
+        $addQuestionsHtml = $addQuestionsHtml . "<li><hr class='dropdown-divider'></li>";
 
-        $addQuestionSectionencode =  htmlspecialchars("<li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/add_test_img_questions/' . $encrypted_test_id) . "'> Add Questions in Test from images </a></li><li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/generate_chapter_wise_test/' . $encrypted_test_id) . "'> Auto-create exam chapter-wise from question bank </a></li><li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/parse_pdf/' . $encrypted_test_id) . "'> Import PDF question paper </a></li><li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/question_bank/' . $encrypted_test_id) . "'> Pick questions from question bank </a></li><li><hr class='dropdown-divider'></li>");
+        $addQuestionSectionencode =  htmlspecialchars($addQuestionsHtml);
 
         $addQuestionSectiondecode = htmlspecialchars_decode($addQuestionSectionencode);
         $addQuestionSection = $addQuestionSectiondecode;
 
     endif;
+
+    
 
     if ((in_array('manage_tests', $perms)) || in_array("all_perms", session()->get('perms'))) :
 
@@ -318,7 +325,7 @@ foreach ($exams_data as $row) :
 
     // OMR Evalution Option
     $OmrTestEvalution = "";
-    if ($exam_conduction == "Offline") {
+    if ($exam_conduction == "Offline" && (in_array("manage_tests", session()->get('perms')) or in_array("all_perms", session()->get('perms')))) {
         $OmrTestEvalutionEncode =  htmlspecialchars("<li><a data-bs-toggle='tooltip' class='dropdown-item' href='" . base_url('tests/omr_test_evalution/' . $encrypted_test_id) . "'> OMR Evalution </a></li>");
         $OmrTestEvalution = htmlspecialchars_decode($OmrTestEvalutionEncode);
     }

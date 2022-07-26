@@ -13,7 +13,7 @@
 
 
                         <div class="col-12">
-                            <label class="form_label" for="session_title">Session Title<span style="color:red;" >*</span></label>
+                            <label class="form_label" for="session_title">Session Title<span style="color:red;">*</span></label>
                             <input type="text" class="form-control" name="session_title" id="session_title" maxlength="240" required>
                         </div>
 
@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="col-4">
-                            <label class="form_label" for="session_subject">Which subject?<span style="color:red;" >*</span></label>
+                            <label class="form_label" for="session_subject">Which subject?<span style="color:red;">*</span></label>
 
                             <select name="session_subject" id="session_subject" class="form-control form-select select2_dropdown" required>
                                 <option value="">Select Subject</option>
@@ -100,6 +100,7 @@
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="session_week_day" value="<?= $day; ?>" />
+                    <input type="hidden" name="session_month_day" value="<?= $month_day_value; ?>" />
                     <input type="hidden" name="session_classroom" value="<?= $classroom_id; ?>" />
                     <input type="hidden" name="schedule_date" value="<?= $schedule_date ?>" />
                     <input type="hidden" name="institute_id" value="<?= $instituteID; ?>" required />
@@ -112,6 +113,15 @@
 
         </div>
     </div>
+
+    <script>
+    var endsAt = "";
+    <?php if( isset($last_end_time) && $last_end_time != ""):?>
+        endsAt = '<?= $last_end_time ?>';
+    <?php endif;?>
+
+        
+    </script>
 
     <script>
         $(document).ready(function() {
@@ -154,8 +164,8 @@
 
             //get values
             var valuestart = $("input[name='session_start_time']").val();
-            var valuestop = $("input[name='session_end_time']").val(); 
-            
+            var valuestop = $("input[name='session_end_time']").val();
+
             if (valuestart != '' && valuestop != '') {
                 var valuestart = valuestart.split(':');
                 var valuestop = valuestop.split(':');
@@ -163,8 +173,8 @@
                 var valuestart1 = valuestart[1].split(' ');
                 var valuestop1 = valuestop[1].split(' ');
 
-                console.log(valuestart1, 'valuestart');
-                console.log(valuestop1, 'valuestart');
+                console.log(valuestart, 'valuestart');
+                console.log(valuestop, 'valuestart');
 
                 time_start.setHours(valuestart[0], valuestart1[0])
                 time_end.setHours(valuestop[0], valuestop1[0])
@@ -172,12 +182,12 @@
                 time_diff = msToTime(time_end - time_start);
 
                 if (time_diff == 'NaN:NaN:NaN') {
-                    $("#session_duration").html(""); 
+                    $("#session_duration").html("");
                     $("#session_end_time").val('');
                     $("#session_duration").html("<b style='color:red' >Invalid Time format</b>");
 
                 } else if (time_diff == '00:00:00') {
-                    $("#session_duration").html(""); 
+                    $("#session_duration").html("");
                     $("#session_end_time").val('');
                     $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
 
@@ -186,7 +196,7 @@
                     if (check_time == false) {
                         $("#session_duration").html("<b>Session Duration:</b> " + time_diff);
 
-                    } else { 
+                    } else {
                         $("#session_end_time").val('');
                         $("#session_duration").html("<b style='color:red' >End Time Should be greater than the start time</b>");
                     }
@@ -219,8 +229,8 @@
                 $("#once_date").hide();
             }
         });
- 
- 
+
+
         $(function() {
             $(".timepicker").timepicker({
                 timeFormat: "HH:mm",
@@ -231,16 +241,47 @@
                 startTime: "01:00",
                 dynamic: true,
                 dropdown: true,
-                scrollbar: false,change: function(time) {
-
-                let start = $("#session_start_time").val();
-                let end = $("#session_end_time").val(); 
-                if ((start != '') && (end != '')) {
-                calculateTime();
-                }
+                scrollbar: false,
+                change: function(time) {
+                    let start = $("#session_start_time").val();
+                    let end = $("#session_end_time").val();
+                    if ((start != '') && (end != '')) {
+                        calculateTime();
+                    } else if (start != '') {
+                        $("#session_end_time").val(get_Update_time(time, 30));
+                    }
                 }
             });
         });
 
- 
+        function get_Update_time(time, add_time) {
+            var d1 = new Date(time);
+            d2 = new Date(d1);
+            d2.setMinutes(d1.getMinutes() + add_time);
+            console.log("Updated D2", d2);
+            let hour = d2.getHours() < 10 ? '0' + d2.getHours() : d2.getHours();
+            let minutes = d2.getMinutes() < 10 ? '0' + d2.getMinutes() : d2.getMinutes();
+            const hoursAndMinutes = hour + ':' + minutes;
+            return hoursAndMinutes;
+        }
+
+        //Setup time
+        if(endsAt != "") {
+            $("#session_start_time").val(endsAt);
+            //Set end time which is 30 minutes + this time
+            var values = endsAt.split(":");
+            var newMinutes = parseInt(values[1]) + 30;
+            var newHour = parseInt(values[0]);
+            if(newMinutes >= 60) {
+                newHour = newHour + 1;
+                newMinutes = newMinutes % 60;
+            }
+            if(newMinutes < 10) {
+                newMinutes = "0" + newMinutes;
+            }
+            if(newHour < 10) {
+                newHour = "0" + newHour;
+            }
+            $("#session_end_time").val(newHour + ":" + newMinutes);       
+        }
     </script>

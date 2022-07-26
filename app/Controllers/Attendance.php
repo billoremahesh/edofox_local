@@ -9,8 +9,15 @@ class Attendance extends BaseController
 {
 	public function index()
 	{
+		// Check Authorized User
+		if (!isAuthorized("view_attendance")) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+			return redirect()->to(base_url('/home'));
+		}
 		$data['title'] = "Attendance Management";
 		$data['module'] = "Attendance";
+		$data['institute_id'] = decrypt_cipher(session()->get('instituteID'));
 		return view('pages/schedule/overview', $data);
 	}
 	/*******************************************************/
@@ -36,7 +43,7 @@ class Attendance extends BaseController
 		$this->activity->page_access_activity('Attendance', '/attendance');
 		$data['title'] = "Take Attendance";
 		$data['institute_id'] = decrypt_cipher(session()->get('instituteID'));
-		$data['session_id'] = decrypt_cipher($session_id);
+		$data['session_id'] = $session_id;
 		$data['encrypt_session_id'] = $session_id;
 		$data['attendance_date'] = date_format_custom($attendance_date, "Y-m-d");
 		$InstituteScheduleModel = new InstituteScheduleModel();
@@ -52,7 +59,7 @@ class Attendance extends BaseController
 
 		$data['title'] = "Attendance Overview";
 		$data['institute_id'] = decrypt_cipher(session()->get('instituteID'));
-		$data['session_id'] = decrypt_cipher($session_id);
+		$data['session_id'] = $session_id;
 		$data['encrypt_session_id'] = $session_id;
 		$data['attendance_date'] = date_format_custom($attendance_date, "Y-m-d");
 		$InstituteScheduleModel = new InstituteScheduleModel();

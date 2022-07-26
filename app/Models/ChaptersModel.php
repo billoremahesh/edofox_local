@@ -400,12 +400,13 @@ class ChaptersModel extends Model
         $db->transStart();
 
         $chapter_id = sanitize_input($data['chapter_id']);
-        $institute_id=decrypt_cipher(session()->get('instituteID')); 
+
+
         $update_array = array(
             'status' => 'D'
         );
- 
-        $db->table('chapters')->update($update_array, ['id' => $chapter_id,'institute_id'=>$institute_id]);
+
+        $db->table('chapters')->update($update_array, ['id' => $chapter_id]);
 
 
         $db->transComplete();

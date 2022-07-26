@@ -451,10 +451,18 @@
                     $("#add_test_ui").val(obj.value);
                 }
 
+                var templateId = "";
+                
                 if (obj.rule_name == "EXAM_CONDUCTION") {
                     $("#exam_conduction").val(obj.value);
-                    render_omr_template();
+                    render_omr_template(templateId);
                 }
+
+                if (obj.rule_name == "OMR_TEMPLATE") {
+                    templateId = obj.value;
+                    render_omr_template(templateId);
+                }
+                
 
                 if (obj.rule_name == "RANDOM_QUESTIONS") {
                     if (obj.value == "Y") {
@@ -505,6 +513,8 @@
                     }
                 }
 
+
+
             });
         }
     }
@@ -512,7 +522,7 @@
 
 
 <script>
-    function render_omr_template() {
+    function render_omr_template(templateId) {
         var mode_of_conduction = $("#exam_conduction").val();
         if (mode_of_conduction == "Offline") {
             $("#omr_template_check").show();
@@ -521,7 +531,7 @@
                 method: "POST",
                 data: {},
                 success: function(result) {
-                    $("#omr_template").html(format_omr_templates(result));
+                    $("#omr_template").html(format_omr_templates(result, templateId));
                 }
             });
         } else {
@@ -542,13 +552,17 @@
     }
 
     // Format OMR Templates
-    function format_omr_templates(data) {
+    function format_omr_templates(data, templateId) {
         var html = "";
         if (data != null && data.length > 0) {
             data = JSON.parse(data);
             html = html + "<option></option>";
             for (var i = 0; i < data.length; i++) {
-                html = html + "<option value='" + data[i].id + "'>" + data[i].omr_template_name + "</option>";
+                var checked = "";
+                if(templateId != "" && templateId == data[i].id) {
+                    checked = "selected";
+                }
+                html = html + "<option value='" + data[i].id + "' " + checked + ">" + data[i].omr_template_name + "</option>";
             };
         } else {
             html = html + "<option></option>";

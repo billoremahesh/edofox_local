@@ -43,7 +43,7 @@
  
 
                     <div class="col-12 col-md-12">
-                    <label class="form_label" for="session_classroom">Which Classroom?</label>
+                    <label class="form_label" for="session_classroom">Which Classroom? (Leave blank if Holiday is applicable to all)</label>
                         <select name="session_classroom[]" class="form-control" multiple id="session_classroom" style="broder:1px solid #ced4da;" >
                         <?php
                             if (!empty($classroom_list)) {
@@ -236,7 +236,6 @@
       $('#session_classroom').multiselect({ 
         columns: 1,
         placeholder: 'Select Classroom',
-        search: true,
-        selectAll: true
+        search: true
     });
 </script>

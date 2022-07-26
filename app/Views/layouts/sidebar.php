@@ -173,7 +173,7 @@ $userType = session()->get('user_type');
                         </a>
                     </li>
                 <?php endif; ?> 
-
+                
                 <?php if (in_array("view_academic_plan", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
                     <li>
                         <a class="nav-link <?= ($uri->getTotalSegments() == 1 && $uri->getSegment(1) == 'academic') ? 'active' : 'link-dark'; ?>" href="<?= base_url('academic'); ?>">
@@ -184,7 +184,6 @@ $userType = session()->get('user_type');
                         </a>
                     </li>
                 <?php endif; ?> 
-
 
                 <?php if (in_array("view_classrooms", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
 

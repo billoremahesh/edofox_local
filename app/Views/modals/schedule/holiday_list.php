@@ -13,7 +13,7 @@
                                 <thead>
                                     <tr> 
                                         <th>Title</th>
-                                        <th>Class Room</th>
+                                        <th>Classrooms (s)</th>
                                         <th>Start Date</th>
                                         <th>End Date</th> 
                                         <th>Duration</th> 
@@ -21,20 +21,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                    <?php foreach($holiday_list as $value){ ?>
+                                <?php foreach($holiday_list as $value){ ?>
                                     <tr class="exam_section_structure_tr" id="exam_section_structure_tr_1">
                                         
                                         <td>
                                             <?= $value['title'] ?>
                                         </td>
                                         <td>
-                                            <?= $value['package_name'] ?>
+                                            <?= isset($value['package_name']) ? $value['package_name'] : 'ALL'  ?>
                                          </td>
                                         <td style="text-align:center;" >
-                                        <?= $value['starts_at'] ?>
+                                        <?= isset($value['date']) ? $value['date'] : "NA" ?>
                                         </td> 
                                         <td style="text-align:center;" >
-                                        <?= $value['ends_at'] ?>
+                                        <?= isset($value['to_date']) ? $value['date'] : "NA" ?>
                                         </td> 
                                         <td style="text-align:center;" >
                                         <?= $value['duration'] ?>

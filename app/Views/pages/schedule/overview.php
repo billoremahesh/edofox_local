@@ -4,23 +4,28 @@
 <!-- Custom CSS -->
 <link href="<?php echo base_url('assets/css/schedule/overview.css?v=20220609'); ?>" rel="stylesheet">
 <style>
-    .holiday_title{ 
-        white-space: nowrap; 
-        max-width: 120px; 
+    .holiday_title {
+        white-space: nowrap;
+        max-width: 120px;
         overflow: hidden;
-        float:right;
-        text-overflow: ellipsis; 
+        float: right;
+        text-overflow: ellipsis;
         border: 0px solid #000000;
     }
-    .bracketsty {position: relative;}
-    .bracketsty:before{
+
+    .bracketsty {
+        position: relative;
+    }
+
+    .bracketsty:before {
         content: "(";
         color: #fff;
         position: absolute;
         left: -7px;
         top: 1px;
     }
-    .bracketsty:after{
+
+    .bracketsty:after {
         content: ")";
         color: #fff;
         position: absolute;
@@ -78,21 +83,21 @@
                         <?php endif; ?>
                     </div>
                     <div class="float-end">
-                    <?php if ($module == 'Schedule') :  ?> 
+                        <?php if ($module == 'Schedule') :  ?>
                             <?php if (in_array("manage_schedule", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) :  ?>
-                              
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center me-1 dropdown-toggle" data-bs-toggle="dropdown" style="margin-right:5px;color:#fff;background-color:#ec5034 !important" aria-expanded="false">
-                                HOLIDAY
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#" onclick="show_add_modal('modal_div','add_holiday_modal','schedule/add_holiday_modal');">Add Holiday</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_list','schedule/holiday_list');">List Holiday</a></li>
-                                <!-- <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_calender','schedule/holiday_calender');">Holiday Calender</a></li> -->
-                            </ul>
-                        </div>
 
-                        <?php endif; ?>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-success btn-sm d-flex align-items-center justify-content-center me-1 dropdown-toggle" data-bs-toggle="dropdown" style="margin-right:5px;color:#fff;background-color:#ec5034 !important" aria-expanded="false">
+                                        HOLIDAY
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" onclick="show_add_modal('modal_div','add_holiday_modal','schedule/add_holiday_modal');">Add Holiday</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_list','schedule/holiday_list');">List Holiday</a></li>
+                                        <!-- <li><a class="dropdown-item" href="#" onclick="show_edit_modal('modal_div','holiday_calender','schedule/holiday_calender');">Holiday Calender</a></li> -->
+                                    </ul>
+                                </div>
+
+                            <?php endif; ?>
                         <?php endif; ?>
 
                     </div>
@@ -120,6 +125,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 
 
 <script>
@@ -225,6 +231,20 @@
         return date.getFullYear() + "-" + month + "-" + day;
     }
 
+    function difference(start_date, end_date) {
+        if(start_date == null || start_date == '') {
+            return -1;
+        }
+        if(end_date == null || end_date == '') {
+            return -1;
+        }
+        const date1 = new Date(start_date);
+        const date2 = new Date(end_date);
+        const diffTime = date2 - date1;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    }
+
 
     function get_schedule_data(date_changed) {
         $("#error_message").html("");
@@ -234,44 +254,84 @@
         var schedule_start_date = $("#schedule_start_date").val();
         var schedule_end_date = $("#schedule_end_date").val();
 
+        var diff = difference(schedule_start_date, schedule_end_date);
         //FOllowing code will maintain 7 days of difference
         if (date_changed == 'start_date') {
-            if(schedule_start_date != null) {
-                var changedDate = addDays(schedule_start_date, 6);
-                schedule_end_date = changedDate;
-                $("#schedule_end_date").val(changedDate);
+            if (schedule_start_date != null && schedule_start_date != "") {
+                if(diff > 6 || diff < 0) {
+                    var changedDate = addDays(schedule_start_date, 6);
+                    schedule_end_date = changedDate;
+                    $("#schedule_end_date").val(changedDate);
+                }
             }
         } else {
-            if(schedule_end_date != null) {
-                var changedDate = addDays(schedule_end_date, -6);
-                schedule_start_date = changedDate;
-                $("#schedule_start_date").val(changedDate);
+            if (schedule_end_date != null && schedule_end_date != "") {
+                if(diff > 6 || diff < 0) {
+                    var changedDate = addDays(schedule_end_date, -6);
+                    schedule_start_date = changedDate;
+                    $("#schedule_start_date").val(changedDate);
+                }
+                
             }
         }
 
 
         if (classroom == '' || schedule_start_date == '' || schedule_end_date == '') {
             toggle_custom_loader(false, "custom_loader");
-            $("#error_message").html("<div class='default_card'><h4>Please select the classroom</h4></div>");
+            $("#error_message").html("<div class='default_card'><h4>Please select the classroom and date range</h4></div>");
         } else {
 
             localStorage.setItem('schedule_classroom_filter_val', classroom);
             localStorage.setItem('schedule_classroom_filter_text', classroom_name);
             localStorage.setItem('schedule_start_date_filter_val', schedule_start_date);
             localStorage.setItem('schedule_end_date_filter_val', schedule_end_date);
-            jQuery.ajax({
-                url: base_url + '/schedule/fetch_schedule_events',
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    schedule_start_date: schedule_start_date,
-                    schedule_end_date: schedule_end_date,
-                    classroom: classroom
+
+
+            // jQuery.ajax({
+            //     url: base_url + '/schedule/fetch_schedule_events',
+            //     type: 'POST',
+            //     dataType: 'json',
+            //     data: {
+            //         schedule_start_date: schedule_start_date,
+            //         schedule_end_date: schedule_end_date,
+            //         classroom: classroom
+            //     },
+            //     success: function(result) {
+            //         $('#schedule_cards_div').html(format_schedule(result));
+            //         toggle_custom_loader(false, "custom_loader");
+            //         $("#error_message").html("");
+            //     }
+            // });
+
+            //Replaced with Java service as logic got complicated 19/07/
+
+            var request = {
+                institute: {
+                    id: <?= $institute_id ?>
                 },
-                success: function(result) {
-                    $('#schedule_cards_div').html(format_schedule(result));
+                schedule: {
+                    dateString: schedule_start_date,
+                    toDateString: schedule_end_date,
+                    classroom: {
+                        id: classroom
+                    }
+                },
+                requestType: ui_module
+            };
+
+            callAdminServiceJSONPost("getClassroomSchedule", request)
+                .then(function(result) {
+                    console.log("Got the response from service", result);
+                    $('#schedule_cards_div').html(formatSchedule(result));
                     toggle_custom_loader(false, "custom_loader");
-                }});
+                })
+                .catch(function(error) {
+                    // An error occurred
+                    //alert("Exception: " + error);
+                    console.log("Error in service call " + error);
+                    $('#schedule_cards_div').html("<div class='default_card'><h4>Error fetching your schedule ..</h4></div>");
+                    toggle_custom_loader(false, "custom_loader");
+                });
 
         }
     }
@@ -406,24 +466,23 @@
                     });
                 }
                 if (ui_module == 'Schedule') {
-                    if(lastEndsAt != "") {
-                        lastEndsAt = "/" + lastEndsAt;
-                    }
                     html = html + "<li>";
                     html = html + "<div>";
                     html = html + "<button class='btn btn-outline-primary' onclick=" +
                         "show_edit_modal('modal_div','add_schedule_modal','/schedule/add_schedule_modal/" +
-                        classroom + "/" + day.dateString + lastEndsAt + "');" +
+                        classroom + "/" + day.dateString + "/" + lastEndsAt + "');" +
                         "> Add Schedule</button>";
                     html = html + "</div>";
                     html = html + "</li>";
                 }
+                html = html + "</ul></div></div>";
             });
         }
+        return html;
     }
 
     function format_schedule(data) {
-        console.log(data,'data format schedule');
+        console.log(data, 'data format schedule');
         var html = "";
         var date = new Date();
         var current_year = date.getFullYear();
@@ -431,11 +490,7 @@
         var current_day = ("0" + date.getDate()).slice(-2);
         var CurrentDate = current_year + "-" + current_month + "-" + current_day;
 
-        var options = {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric'
-        };
+
 
         console.log(CurrentDate);
         if (data != null) {
@@ -449,8 +504,8 @@
 
                 html = html + "<div class='kanban'>";
                 html = html + "<div class='kanban-container'>";
-                $.each(data, function(objIndex, obj) { 
-                  
+                $.each(data, function(objIndex, obj) {
+
                     if (week_date != obj.date) {
                         if (objIndex != 0) {
                             if (ui_module == 'Schedule') {
@@ -466,96 +521,96 @@
                             html = html + "</ul></div></div>";
                         }
 
-                        if(obj.frequency=="Holiday"){ 
-                        var formatted_date = new Date(obj.date);
-                        formatted_date = formatted_date.toLocaleDateString("en-US", options)
-                        holiday_content =formatted_date +' <span  class="float-end bracketsty" data-bs-toggle="tooltip" data-bs-placement="top" title="'+obj.title+'" > <span class="holiday_title">'+obj.title+'</span> </span>';
-                        html = html + "<div class='kanban-column'>";
-                        html = html + "<div class='kanban-column-header' style='background-color:red !important' >" + holiday_content + "</div>";
-                        html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
-                        week_date = obj.date;
-                        }else{
-                        var formatted_date = new Date(obj.date);
-                        formatted_date = formatted_date.toLocaleDateString("en-US", options)
-                        html = html + "<div class='kanban-column'>";
-                        html = html + "<div class='kanban-column-header'>" + formatted_date + "</div>";
-                        html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
-                        week_date = obj.date;
+                        if (obj.type == "Holiday") {
+                            var formatted_date = new Date(obj.date);
+                            formatted_date = formatted_date.toLocaleDateString("en-US", options)
+                            holiday_content = formatted_date + ' <span  class="float-end bracketsty" data-bs-toggle="tooltip" data-bs-placement="top" title="' + obj.title + '" > <span class="holiday_title">' + obj.title + '</span> </span>';
+                            html = html + "<div class='kanban-column'>";
+                            html = html + "<div class='kanban-column-header' style='background-color:red !important' >" + holiday_content + "</div>";
+                            html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
+                            week_date = obj.date;
+                        } else {
+                            var formatted_date = new Date(obj.date);
+                            formatted_date = formatted_date.toLocaleDateString("en-US", options)
+                            html = html + "<div class='kanban-column'>";
+                            html = html + "<div class='kanban-column-header'>" + formatted_date + "</div>";
+                            html = html + "<div class='kanban-column'><ul class='kanban-column-list'>";
+                            week_date = obj.date;
                         }
-                       
-                    } 
-                    
-                    if(obj.frequency=="Weekly" || obj.frequency=='Monthly' || obj.frequency=='Date'){ 
-                        var title =obj.title;
-                        console.log(title,'title');
-                        var sch_title =obj.title.toUpperCase();
-                            title_length= sch_title.length;
-                            if(parseInt(title_length)>25){
-                             sch_title = sch_title.substring(0, 25);
-                             sch_title = sch_title+' ...';
+
+                    }
+
+                    if (obj.frequency == "Weekly" || obj.frequency == 'Monthly' || obj.frequency == 'Date') {
+                        var title = obj.title;
+                        console.log(title, 'title');
+                        var sch_title = obj.title.toUpperCase();
+                        title_length = sch_title.length;
+                        if (parseInt(title_length) > 25) {
+                            sch_title = sch_title.substring(0, 25);
+                            sch_title = sch_title + ' ...';
+                        }
+
+                        if (obj.title != null) {
+                            html = html + "<li class='schedule_card position-relative'>";
+                            html = html + "<div class='badge subject_badge'>" + obj.subject_name.toUpperCase() + "</div>";
+                            html = html + "<div class='card_head'>";
+                            html = html + `<div class='card_title' data-bs-toggle='tooltip' data-bs-placement='top' title="` + title + `" >` + sch_title.toUpperCase() + `</div>`;
+                            html = html + "</div>";
+                            html = html + "<div class='card_body'>";
+                            html = html + "<div class='card_supporting_text'>Classroom: " + obj.package_name.toUpperCase() + "</div>";
+
+
+                            html = html + "<div class='card_supporting_text'>" + formatAMPM(obj.starts_at) + "-" + formatAMPM(obj.ends_at) + "</div>";
+
+
+                            html = html + "<div class='card_supporting_text'>Duration: ";
+                            html = html + secondsToHms(obj.duration);
+                            html = html + "</div>";
+
+
+                            html = html + "<div class='card_supporting_text'>Session Frequency:";
+                            html = html + obj.frequency;
+                            html = html + "</div>";
+
+                            if (obj.total_students != null) {
+                                html = html + "<div class='card_supporting_text'>Attendance: ";
+                                if (obj.present_students != null) {
+                                    html = html + obj.present_students + "/" + obj.total_students;
+                                } else {
+                                    html = html + obj.total_students;
+                                }
+
+                                html = html + "</div>";
                             }
-                       
-                    if (obj.title != null) {
-                        html = html + "<li class='schedule_card position-relative'>";
-                        html = html + "<div class='badge subject_badge'>" + obj.subject_name.toUpperCase() + "</div>";
-                        html = html + "<div class='card_head'>";
-                        html = html + `<div class='card_title' data-bs-toggle='tooltip' data-bs-placement='top' title="`+title+`" >` + sch_title.toUpperCase() + `</div>`;
-                        html = html + "</div>";
-                        html = html + "<div class='card_body'>";
-                        html = html + "<div class='card_supporting_text'>Classroom: " + obj.package_name.toUpperCase() + "</div>";
 
-
-                        html = html + "<div class='card_supporting_text'>" + formatAMPM(obj.starts_at) + "-" + formatAMPM(obj.ends_at) + "</div>";
-
-
-                        html = html + "<div class='card_supporting_text'>Duration: ";
-                        html = html + secondsToHms(obj.duration);
-                        html = html + "</div>";
-
-                        
-                        html = html + "<div class='card_supporting_text'>Session Frequency:";
-                        html = html + obj.frequency;
-                        html = html + "</div>";
-
-                        if (obj.total_students != null) {
-                            html = html + "<div class='card_supporting_text'>Attendance: ";
-                            if (obj.present_students != null) {
-                                html = html + obj.present_students + "/" + obj.total_students;
+                            if (ui_module == 'Schedule') {
+                                html = html + "<div class='d-flex justify-content-between my-2'><span class='material-icons schedule_btns schedule_edit_btn' onclick=" +
+                                    "show_edit_modal('modal_div','update_schedule_modal','/schedule/update_schedule_modal/" +
+                                    obj.id +
+                                    "');" +
+                                    ">edit</span><span class='material-icons schedule_btns schedule_delete_btn  mx-2' onclick=" +
+                                    "show_edit_modal('modal_div','delete_schedule_modal','/schedule/delete_schedule_modal/" +
+                                    obj.id +
+                                    "');" +
+                                    ">delete</span></div>";
                             } else {
-                                html = html + obj.total_students;
+                                if (obj.date <= CurrentDate) {
+                                    if (obj.total_students == null) {
+                                        html = html + "<div class='d-flex justify-content-between my-2'><a class='btn btn-sm btn-primary mx-2' href='" +
+                                            base_url + "/attendance/take_attendance/" +
+                                            obj.id + "/" + obj.date + "'>Take attendance</a></div>";
+                                    } else {
+                                        html = html + "<div class='d-flex justify-content-between my-2'><a class='material-icons schedule_btns schedule_view_btn' target='_blank' href='" +
+                                            base_url + "/attendance/overview/" +
+                                            obj.id + "/" + obj.date + "'>visibility</a></div>";
+                                    }
+                                }
                             }
 
                             html = html + "</div>";
+                            html = html + "</li>";
                         }
-
-                        if (ui_module == 'Schedule') {
-                            html = html + "<div class='d-flex justify-content-between my-2'><span class='material-icons schedule_btns schedule_edit_btn' onclick=" +
-                                "show_edit_modal('modal_div','update_schedule_modal','/schedule/update_schedule_modal/" +
-                                obj.id +
-                                "');" +
-                                ">edit</span><span class='material-icons schedule_btns schedule_delete_btn  mx-2' onclick=" +
-                                "show_edit_modal('modal_div','delete_schedule_modal','/schedule/delete_schedule_modal/" +
-                                obj.id +
-                                "');" +
-                                ">delete</span></div>";
-                        } else {
-                            if (obj.date <= CurrentDate) {
-                                if (obj.total_students == null) {
-                                    html = html + "<div class='d-flex justify-content-between my-2'><a class='btn btn-sm btn-primary mx-2' href='" +
-                                        base_url + "/attendance/take_attendance/" +
-                                        obj.id + "/" + obj.date + "'>Take attendance</a></div>";
-                                } else {
-                                    html = html + "<div class='d-flex justify-content-between my-2'><a class='material-icons schedule_btns schedule_view_btn' target='_blank' href='" +
-                                        base_url + "/attendance/overview/" +
-                                        obj.id + "/" + obj.date + "'>visibility</a></div>";
-                                }
-                            }
-                        }
-
-                        html = html + "</div>";
-                        html = html + "</li>";
-                    } 
-                    } 
+                    }
                 });
                 if (ui_module == 'Schedule') {
                     html = html + "<li>";
@@ -575,10 +630,4 @@
         }
         return html;
     }
-
-
-
-
-
-    
 </script>

@@ -13,6 +13,12 @@ class Students extends BaseController
 
     public function index()
     {
+        // Check Authorized User
+		if (!isAuthorized("view_students")) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+			return redirect()->to(base_url('/home'));
+		}
         // Log Activity 
         $this->activity->page_access_activity('Your Students', '/students');
         $data['title'] = "Your Students";

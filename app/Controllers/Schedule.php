@@ -11,8 +11,15 @@ class Schedule extends BaseController
 {
 	public function index()
 	{
+		// Check Authorized User
+		if (!isAuthorized("view_schedule")) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+			return redirect()->to(base_url('/home'));
+		}
 		$data['title'] = "Schedule Management";
 		$data['module'] = "Schedule";  
+		$data['institute_id'] = decrypt_cipher(session()->get('instituteID'));
 		return view('pages/schedule/overview', $data);
 	}
 	/*******************************************************/
@@ -44,30 +51,14 @@ class Schedule extends BaseController
 			$post_data['date'] = $date; 
 			
 		
-			$holiday_all =  $InstituteScheduleModel->fetch_holiday_all_classes($post_data); 
+			//$holiday_all =  $InstituteScheduleModel->fetch_holiday_all_classes($post_data); 
 			$holiday_data = $InstituteScheduleModel->fetch_holiday_events($post_data); 
 			$event_data = $InstituteScheduleModel->fetch_schedule_events($post_data);
 
 
-			if (!empty($holiday_all)) {
-				foreach ($holiday_all as $event) {  
-					$data[] = array(
-						'id' => encrypt_string($event['id']),
-						'title' => $event['title'],
-						'package_name' => '',
-						'subject_name' =>'',
-						'date' => $date,
-						'starts_at' => $event['starts_at'],
-						'ends_at' =>  $event['ends_at'],
-						'duration' => $event['duration'],
-						'total_students' => '',
-						'present_students' => '',
-						'frequency'=>$event['frequency']
-					);
-				}
-			}else if (!empty($holiday_data)) {
+			if (!empty($holiday_data)) {
 				foreach ($holiday_data as $event) { 
-					$data[] = array(
+					$holiday_array[] = array(
 						'id' => encrypt_string($event['id']),
 						'title' => $event['title'],
 						'package_name' => '',
@@ -81,7 +72,8 @@ class Schedule extends BaseController
 						'frequency'=>$event['frequency']
 					);
 				}
-			}else if (!empty($event_data)) {
+			}
+			if (!empty($event_data)) {
 				foreach ($event_data as $event) {
 					$data[] = array(
 						'id' => encrypt_string($event['id']),
@@ -97,10 +89,18 @@ class Schedule extends BaseController
 						'frequency'=>$event['frequency']
 					);
 				}
+				if(!empty($holiday_array)) {
+					$data = array_merge($data, $holiday_array);
+				}
 			} else {
-				$data[] = array(
-					'date' => $date
-				);
+				if(!empty($holiday_array)) {
+					$data = array_merge($data, $holiday_array);
+				} else {
+					$data[] = array(
+						'date' => $date
+					);
+				}
+				
 			}
 		}
 		if (!isset($data)) {
@@ -123,7 +123,7 @@ class Schedule extends BaseController
 	 * @return void
 	 * @author Hemant K
 	 */
-	public function add_schedule_modal($classroom, $schedule_date,$redirect = 'schedule')
+	public function add_schedule_modal($classroom, $schedule_date, $last_end_time = "", $redirect = 'schedule')
 	{
 		$data['title'] = "Add New Schedule";
 		$data['instituteID'] = session()->get('instituteID');
@@ -139,8 +139,10 @@ class Schedule extends BaseController
 		$data['redirect'] = $redirect;
 		$InstituteScheduleModel = new InstituteScheduleModel();  
 		$day_of_month = date_format(date_create($schedule_date), 'd');
-		$dayofmonth=$InstituteScheduleModel->addOrdinalNumberSuffix($day_of_month); 
-		$data['dayofmonth']=$dayofmonth; 
+		$data['month_day_value'] = (int) $day_of_month;
+		$dayofmonth = $InstituteScheduleModel->addOrdinalNumberSuffix($day_of_month); 
+		$data['dayofmonth']= $dayofmonth; 
+		$data['last_end_time'] = $last_end_time;
 		echo view('modals/schedule/add_schedule', $data);
 	}
 	/*******************************************************/
@@ -243,7 +245,7 @@ class Schedule extends BaseController
 	 * @return void
 	 * @author Rushikesh B
 	 */
-	public function update_schedule_modal(string $schedule_id, $redirect = 'schedule')
+	public function update_schedule_modal(int $schedule_id, $redirect = 'schedule')
 	{
 		$data['title'] = "Update Schedule";
 
@@ -252,20 +254,23 @@ class Schedule extends BaseController
 
 		$instituteID = decrypt_cipher($data['instituteID']);
 
-		$ClassroomModel = new ClassroomModel();
-		$data['classroom_list'] = $ClassroomModel->fetch_all_classrooms($instituteID);
+		//$ClassroomModel = new ClassroomModel();
+		//$data['classroom_list'] = $ClassroomModel->fetch_all_classrooms($instituteID);
 
 		$SubjectsModel = new SubjectsModel();
 		$data['subjects_list'] = $SubjectsModel->get_subjects($instituteID);
 
 		$InstituteScheduleModel = new InstituteScheduleModel();
-		$data['schedule_details'] = $InstituteScheduleModel->fetch_institute_schedule_data(decrypt_cipher($data['schedule_id']));
+		$data['schedule_details'] = $InstituteScheduleModel->fetch_institute_schedule_data($data['schedule_id']);
 		$schedule_details=$data['schedule_details'];
-		$InstituteScheduleModel = new InstituteScheduleModel();  
-		$day_of_month = date_format(date_create($schedule_details['date']), 'd');
-		$dayofmonth=$InstituteScheduleModel->addOrdinalNumberSuffix($day_of_month); 
-		$data['dayofmonth']=$dayofmonth; 
 
+		//Add week day month day and date for time overlap validation
+		if(isset($schedule_details['day'])) {
+			//$InstituteScheduleModel = new InstituteScheduleModel();  
+			//$day_of_month = date_format(date_create($schedule_details['date']), 'd');
+			$dayofmonth=$InstituteScheduleModel->addOrdinalNumberSuffix($schedule_details['day']); 
+			$data['dayofmonth']=$dayofmonth; 	
+		}
 		$data['redirect'] = $redirect; 
 		echo view('modals/schedule/update_schedule', $data);
 	}
@@ -287,7 +292,7 @@ class Schedule extends BaseController
 		$data['schedule_id'] = $schedule_id;
 
 		$InstituteScheduleModel = new InstituteScheduleModel();
-		$data['schedule_details'] = $InstituteScheduleModel->fetch_institute_schedule_data(decrypt_cipher($data['schedule_id']));
+		$data['schedule_details'] = $InstituteScheduleModel->fetch_institute_schedule_data($data['schedule_id']);
 
 		$data['redirect'] = $redirect;
 		echo view('modals/schedule/delete_schedule', $data);
@@ -333,7 +338,7 @@ class Schedule extends BaseController
 				$session->setFlashdata('toastr_success', 'Added New Session Schedule successfully.');
 				return redirect()->to(base_url($redirect));
 			} else { 
-				$session->setFlashdata('toastr_error', 'This schedule '.$result.'  already exists');
+				$session->setFlashdata('toastr_error', 'Another schedule overlaps with this schedule time '.$result.'  ');
 				return redirect()->to(base_url($redirect));
 			}
 			// return redirect()->to(base_url($redirect));
@@ -350,8 +355,7 @@ class Schedule extends BaseController
 		$session = session();
 		$redirect = $this->request->getVar('redirect'); 
 		$result = $this->validate([
-			'session_title' => ['label' => 'Class Session Title', 'rules' => 'required|string|min_length[1]|max_length[240]'],
-			'session_classroom' => ['label' => 'Class Session Classroom', 'rules' => 'required']
+			'session_title' => ['label' => 'Class Session Title', 'rules' => 'required|string|min_length[1]|max_length[240]']
 		]);
 
 		if (!$result) {
@@ -362,8 +366,12 @@ class Schedule extends BaseController
 			$InstituteScheduleModel = new InstituteScheduleModel();
 			$data['institute_id'] = decrypt_cipher($data['institute_id']);
 
-			$ClassroomModel = new ClassroomModel();
-	    	$data['classroom_list'] = $ClassroomModel->fetch_all_classrooms($data['institute_id']); 
+			if(!isset($data['session_classroom']) || empty($data['session_classroom'])) {
+				//If no classroom is selected, holiday needs to be applied to all classrooms
+				$ClassroomModel = new ClassroomModel();
+				$data['session_classroom'] = [0]; 
+			}
+			
 			
 			if ($InstituteScheduleModel->add_new_holiday($data)) {
 				$session->setFlashdata('toastr_success', 'Added New Session Holiday successfully.');
@@ -389,7 +397,7 @@ class Schedule extends BaseController
 			'session_title' => ['label' => 'Class Session Title', 'rules' => 'required|string|min_length[1]|max_length[240]'],
 			'session_classroom' => ['label' => 'Class Session Classroom', 'rules' => 'required'],
 			'session_subject' => ['label' => 'Class Session Subject', 'rules' => 'required'],
-			'session_week_day' => ['label' => 'Class Session Day', 'rules' => 'required'],
+			//'session_week_day' => ['label' => 'Class Session Day', 'rules' => 'required'],
 			'session_start_time' => ['label' => 'Class Session Start Time', 'rules' => 'required'],
 			'session_end_time' => ['label' => 'Class Session End Time', 'rules' => 'required']
 		]);
@@ -400,11 +408,13 @@ class Schedule extends BaseController
 		} else {
 			$data = $this->request->getVar();
 			$InstituteScheduleModel = new InstituteScheduleModel();
-			$data['schedule_id'] = decrypt_cipher($data['schedule_id']);
-			if ($InstituteScheduleModel->update_schedule($data)) {
+			$data['schedule_id'] = $data['schedule_id'];
+
+			$updateResult = $InstituteScheduleModel->update_schedule($data);
+			if ($updateResult == "" || $updateResult == 1) {
 				$session->setFlashdata('toastr_success', 'Schedule updated successfully.');
 			} else {
-				$session->setFlashdata('toastr_error', 'Error in processing.');
+				$session->setFlashdata('toastr_error', 'Another schedule overlaps with this schedule time '.$updateResult.'  ');
 			}
 			return redirect()->to(base_url($redirect));
 		}
@@ -432,7 +442,7 @@ class Schedule extends BaseController
 		} else {
 			$data = $this->request->getVar();
 			$InstituteScheduleModel = new InstituteScheduleModel();
-			$data['schedule_id'] = decrypt_cipher($data['schedule_id']);
+			$data['schedule_id'] = $data['schedule_id'];
 			if ($InstituteScheduleModel->update_schedule($data)) {
 				$session->setFlashdata('toastr_success', 'Schedule deleted successfully.');
 			} else {

@@ -8,6 +8,12 @@
             <?php echo form_open('classrooms/delete_classroom_submit'); ?>
             <div class="modal-body">
                 <p> Are you sure, you want to delete this <b><?= $classroom_details['package_name'];?></b> classroom?</p>
+                <div class="col-12">
+                        <div class="form-check form-switch form-check-custom">
+                            <input class="form-check-input cashbook_filter" value="Y" type="checkbox" name="delete_students" id="delete_students" >
+                            <label class="form-check-label" for="delete_students"> Delete all student profiles of this classroom </label>
+                        </div>
+                    </div>
             </div>
             <div class="modal-footer">
                 <input type="hidden" name="classroom_id" value="<?= $classroom_id; ?>" required />

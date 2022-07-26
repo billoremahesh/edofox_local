@@ -244,10 +244,11 @@ class AcademicModel extends Model
         $academic_data = [
             'is_disabled' => '1'
         ];
+      
         $id = sanitize_input(decrypt_cipher($data['academic_id']));
         $db->table('academic_plan')->update($academic_data, ['id' => $id]);
- 
-        $academic_data = $this->get_academic_details($id);
+      
+        $academic_data = $this->get_academic_details($id); 
         $db->transComplete();
 
         if ($db->transStatus() === FALSE) {
@@ -294,8 +295,7 @@ class AcademicModel extends Model
     }
     /*******************************************************/
 
-
-
+   
     /**
      * Update Syllabus
      *
@@ -309,8 +309,9 @@ class AcademicModel extends Model
         $db = \Config\Database::connect();
 
         $db->transStart(); 
-
-        $this->delete_academic($data);
+        
+         $result = $this->delete_academic($data);
+      
         $academic_id = decrypt_cipher($data['academic_id']);
         // update academic  
         $syllabus_data = [ 
@@ -321,7 +322,7 @@ class AcademicModel extends Model
             'institute_id' => decrypt_cipher(session()->get('instituteID')),
             'is_disabled' => '0'
         ];
-
+     
         $id = sanitize_input(decrypt_cipher($data['academic_id']));
         $db->table('academic_plan')->update($syllabus_data, ['id' => $id]);
  
@@ -843,7 +844,7 @@ class AcademicModel extends Model
     public function get_academic_details($syllabus_id)
     {
         $db = \Config\Database::connect(); 
-        $sql = "SELECT academic_plan.*,syllabus.subject_id FROM academic_plan LEFT JOIN syllabus ON syllabus.id=academic_plan.syllabus_id WHERE academic_plan.id= :id:  AND academic_plan.is_disabled=0";
+        $sql = "SELECT academic_plan.*,syllabus.subject_id FROM academic_plan LEFT JOIN syllabus ON syllabus.id=academic_plan.syllabus_id WHERE academic_plan.id= :id: ";
 
         $query = $this->db->query($sql, [
             'id' => sanitize_input($syllabus_id)

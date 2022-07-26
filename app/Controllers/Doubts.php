@@ -9,6 +9,12 @@ class Doubts extends BaseController
 {
 	public function index()
 	{
+		// Check Authorized User
+		if (!isAuthorized("view_doubts")) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+			return redirect()->to(base_url('/home'));
+		}
 		// Log Activity 
 		$this->activity->page_access_activity('Doubts', '/doubts');
 		$data['title'] = "Doubts";

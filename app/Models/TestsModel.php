@@ -364,6 +364,34 @@ class TestsModel extends Model
     }
     /*******************************************************/
 
+    /**
+     * Section wise question count (required for edit upload PDF feature)
+     *
+     * @param integer $institute_id
+     *
+     * @return Integer
+     * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+     */
+    public function section_wise_question_count(int $test_id)
+    {
+        $db = \Config\Database::connect();
+        
+        $sql_all_active_students_count = "SELECT COUNT(test_questions_map.id) AS section_count, 
+        test_questions_map.question_number, test_questions_map.section 
+        FROM test_questions_map WHERE test_questions_map.test_id = :test_id:  
+        AND test_questions_map.question_disabled = 0
+        group by test_questions_map.section
+        order by test_questions_map.question_number ASC ";
+
+        $query = $db->query($sql_all_active_students_count, [
+            'test_id' => sanitize_input($test_id)
+        ]);
+
+        $result = $query->getResultArray();
+        return $result;
+    }
+    /*******************************************************/
+
 
 
 
@@ -1181,11 +1209,13 @@ class TestsModel extends Model
     public function student_test_options_selected(int $test_id, string $username)
     {
         $db = \Config\Database::connect();
-        $query = $db->query("SELECT test_result.*, test_questions_map.question_number 
+        $query = $db->query("SELECT test_result.*, test_questions_map.question_number,
+        test_questions.question_type,test_questions.correct_answer 
         FROM test_result
         join test_questions_map 
         on test_result.test_id = test_questions_map.test_id 
         and test_result.question_id = test_questions_map.question_id 
+        join test_questions on test_questions.id = test_questions_map.question_id
         join student_login
         on student_login.student_id = test_result.student_id
         where test_result.test_id = '$test_id' 
@@ -3553,7 +3583,9 @@ class TestsModel extends Model
                 'time_constraint' => sanitize_input($row_test_details['time_constraint']),
                 'student_time_constraint' => sanitize_input($row_test_details['student_time_constraint']),
                 'round_marks' => sanitize_input($row_test_details['round_marks']),
-                'random_pool' => sanitize_input($row_test_details['random_pool'])
+                'random_pool' => sanitize_input($row_test_details['random_pool']),
+                'exam_conduction' => sanitize_input($row_test_details['exam_conduction']),
+                'omr_template' => sanitize_input($row_test_details['omr_template'])
             ];
 
             $db->table('test')->insert($test_data);

@@ -73,20 +73,50 @@
                             <td><?= $student_option['question_number']; ?></td>
                             <?php
                             if ($test_details['exam_conduction'] == 'Offline') {
-                                $correct_answer = $student_option['option_selected'];
+                                $selected_answer = $student_option['option_selected'];
+                                $answerClass = "default_answer_badge";
+                                if(isset($student_option['marks'])) {
+                                    if($student_option['marks'] <= 0) {
+                                        $answerClass = "wrong_answer_badge";
+                                    } else {
+                                        $answerClass = "correct_answer_badge";
+                                    }
+                                }
+
                             ?>
                                 <td>
-                                    <select class="form-control update_student_test_option">
-                                        <option value="">Select Correct Answer</option>
-                                        <option value="option1" <?php if ($correct_answer == "option1") { ?> selected="selected" <?php } ?>>Option 1</option>
-                                        <option value="option2" <?php if ($correct_answer == "option2") { ?> selected="selected" <?php } ?>>Option 2</option>
-                                        <option value="option3" <?php if ($correct_answer == "option3") { ?> selected="selected" <?php } ?>>Option 3</option>
-                                        <option value="option4" <?php if ($correct_answer == "option4") { ?> selected="selected" <?php } ?>>Option 4</option>
-                                        <option value="BONUS" <?php if ($correct_answer == "BONUS") { ?> selected="selected" <?php } ?>>BONUS</option>
-                                        <option value="cancel" <?php if ($correct_answer == "cancel") { ?> selected="selected" <?php } ?>>cancel</option>
-                                    </select>
+                                    <?php if ($student_option['question_type'] == 'MULTIPLE') { 
+                                        $student_answer_array = explode(",", $selected_answer);
+                                        ?>
+                                        <select class="form-control update_student_test_option multiple_correct" multiple>
+                                            <option value="">Select Correct Answer</option>
+                                            <option value="option1" <?php if (in_array("option1", $student_answer_array)) { ?> selected="selected" <?php } ?>>Option 1</option>
+                                            <option value="option2" <?php if (in_array("option2", $student_answer_array)) { ?> selected="selected" <?php } ?>>Option 2</option>
+                                            <option value="option3" <?php if (in_array("option3", $student_answer_array)) { ?> selected="selected" <?php } ?>>Option 3</option>
+                                            <option value="option4" <?php if (in_array("option4", $student_answer_array)) { ?> selected="selected" <?php } ?>>Option 4</option>
+                                            <option value="BONUS" <?php if (in_array("BONUS", $student_answer_array)) { ?> selected="selected" <?php } ?>>BONUS</option>
+                                            <option value="cancel" <?php if (in_array("cancel", $student_answer_array)) { ?> selected="selected" <?php } ?>>cancel</option>
+                                        </select>
+
+                                    <?php } else if ($student_option['question_type'] == 'SINGLE') { ?>
+                                    
+                                        <select class="form-control update_student_test_option">
+                                            <option value="">Select Correct Answer</option>
+                                            <option value="option1" <?php if ($selected_answer == "option1") { ?> selected="selected" <?php } ?>>Option 1</option>
+                                            <option value="option2" <?php if ($selected_answer == "option2") { ?> selected="selected" <?php } ?>>Option 2</option>
+                                            <option value="option3" <?php if ($selected_answer == "option3") { ?> selected="selected" <?php } ?>>Option 3</option>
+                                            <option value="option4" <?php if ($selected_answer == "option4") { ?> selected="selected" <?php } ?>>Option 4</option>
+                                            <option value="BONUS" <?php if ($selected_answer == "BONUS") { ?> selected="selected" <?php } ?>>BONUS</option>
+                                            <option value="cancel" <?php if ($selected_answer == "cancel") { ?> selected="selected" <?php } ?>>cancel</option>
+                                        </select>
+
+                                    <?php } else {
+                                    ?>
+                                        <input type="text" class="form-control update_student_test_option" value="<?= $selected_answer ?>" />
+                                    <?php } ?>
 
                                     <input type="hidden" class="form-control" value="<?= $student_option['id']; ?>" />
+                                    <div class="badge <?= $answerClass ?> "><?= isset($student_option['correct_answer']) ? $student_option['correct_answer'] : "" ?></div>
                                 </td>
                             <?php
                             } else {
@@ -118,14 +148,26 @@
 <script src="<?php echo base_url('assets/js/manage_test.js'); ?>"></script>
 
 <script>
+
+    $('.multiple_correct').select2();
+
     $("#reevalute_result_loading_div").hide();
     var test_id = "<?= $test_id; ?>";
     var test_name = "<?= $test_details['test_name']; ?>";
     var student_id = "<?= $student_details['id']; ?>";
     var student_name = "<?= $student_details['name']; ?>";
+
     $('.update_student_test_option').change(function() {
-        var option_selected = $(this).val();
-        var row_id = $(this).siblings().val();
+        var option_selected = $(this).val().toString();
+        var row_id = $(this).next().val();
+        if(row_id == null || row_id == "") {
+            row_id = $(this).next().next().val();
+        }
+        // while(row_id == null || row_id == "") {
+        //     row_id = $(this).siblings().val();
+        //     break;
+        // }
+        
         var dataString = 'test_id=' + test_id + '&test_name=' + test_name + '&student_id=' + student_id + '&student_name=' + student_name + '&row_id=' + row_id + '&option_selected=' + option_selected;
         $.ajax({
             type: 'POST',
@@ -138,6 +180,10 @@
                 });
             }
         });
+    });
+    //Change event for Numeric/text answers
+    $('.text_answer').on('input',function(e){
+        console.log("Changed!");
     });
 </script>
 

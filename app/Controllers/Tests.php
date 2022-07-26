@@ -28,6 +28,12 @@ class Tests extends BaseController
             $session->setFlashdata('toastr_error', 'UnAuthorized access.');
             return redirect()->to(base_url('/home'));
         }
+        // Check Authorized User
+		if (!isAuthorized("view_tests")) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+			return redirect()->to(base_url('/home'));
+		}
 
         // Log Activity 
         $this->activity->page_access_activity('Tests', '/tests');
@@ -2731,6 +2737,48 @@ class Tests extends BaseController
         if(!empty($data['test_details']['template_id'])){
             $TestTemplateConfigModel = new TestTemplateConfigModel();
             $data['test_template_data'] = $TestTemplateConfigModel->fetch_template_section_rules($data['test_details']['template_id']);  
+        }
+        $SubjectsModel = new SubjectsModel();
+        $data['subject_details'] = $SubjectsModel->get_subjects($data['decrypted_institute_id']);
+        echo view('pages/tests/upload_exam_pdf_paper', $data);
+    }
+
+    /**
+     * Update Offlne Exam - Pdf Paper
+     *
+     * @param string $test_id
+     * @return void
+     * @author Ajinkya K
+     */
+    public function update_exam_pdf_paper(string $test_id)
+    {
+        if (session()->get('exam_feature') == 0) {
+            $session = session();
+            $session->setFlashdata('toastr_error', 'UnAuthorized access.');
+            return redirect()->to(base_url('/home'));
+        }
+
+        // Log Activity 
+        $this->activity->page_access_activity('Test Update Uploaded Pdf Exam Paper', '/tests/upload_exam_pdf_paper');
+
+        $data['title'] = "Update PDF Paper";
+        $data['instituteID'] = session()->get('instituteID');
+        $data['decrypted_institute_id'] = decrypt_cipher(session()->get('instituteID'));
+        $data['test_id'] = $test_id;
+        $data['staff_id'] = decrypt_cipher(session()->get('login_id'));
+        $data['decrypt_test_id'] =  decrypt_cipher($test_id);
+
+        $TestsModel = new TestsModel();
+        $data['test_details'] = $TestsModel->get_test_details(decrypt_cipher($test_id));
+        $data['test_template_data'] = array();
+
+        //Fetch already added sections
+        $data['uploaded_questions'] = $TestsModel->section_wise_question_count(decrypt_cipher($test_id));
+        if(!isset($data['uploaded_questions']) || empty($data['uploaded_questions'])) {
+            if(!empty($data['test_details']['template_id'])){
+                $TestTemplateConfigModel = new TestTemplateConfigModel();
+                $data['test_template_data'] = $TestTemplateConfigModel->fetch_template_section_rules($data['test_details']['template_id']);  
+            }
         }
         $SubjectsModel = new SubjectsModel();
         $data['subject_details'] = $SubjectsModel->get_subjects($data['decrypted_institute_id']);

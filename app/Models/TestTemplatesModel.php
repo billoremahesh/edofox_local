@@ -196,6 +196,22 @@ class TestTemplatesModel extends Model
             return false;
         }
 
+        if (isset($test_data['omr_template'])) {
+            $add_template_config_arr = array();
+            $add_template_config_arr['template_id'] = $template_id;
+            $add_template_config_arr['rule_name'] = 'OMR_TEMPLATE';
+            $add_template_config_arr['display_name'] = 'OMR TEMPLATE';
+            $add_template_config_arr['value'] = strtoupper(sanitize_input($test_data['omr_template']));
+            if (!$TestTemplateConfigModel->add_template_config_data($add_template_config_arr)) {
+                // Log Message
+                $log_info =  [
+                    'username' =>  $this->session->get('username')
+                ];
+                log_message('error', 'User {username} tried to add template config details but failed', $log_info);
+                return false;
+            }
+        }
+
 
 
         // Test interface template config
@@ -351,7 +367,6 @@ class TestTemplatesModel extends Model
             log_message('error', 'User {username} tried to add template config details but failed', $log_info);
             return false;
         }
-
 
         // Fetch test mapped questions
         $TestsModel = new TestsModel();

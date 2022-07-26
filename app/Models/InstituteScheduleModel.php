@@ -56,11 +56,19 @@ class InstituteScheduleModel extends Model
         $institute_id = $postData['institute_id']; 
 
         $institute = "";
+        $classroomQuery = "";
+        if(isset($postData['classroom'])) {
+            $classroom = $postData['classroom'];
+            $classroomQuery = " AND (institute_schedule.classroom_id = $classroom OR institute_schedule.classroom_id IS NULL) ";
+        }
+        
         if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
             $institute_id = $postData['institute_id'];
             $institute = "AND institute_schedule.institute_id=$institute_id";
         } 
-        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE institute_schedule_data.is_disabled=0 AND institute_schedule.frequency='Holiday' $institute ORDER BY DATE(institute_schedule_data.DATE) ASC";
+        $sql_fetch_data = "SELECT * from institute_schedule WHERE institute_schedule.is_disabled=0 AND institute_schedule.type='Holiday' $institute 
+        $classroomQuery
+        ORDER BY DATE(institute_schedule.DATE) ASC";
         $query = $db->query($sql_fetch_data); 
         $result = $query->getResultArray(); 
         return $result;
@@ -79,16 +87,17 @@ class InstituteScheduleModel extends Model
             $institute_id = $postData['institute_id'];
             $institute_condn = " AND institute_schedule.institute_id= '$institute_id' ";
         }
-        $frequencytype ="AND institute_schedule.frequency='Holiday'"; 
+        $frequencytype ="AND institute_schedule.type='Holiday'"; 
 
         $classroom = "";
         if (isset($postData['institute_id']) && !empty($postData['institute_id'])) {
             $institute_id = $postData['institute_id'];
-            $classroom = " AND institute_schedule.classroom_id=$class_room";
+            $classroom = " AND (institute_schedule.classroom_id=$class_room OR institute_schedule.classroom_id IS NULL)";
         } 
          
 
-        $sql_fetch_data = "SELECT institute_schedule.*,packages.package_name FROM institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id LEFT JOIN packages ON packages.id=institute_schedule.classroom_id WHERE DATE(institute_schedule_data.DATE)='$date' $frequencytype $institute_condn $classroom";
+        $sql_fetch_data = "SELECT institute_schedule.* FROM institute_schedule 
+        WHERE DATE(institute_schedule.DATE)='$date' $frequencytype $institute_condn $classroom";
         $query = $db->query($sql_fetch_data);  
         $result = $query->getResultArray(); 
         return $result; 
@@ -245,28 +254,42 @@ class InstituteScheduleModel extends Model
 
     public function  checkSchedule(array $data){
       
-        $start_at = $data['starts_at'];
-        $end_at = $data['ends_at'];
-        $date  = $data['date'];
+        if(isset($data['starts_at'])) {
+            $start_at = $data['starts_at'];
+            $end_at = $data['ends_at'];
+        }
+        
+        if(isset($data['date'])) {
+            $date  = $data['date'];
+        }
+        
         $session_classroom = $data['classroom_id'];
-        $institute_id = $data['institute_id']; 
+        //$institute_id = $data['institute_id']; 
         $scheduleType=''; 
-       if($data['frequency'] ='weekly'){
-        $day =$data['day'];
-        $scheduleType="AND institute_schedule.day =$day";
-       }else {  
-        $scheduleType="AND date(institute_schedule_data.DATE)='$date'";
+       if($data['frequency'] != 'Date'){
+            $day =$data['day'];
+            $scheduleType="AND institute_schedule.day =$day AND institute_schedule.frequency = '" .$data['frequency'] . "'";
+       } else {  
+            $scheduleType="AND (date(institute_schedule_data.DATE)='$date'";
+            $dayofweek = date('w', strtotime($date));
+            $scheduleType = $scheduleType . " OR (institute_schedule.day = $dayofweek AND institute_schedule.frequency = 'Weekly') ";
+            $day_of_month = date_format(date_create($date), 'd');
+            $scheduleType = $scheduleType . " OR (institute_schedule.day = $day_of_month AND institute_schedule.frequency = 'Monthly') ";
+            $scheduleType = $scheduleType . ")";
+            
        }
- 
+       if(isset($data['schedule_id'])) {
+            $scheduleType = $scheduleType . " AND institute_schedule.id != " . $data['schedule_id'];
+        }
 
         $db = \Config\Database::connect();
         $sql ="select * from institute_schedule LEFT JOIN institute_schedule_data ON institute_schedule_data.schedule_id=institute_schedule.id where ((starts_at >= '$start_at' and starts_at < '$end_at') OR (ends_at > '$start_at' and ends_at <= '$end_at') OR (starts_at < '$start_at' and ends_at > '$end_at')) and institute_schedule.is_disabled = 0 and classroom_id = $session_classroom $scheduleType and type = 'Session'";
-        $query = $db->query($sql); 
+        $query = $db->query($sql);
         $result = $query->getRowArray();  
-       if($result==''){
-        return 1;
-       }else{
-       return 0;
+        if($result==''){
+            return 1;
+        }else{
+            return 0;
        }
      
     }
@@ -274,6 +297,7 @@ class InstituteScheduleModel extends Model
     {
         $db = \Config\Database::connect();
         $exits_schedule=""; 
+        $frequency = "";
         $db->transStart();   
         if (isset($data['institute_id']) && !empty($data['institute_id'])) {
             $insert_data['institute_id'] = sanitize_input($data['institute_id']);
@@ -298,13 +322,13 @@ class InstituteScheduleModel extends Model
 
         if (isset($data['session_frequency']) && !empty($data['session_frequency'])) {
             $insert_data['frequency'] = sanitize_input($data['session_frequency']);
+            $frequency = $insert_data['frequency'];
         }
 
       
 
         // Add Multiple Schdules
         if (isset($data['session_week_days']) && !empty($data['session_week_days'])) {
-
             foreach ($data['session_week_days'] as $key => $value) {
                 $insert_data['day'] = sanitize_input($value);
 
@@ -329,6 +353,13 @@ class InstituteScheduleModel extends Model
                 $day_name=$daysWeekArray[$value];  
                 $insert_tran_data['date']=date( 'Y-m-d', strtotime( $day_name.' this week' ) );   
                 $insert_data['date']=$insert_tran_data['date'];
+
+                //Validation if schedule is not One time, dates should be NULL
+                if($insert_data['frequency'] != 'Date') {
+                    $insert_data['date'] = NULL;
+                    $insert_data['to_date'] = NULL;
+                }
+
                 $if_exit=$this->checkSchedule($insert_data); 
            
                 if($if_exit==0){
@@ -341,8 +372,10 @@ class InstituteScheduleModel extends Model
 
             }
         } else {
-            if (isset($data['session_week_day']) && !empty($data['session_week_day'])) {
+            if (isset($data['session_week_day']) && !empty($data['session_week_day']) && $frequency == "Weekly") {
                 $insert_data['day'] = sanitize_input($data['session_week_day']);
+            } else if (isset($data['session_month_day']) && !empty($data['session_month_day']) && $frequency == "Monthly") {
+                $insert_data['day'] = sanitize_input($data['session_month_day']);
             }
 
             if (isset($data['session_start_time']) && !empty($data['session_start_time'])) {
@@ -367,6 +400,13 @@ class InstituteScheduleModel extends Model
                 return $exits_schedule;
             }
             $insert_data['duration'] =  $add_duration;
+
+            //Validation if schedule is not One time, dates should be NULL
+            if($insert_data['frequency'] != 'Date') {
+                $insert_data['date'] = NULL;
+                $insert_data['to_date'] = NULL;
+            }
+
             $db->table('institute_schedule')->insert($insert_data); 
             $insert_tran_data['schedule_id']=$db->insertID();
             $db->table('institute_schedule_data')->insert($insert_tran_data);
@@ -405,11 +445,11 @@ class InstituteScheduleModel extends Model
 
         $db->transStart(); 
 
-        $classroom_arr = []; 
-        if(count($data['session_classroom'])==count($data['classroom_list'])){
-            $classroom_arr[] =0;
-            $data['session_classroom'] = $classroom_arr;
-        }  
+        // $classroom_arr = []; 
+        // if(count($data['session_classroom'])==count($data['classroom_list'])){
+        //     $classroom_arr[] =0;
+        //     $data['session_classroom'] = $classroom_arr;
+        // }  
  
         foreach ($data['session_classroom'] as $class_value) {
           
@@ -422,12 +462,15 @@ class InstituteScheduleModel extends Model
             }
 
 
-            if (isset($class_value) && !empty($class_value)) {
+            if (isset($class_value) && !empty($class_value) && $class_value != 0) {
                 $insert_data['classroom_id'] = sanitize_input($class_value);
-            } 
-            if(count($data['session_classroom'])==count($data['classroom_list'])){
-                $insert_data['classroom_id'] =0;
-            }  
+            } else {
+                //Insert NULL for holiday applicable to all classrooms
+                $insert_data['classroom_id'] = NULL;
+            }
+            // if(count($data['session_classroom'])==count($data['classroom_list'])){
+            //     $insert_data['classroom_id'] =0;
+            // }  
 
             if (isset($data['session_frequency']) && !empty($data['session_frequency'])) {
                 $insert_data['frequency'] = sanitize_input($data['session_frequency']);
@@ -561,6 +604,8 @@ class InstituteScheduleModel extends Model
 
         $db->transStart();
 
+        $exits_schedule=""; 
+
         if (isset($data['is_disabled']) && !empty($data['is_disabled'])) {
             $update_data['is_disabled'] = '1';
         } else {
@@ -605,6 +650,22 @@ class InstituteScheduleModel extends Model
 
             $update_data['duration'] =  $add_duration;
         }
+
+        
+        if(!isset($update_data['is_disabled']) || $update_data['is_disabled'] != 1) {
+            //Check time overlap if not delete operation
+            if(isset($data['session_start_time']) && isset($data['session_end_time'])) {
+                $data['starts_at'] = $data['session_start_time'];
+                $data['ends_at'] = $data['session_end_time'];
+
+                $if_exit=$this->checkSchedule($data); 
+                if($if_exit==0){
+                    $exits_schedule .= $data['starts_at'].'-'.$data['ends_at']; 
+                    return $exits_schedule;
+                }
+            }
+        }
+        
 
         $schedule_id = $data['schedule_id'];
 

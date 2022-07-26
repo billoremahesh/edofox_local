@@ -112,6 +112,11 @@
                 <input type="hidden" name="schedule_id" value="<?= $schedule_id; ?>" required />
                 <input type="hidden" name="redirect" value="<?= $redirect; ?>" required />
                 <input type="hidden" name="session_week_day" id="session_week_day" value="<?= $schedule_details['day'] ?>" />
+                <input type="hidden" name="session_month_day" id="session_week_day" value="<?= $schedule_details['day'] ?>" />
+                <input type="hidden" name="frequency" id="session_frequency" value="<?= $schedule_details['frequency'] ?>" />
+                <input type="hidden" name="classroom_id" id="classroom_id" value="<?= $schedule_details['classroom_id'] ?>" />
+                <input type="hidden" name="date" id="date" value="<?= $schedule_details['date'] ?>" />
+                <input type="hidden" name="day" id="day" value="<?= $schedule_details['day'] ?>" />
                 <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-success">Update</button>
             </div>

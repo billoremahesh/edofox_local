@@ -217,6 +217,13 @@ class ClassroomModel extends Model
             )";
         }
 
+        // Check Mapped Classrooms to staff in case of not given global permissions
+        $check_access_perms = "";
+        $classroom_mapped_ids = session()->get('classroom_mapped_arr');
+        if (!empty($classroom_mapped_ids)) {
+            $check_access_perms = " AND packages.id IN ($classroom_mapped_ids) ";
+        }
+
 
         $sql = "SELECT packages.*,IF(cnt IS NULL,0,cnt) student_cnt,IF(deletedCount IS NULL,0,deletedCount) deleted_cnt
         FROM packages
@@ -227,10 +234,10 @@ class ClassroomModel extends Model
         ON stu_institute.package_id = packages.id
         LEFT JOIN (select count(*) as deletedCount, package_id
         from student_institute join student_login on student_institute.student_id = student_login.student_id
-        where student_institute.institute_id='$instituteID' AND (student_login.student_access IS NOT NULL AND student_login.student_access != '' AND student_login.student_access != 'Teacher') AND
+        where student_institute.institute_id='$instituteID' AND (student_login.student_access IS NOT NULL AND student_login.student_access != '' AND student_login.student_access != 'Teacher' AND student_login.student_access != 'Deleted') AND
         student_institute.is_disabled = 0 group by package_id ) stu_institute_deleted
         ON stu_institute_deleted.package_id = packages.id 
-        WHERE institute_id='$instituteID' ";
+        WHERE institute_id='$instituteID' $check_access_perms ";
 
         $totalquery = $this->db->query($sql);
         $resultTotalData = $totalquery->getResultArray();
@@ -257,6 +264,7 @@ class ClassroomModel extends Model
             $is_public_badge = "";
 
             $active_student_count = $row['student_cnt'];
+            //Its actually blocked count
             $disabled_student_count = $row['deleted_cnt'];
 
 
@@ -295,6 +303,7 @@ class ClassroomModel extends Model
 
                 $update_btn = "";
                 $delete_btn = "";
+                $empty_btn = "";
 
                 if (in_array("manage_classrooms", session()->get('perms')) or in_array("all_perms", session()->get('perms'))) {
 
@@ -303,6 +312,9 @@ class ClassroomModel extends Model
 
                     // Disable Option
                     $delete_btn = "<li role='separator' class='dropdown-divider'></li><li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','delete_classroom_modal','classrooms/delete_classroom_modal/" . $package_id . "');" . "> Disable Classroom </a></li>";
+
+                    //Empty classroom
+                    $empty_btn = "<li role='separator' class='dropdown-divider'></li><li><a class='btn btn-sm' onclick=" . "show_edit_modal('modal_div','empty_classroom_modal','classrooms/empty_classroom_modal/" . $package_id . "');" . "> Empty Classroom </a></li>";
                 }
 
                 $is_public_share = "";
@@ -312,7 +324,7 @@ class ClassroomModel extends Model
 
 
                 $dropdown_wrapper_code = htmlspecialchars("<div class='dropdown'><button class='btn btn-default dropdown-toggle more_option_button' type='button' id='classroomDropdownMenu' data-bs-toggle='dropdown'  data-bs-auto-close='outside'  aria-expanded='false'><i class='fa fa-ellipsis-h' aria-hidden='true'></i>
-                </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='classroomDropdownMenu'> $view_classroom_students $update_btn $delete_btn $is_public_share  </ul></div>");
+                </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='classroomDropdownMenu'> $view_classroom_students $update_btn $delete_btn $empty_btn $is_public_share  </ul></div>");
             }
 
             $nestedData[] = htmlspecialchars_decode($dropdown_wrapper_code);

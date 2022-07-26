@@ -463,6 +463,12 @@ class StudentModel extends Model
                 }
             }
             $packageQuery .= " ) ";
+        } else {
+            // Check Mapped Classrooms to staff in case of not given global permissions
+            $classroom_mapped_ids = session()->get('classroom_mapped_arr');
+            if (!empty($classroom_mapped_ids)) {
+                $packageQuery = " AND student_institute.package_id IN ($classroom_mapped_ids) ";
+            }
         }
 
 
@@ -633,12 +639,11 @@ class StudentModel extends Model
             $check_performance_form = "<li><a  class='dropdown-item' href=" . base_url('students/performance_report/' . $encrypted_student_id) . "> Check Performance </a></li>";
             $check_attendance_form = "<li><a  class='dropdown-item' href=" . base_url('students/attendance_performance_report/' . $encrypted_student_id) . ">Attendance Report </a></li>";
 
-
-            $edit_students_classroom_form = "<li><a  class='dropdown-item' href=" . base_url('students/students_classroom/' . $encrypted_student_id) . "> Edit Student's Classrooms </a></li>";
-
-
-
-
+            $edit_students_classroom_form = "";
+            $edit_student_details = "";
+            $edit_student_password = "";
+            $delete_student = "";
+            $block_student = "";
 
             $blockButtonText = 'Block Student Account';
             $blockType = 'disable';
@@ -646,6 +651,17 @@ class StudentModel extends Model
                 $blockButtonText = 'Unblock Student account';
                 $blockType = 'unblock';
             }
+
+            if (isAuthorized("manage_students")) {
+                $edit_students_classroom_form = "<li><a  class='dropdown-item' href=" . base_url('students/students_classroom/' . $encrypted_student_id) . "> Edit Student's Classrooms </a></li>";
+                $edit_student_details = "<li role='separator' class='divider'></li><li><a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','update_student_details_modal','students/update_student_details_modal/" . $encrypted_student_id . "');" . "> Update Student Details </a></li>";
+                $edit_student_password = "<li><a  class='dropdown-item more_options_btn_link' href=" . base_url('students/update_password/' . $encrypted_student_id) . "> Update Student Password</a>";
+                $block_student = "<li><a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','disable_student_modal','students/disable_student_modal/" . $encrypted_student_id . "/" . $blockType . "');" . "> $blockButtonText </a></li>";
+                $delete_student = "<li><a class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','delete_student_modal','students/delete_student_modal/" . $encrypted_student_id . "');" . "> Delete Student </a></li>";
+            }
+            
+
+            
 
 
             $send_account_invite = "<li><a  class='dropdown-item more_options_btn_link' onclick=" . "send_account_invite('" . $row['username'] . "');" . "> Send Account Invite </a></li>";
@@ -657,7 +673,7 @@ class StudentModel extends Model
 
 
             $dropdown_wrapper_code = htmlspecialchars("<div class='dropdown'><button class='btn btn-default dropdown-toggle more_option_button' type='button' id='studentDropdownMenu' data-bs-toggle='dropdown'  data-bs-auto-close='outside'  aria-expanded='false'><i class='fa fa-ellipsis-h' aria-hidden='true'></i>
-            </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='studentDropdownMenu'> $check_performance_form $check_attendance_form <li role='separator' class='divider'></li> $update_permission_button  $edit_students_classroom_form <li role='separator' class='divider'></li><li><a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','update_student_details_modal','students/update_student_details_modal/" . $encrypted_student_id . "');" . "> Update Student Details </a></li><li><a  class='dropdown-item more_options_btn_link' href=" . base_url('students/update_password/' . $encrypted_student_id) . "> Update Student Password</a></li>$send_account_invite<li>$whatsapp_invite<a  class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','disable_student_modal','students/disable_student_modal/" . $encrypted_student_id . "/" . $blockType . "');" . "> $blockButtonText </a></li><li><a class='dropdown-item more_options_btn_link' onclick=" . "show_edit_modal('modal_div','delete_student_modal','students/delete_student_modal/" . $encrypted_student_id . "');" . "> Delete Student </a></li></ul></div>");
+            </button><ul class='dropdown-menu dropdown-menu-end' aria-labelledby='studentDropdownMenu'> $check_performance_form $check_attendance_form <li role='separator' class='divider'></li> $update_permission_button $edit_student_details  $edit_students_classroom_form  $edit_student_password </li>$send_account_invite $whatsapp_invite $block_student $delete_student </ul></div>");
 
 
             if ($row['student_access'] != "Deleted") {
@@ -1074,6 +1090,56 @@ class StudentModel extends Model
                 'username' =>  session()->get('username'),
                 'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
                 'item' => 'student with Student ID ' . $student_id,
+                'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
+                'admin_id' =>  decrypt_cipher(session()->get('login_id'))
+            ];
+            $UserActivityModel->log('deleted', $log_info);
+            return true;
+        }
+    }
+    /*******************************************************/
+
+    /**
+     * Delete Students of classroom
+     *
+     * @param [Array] $data
+     *
+     * @return void
+     * @author Rushi B <rushikesh.badadale@mattersoft.xyz>
+     */
+    public function delete_classroom_students($data)
+    {
+        $db = \Config\Database::connect();
+
+        $db->transStart();
+
+        $classroom_id = sanitize_input(decrypt_cipher($data['classroom_id']));
+
+        $student_login_data = [
+            'student_access' => 'Deleted'
+        ];
+
+        $db->table('student_login')->update($student_login_data, "student_id in 
+        (select student_id from student_institute where is_disabled = 0 AND package_id = ". $classroom_id . " )
+        AND institute_id = ". decrypt_cipher(session()->get('instituteID')));
+
+
+        $db->transComplete();
+
+        if ($db->transStatus() === FALSE) {
+            // generate an error... or use the log_message() function to log your error
+            return false;
+        } else {
+            $UserActivityModel = new UserActivityModel();
+            $classroomName = "";
+            if(isset($data['classroom_details'])) {
+                $classroomName = $data['classroom_details']['package_name'];
+            }
+            // Activity Log
+            $log_info =  [
+                'username' =>  session()->get('username'),
+                'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
+                'item' => 'students from classroom '. $classroomName,
                 'institute_id' =>  decrypt_cipher(session()->get('instituteID')),
                 'admin_id' =>  decrypt_cipher(session()->get('login_id'))
             ];
